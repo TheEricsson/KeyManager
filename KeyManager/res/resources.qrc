@@ -1,0 +1,12 @@
+<RCC>
+    <qresource prefix="/images">
+        <file>shutter.svg</file>
+        <file>search.svg</file>
+        <file>settings.svg</file>
+        <file>exit.svg</file>
+        <file>logo.png</file>
+    </qresource>
+    <qresource prefix="/sounds">
+        <file>scanner_beep.mp3</file>
+    </qresource>
+</RCC>

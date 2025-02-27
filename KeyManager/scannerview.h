@@ -1,0 +1,61 @@
+#ifndef SCANNERVIEW_H
+#define SCANNERVIEW_H
+
+#include <QWidget>
+#include <QMediaDevices>
+#include <QScopedPointer>
+#include <QImageCapture>
+#include <QMediaRecorder>
+#include <QMediaCaptureSession>
+#include <QCamera>
+#include <QCameraDevice>
+#include <QImage>
+
+class QTimer;
+class QVideoWidget;
+class QPushButton;
+class QLabel;
+
+class ScannerView : public QWidget
+{
+    Q_OBJECT
+public:
+    explicit ScannerView(QWidget *parent = nullptr);
+    void setCamera (QCamera *cameraDevice);
+    void startScanning ();
+    void stopScanning ();
+    ~ScannerView();
+
+private:
+    void checkAvailableCams ();
+    void checkPermissions ();
+    //void setCamera (const QCameraDevice &cameraDevice);
+    void takePicture ();
+
+    QMediaDevices m_devices;
+    //QScopedPointer<QImageCapture> m_imageCapture;
+    QImageCapture *m_ImageCapture;
+    QMediaCaptureSession m_captureSession;
+    QVideoWidget *m_viewfinder;
+
+    bool m_isCapturingImage = false;
+    bool m_applicationExiting = false;
+    bool m_doImageCapture = true;
+
+    int m_scanFrequency;
+
+    QTimer *m_DecoderTimer;
+    QLabel *m_lastPhoto;
+
+signals:
+    void closeWindow (int returnCode);
+    void codeRetrieved (int code);
+    void closeScannerView ();
+
+private slots:
+    void onAbortBtnClicked ();
+    void onScanButtonReleased ();
+    void processCapturedImage (int requestId, const QImage &img);
+};
+
+#endif // SCANNERVIEW_H
