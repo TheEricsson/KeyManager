@@ -67,7 +67,7 @@ void Camera::setCamera (const QCameraDevice &cameraDevice)
     mCamera = new QCamera(cameraDevice);
 
     mCamera->setFocusMode(QCamera::FocusModeAuto);
-    //mCamera->start();
+    mCamera->setExposureMode(QCamera::ExposureBarcode);
 }
 
 QCamera* Camera::getCamera ()
