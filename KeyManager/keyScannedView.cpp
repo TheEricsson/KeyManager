@@ -1,12 +1,14 @@
 #include "keyscannedview.h"
-#include <QGridLayout>
+#include <QVBoxLayout>
 #include <QLabel>
 #include <QPushButton>
+#include <QHBoxLayout>
 
 KeyScannedView::KeyScannedView(QWidget *parent)
     : QWidget{parent}
 {
-    mLayout = new QGridLayout ();
+    QVBoxLayout *verticalLayout = new QVBoxLayout ();
+
     QLabel *keyScanned = new QLabel ("Code erkannt!");
     QLabel *mandant = new QLabel ("Mandant:");
     QLabel *keyId = new QLabel ("Schlüssel-ID:");
@@ -19,17 +21,20 @@ KeyScannedView::KeyScannedView(QWidget *parent)
     QPushButton *btnOut = new QPushButton ("Schlüssel ausgeben");
     QPushButton *btnUnknown = new QPushButton ("Schlüssel anlegen");
 
-    mLayout->addWidget(keyScanned);
-    mLayout->addWidget(mandant);
-    mLayout->addWidget(keyId);
-    mLayout->addWidget(property);
-    mLayout->addWidget(Typ);
-    mLayout->addWidget(keyInternalId);
+    QHBoxLayout *horizontalLayout = new QHBoxLayout ();
+    horizontalLayout->addWidget(btnOut);
+    horizontalLayout->addWidget(btnReturn);
+    horizontalLayout->addWidget(btnUnknown);
+    horizontalLayout->addWidget(btnBack);
 
-    mLayout->addWidget(btnBack);
-    mLayout->addWidget(btnReturn);
-    mLayout->addWidget(btnOut);
-    mLayout->addWidget(btnUnknown);
+    verticalLayout->addWidget(keyScanned);
+    verticalLayout->addWidget(mandant);
+    verticalLayout->addWidget(keyId);
+    verticalLayout->addWidget(property);
+    verticalLayout->addWidget(Typ);
+    verticalLayout->addWidget(keyInternalId);
 
-    this->setLayout(mLayout);
+    verticalLayout->addLayout(horizontalLayout);
+
+    this->setLayout(verticalLayout);
 }

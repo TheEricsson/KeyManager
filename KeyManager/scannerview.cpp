@@ -13,6 +13,7 @@
 #include <QTimer>
 #include <QMediaPlayer>
 #include <QAudioOutput>
+#include <QScreenCapture>
 
 #if QT_CONFIG(permissions)
 #include <QPermission>
@@ -26,7 +27,7 @@ ScannerView::ScannerView(QWidget *parent)
     m_ImageCapture = 0;
 
     m_DecoderTimer = 0;
-    m_scanFrequency = 1000;
+    m_scanFrequency = 5000;
 
     // main Layout
     QVBoxLayout *layout = new QVBoxLayout;
@@ -46,7 +47,6 @@ ScannerView::ScannerView(QWidget *parent)
     layout->setStretch(1, 5);
 
     m_lastPhoto = new QLabel ("");
-
     layout->addWidget(m_lastPhoto);
 
     QPushButton* btnAbort = new QPushButton ("Abbrechen");
@@ -54,6 +54,10 @@ ScannerView::ScannerView(QWidget *parent)
 
     m_ImageCapture = new QImageCapture ();
     m_captureSession.setImageCapture(m_ImageCapture);
+    m_ImageCapture->setQuality(QImageCapture::HighQuality);
+    m_ImageCapture->setFileFormat(QImageCapture::JPEG);
+    //m_ImageCapture->setResolution(3072, 4080);
+
     connect(m_ImageCapture, &QImageCapture::imageCaptured, this, &ScannerView::processCapturedImage);
 
     m_DecoderTimer = new QTimer (this);
@@ -74,7 +78,10 @@ void ScannerView::onAbortBtnClicked ()
 void ScannerView::startScanning ()
 {
     if (0 != m_DecoderTimer)
-        m_DecoderTimer->start (m_scanFrequency);
+    {
+        m_DecoderTimer->start ();
+        m_DecoderTimer->setInterval(m_scanFrequency);
+    }
 }
 
 void ScannerView::stopScanning ()
@@ -86,20 +93,19 @@ void ScannerView::stopScanning ()
 void ScannerView::processCapturedImage(int requestId, const QImage &img)
 {
     Q_UNUSED(requestId);
-    QImage scaledImage = img.scaled(m_viewfinder->size(), Qt::KeepAspectRatio, Qt::SmoothTransformation);
-    qDebug () << "Höhe: " << scaledImage.size().height() << "Breite: " << scaledImage.size().width();
-    qDebug () << "Bytes: " << scaledImage.sizeInBytes();
 
-    m_lastPhoto->setPixmap(QPixmap::fromImage(scaledImage));
+    QImage scaledImage = img.scaled(m_viewfinder->size(), Qt::KeepAspectRatio, Qt::FastTransformation);
 
     QZXing decoder;
     //mandatory settings
-    decoder.setDecoder(QZXing::DecoderFormat_QR_CODE);
+    decoder.setDecoder(QZXing::DecoderFormat_CODE_128);
 
     //optional settings
     decoder.setSourceFilterType(QZXing::SourceFilter_ImageNormal);
     decoder.setTryHarderBehaviour(QZXing::TryHarderBehaviour_ThoroughScanning | QZXing::TryHarderBehaviour_Rotate);
 
+    m_lastPhoto->setPixmap(QPixmap::fromImage(scaledImage));
+;
     //trigger decode
     QString result = decoder.decodeImage(scaledImage);
 
@@ -150,7 +156,9 @@ void ScannerView::setCamera (QCamera *cameraDevice)
 
 void ScannerView::takePicture ()
 {
-    m_ImageCapture->captureToFile();
+    //m_ImageCapture->captureToFile();
+    if (m_ImageCapture->isReadyForCapture())
+        m_ImageCapture->capture();
 }
 
 ScannerView::~ScannerView()

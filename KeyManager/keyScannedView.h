@@ -3,7 +3,7 @@
 
 #include <QWidget>
 
-class QGridLayout;
+//class QGridLayout;
 
 class KeyScannedView : public QWidget
 {
@@ -13,7 +13,7 @@ public:
 
 signals:
 private:
-    QGridLayout  *mLayout;
+    //QGridLayout  *mLayout;
 };
 
 #endif // KEYSCANNEDVIEW_H
