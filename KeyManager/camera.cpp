@@ -66,8 +66,30 @@ void Camera::setCamera (const QCameraDevice &cameraDevice)
 
     mCamera = new QCamera(cameraDevice);
 
+    mCamera->setExposureMode(QCamera::ExposurePortrait);
+    mCamera->setManualExposureTime(0.02);
+    mCamera->setManualIsoSensitivity(100);
+    //mCamera->setAutoIsoSensitivity();
+    //mCamera->setAutoExposureTime();
+    mCamera->setWhiteBalanceMode(QCamera::WhiteBalanceAuto);
     mCamera->setFocusMode(QCamera::FocusModeAuto);
-    mCamera->setExposureMode(QCamera::ExposureBarcode);
+    mCamera->setExposureCompensation(-75);
+
+    QCameraDevice camDevice = mCamera->cameraDevice();
+    QList<QCameraFormat> camFormatList = camDevice.videoFormats();
+    QList<QSize> photoRes = camDevice.photoResolutions();
+
+    qDebug () << "available video formats:";
+    for (int i = 0; i < camFormatList.count(); i++)
+    {
+        qDebug () << camFormatList[i].resolution().width() << " x " << camFormatList[i].resolution().height();
+    }
+
+    qDebug () << "available photo formats:";
+    for (int i = 0; i < photoRes.count(); i++)
+    {
+        qDebug () << photoRes[i].width() << " x " << photoRes[i].height();
+    }
 }
 
 QCamera* Camera::getCamera ()
