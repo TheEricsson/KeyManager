@@ -36,9 +36,6 @@ ScannerView::ScannerView(QWidget *parent)
     QLabel* header = new QLabel("Code Scanner");
     layout->addWidget(header);
 
-    //checkPermissions();
-    //checkAvailableCams ();
-
     // layout for the cam video/ pic screen
     m_viewfinder = new QVideoWidget ();
 
@@ -52,21 +49,16 @@ ScannerView::ScannerView(QWidget *parent)
     QPushButton* btnAbort = new QPushButton ("Abbrechen");
     layout->addWidget(btnAbort);
 
-    m_ImageCapture = new QImageCapture ();
-    m_captureSession.setImageCapture(m_ImageCapture);
-    m_ImageCapture->setQuality(QImageCapture::HighQuality);
-    m_ImageCapture->setFileFormat(QImageCapture::JPEG);
-    //m_ImageCapture->setResolution(3072, 4080);
-
-    connect(m_ImageCapture, &QImageCapture::imageCaptured, this, &ScannerView::processCapturedImage);
+    // m_ImageCapture = new QImageCapture ();
+    // m_captureSession.setImageCapture(m_ImageCapture);
+    // m_ImageCapture->setQuality(QImageCapture::HighQuality);
+    // m_ImageCapture->setFileFormat(QImageCapture::JPEG);
+    //connect(m_ImageCapture, &QImageCapture::imageCaptured, this, &ScannerView::processCapturedImage);
 
     m_DecoderTimer = new QTimer (this);
     connect (m_DecoderTimer, &QTimer::timeout, this, &ScannerView::takePicture);
 
     connect (btnAbort, SIGNAL (clicked()), this, SLOT (onAbortBtnClicked()));
-
-    // start scanning immediately
-    //m_DecoderTimer->start (m_scanFrequency);
 }
 
 void ScannerView::onAbortBtnClicked ()
@@ -92,6 +84,7 @@ void ScannerView::stopScanning ()
 
 void ScannerView::processCapturedImage(int requestId, const QImage &img)
 {
+    return;
     Q_UNUSED(requestId);
 
     QImage scaledImage = img.scaled(m_viewfinder->size(), Qt::KeepAspectRatio, Qt::FastTransformation);
@@ -143,22 +136,26 @@ void ScannerView::onScanButtonReleased()
     }
 }
 
+void ScannerView::setVideoOutput (QMediaCaptureSession *captureSession)
+{
+    captureSession->setVideoOutput(m_viewfinder);
+}
+
 //void ScannerView::setCamera (const QCameraDevice &cameraDevice)
 void ScannerView::setCamera (QCamera *cameraDevice)
 {
-    if (0 != cameraDevice)
-    {
-        m_captureSession.setCamera(cameraDevice);
-        m_captureSession.setVideoOutput(m_viewfinder);
-        cameraDevice->start();
-    }
+    // if (0 != cameraDevice)
+    // {
+    //     m_captureSession.setCamera(cameraDevice);
+    //     m_captureSession.setVideoOutput(m_viewfinder);
+    //     cameraDevice->start();
+    // }
 }
 
 void ScannerView::takePicture ()
 {
-    //m_ImageCapture->captureToFile();
-    if (m_ImageCapture->isReadyForCapture())
-        m_ImageCapture->capture();
+    // if (m_ImageCapture->isReadyForCapture())
+    //     m_ImageCapture->capture();
 }
 
 ScannerView::~ScannerView()

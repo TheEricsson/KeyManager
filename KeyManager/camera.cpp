@@ -5,6 +5,7 @@
 #include <QCameraDevice>
 #include <QMediaDevices>
 #include <QCamera>
+#include <QImageCapture>
 
 #if QT_CONFIG(permissions)
     #include <QPermission>
@@ -18,11 +19,26 @@ Camera::Camera (QWidget *parent)
     init ();
 }
 
+void Camera::takePicture ()
+{
+    qDebug () << "Camera::takePicture () called";
+
+    if (mImageCapture->isReadyForCapture())
+        mImageCapture->capture();
+}
+
+QImageCapture* Camera::getImageCapture ()
+{
+    return mImageCapture;
+}
+
 void Camera::init ()
 {
     checkPermissions();
     checkAvailableCams ();
     setCamera(QMediaDevices::defaultVideoInput());
+    initCaptureSession ();
+    mCamera->start();
 }
 
 void Camera::checkPermissions ()
@@ -90,6 +106,28 @@ void Camera::setCamera (const QCameraDevice &cameraDevice)
     {
         qDebug () << photoRes[i].width() << " x " << photoRes[i].height();
     }
+}
+
+void Camera::initCaptureSession ()
+{
+    mImageCapture = new QImageCapture ();
+    mCaptureSession = new QMediaCaptureSession;
+    mCaptureSession->setImageCapture(mImageCapture);
+    mImageCapture->setQuality(QImageCapture::HighQuality);
+    mImageCapture->setFileFormat(QImageCapture::JPEG);
+
+    connect(mImageCapture, &QImageCapture::imageCaptured, this, &Camera::processCapturedImage);
+}
+
+QMediaCaptureSession* Camera::getCaptureSession ()
+{
+    return mCaptureSession;
+}
+
+void Camera::processCapturedImage (int requestId, const QImage &img)
+{
+    qDebug () << "picture taken!";
+    emit onPictureTaken (img);
 }
 
 QCamera* Camera::getCamera ()
