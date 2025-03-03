@@ -6,6 +6,7 @@
 #include <QMediaDevices>
 #include <QCamera>
 #include <QImageCapture>
+#include <QVideoWidget>
 
 #if QT_CONFIG(permissions)
     #include <QPermission>
@@ -16,6 +17,7 @@ Camera::Camera (QWidget *parent)
 {
     mCamera = 0;
     mImageCapture = 0;
+    //mCaptureSession = 0;
 
     init ();
 }
@@ -101,21 +103,21 @@ void Camera::setCamera (const QCameraDevice &cameraDevice)
     mCamera->setFocusMode(QCamera::FocusModeAuto);
     //mCamera->setExposureCompensation(-75);
 
-    QCameraDevice camDevice = mCamera->cameraDevice();
-    QList<QCameraFormat> camFormatList = camDevice.videoFormats();
-    QList<QSize> photoRes = camDevice.photoResolutions();
+    // QCameraDevice camDevice = mCamera->cameraDevice();
+    // QList<QCameraFormat> camFormatList = camDevice.videoFormats();
+    // QList<QSize> photoRes = camDevice.photoResolutions();
 
-    qDebug () << "available video formats:";
-    for (int i = 0; i < camFormatList.count(); i++)
-    {
-        qDebug () << camFormatList[i].resolution().width() << " x " << camFormatList[i].resolution().height();
-    }
+    // qDebug () << "available video formats:";
+    // for (int i = 0; i < camFormatList.count(); i++)
+    // {
+    //     qDebug () << camFormatList[i].resolution().width() << " x " << camFormatList[i].resolution().height();
+    // }
 
-    qDebug () << "available photo formats:";
-    for (int i = 0; i < photoRes.count(); i++)
-    {
-        qDebug () << photoRes[i].width() << " x " << photoRes[i].height();
-    }
+    // qDebug () << "available photo formats:";
+    // for (int i = 0; i < photoRes.count(); i++)
+    // {
+    //     qDebug () << photoRes[i].width() << " x " << photoRes[i].height();
+    // }
 }
 
 void Camera::initCaptureSession ()
@@ -123,15 +125,17 @@ void Camera::initCaptureSession ()
     if (mImageCapture)
         delete mImageCapture;
 
-    if (mCaptureSession)
-        delete mCaptureSession;
+    //if (mCaptureSession)
+    //    delete mCaptureSession;
 
     mImageCapture = new QImageCapture ();
-    mCaptureSession = new QMediaCaptureSession ();
+    //mCaptureSession = new QMediaCaptureSession ();
 
     mImageCapture->setQuality(QImageCapture::HighQuality);
     mImageCapture->setFileFormat(QImageCapture::JPEG);
-    mCaptureSession->setImageCapture(mImageCapture);
+    mCaptureSession.setImageCapture(mImageCapture);
+
+    mCaptureSession.setCamera(mCamera);
 
     connect(mImageCapture, &QImageCapture::imageCaptured, this, &Camera::processCapturedImage);
 }
@@ -152,14 +156,24 @@ void Camera::stopCamera()
         qFatal () << "Camera::stopCamera ():" << "mCamera is Null";
 }
 
-QMediaCaptureSession* Camera::getCaptureSession ()
+void Camera::setVideoOutput (QVideoWidget* videoOutput)
 {
-    if (mCaptureSession)
-        return mCaptureSession;
-    else
-        qFatal () << "Camera::getCaptureSession ():" << "mCaptureSession is Null";
-    return 0;
+    if (!videoOutput)
+        return;
+
+    qDebug () << "Camera::setVideoOutput:" << "ok";
+
+    mCaptureSession.setVideoOutput(videoOutput);
 }
+
+// QMediaCaptureSession* Camera::getCaptureSession ()
+// {
+//     if (mCaptureSession)
+//         return mCaptureSession;
+//     else
+//         qFatal () << "Camera::getCaptureSession ():" << "mCaptureSession is Null";
+//     return 0;
+// }
 
 void Camera::processCapturedImage (int requestId, const QImage &img)
 {

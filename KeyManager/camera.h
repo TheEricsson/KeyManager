@@ -8,6 +8,7 @@ class QCameraDevice;
 class QCamera;
 class QImageCapture;
 class QImage;
+class QVideoWidget;
 
 class Camera : public QWidget
 {
@@ -16,9 +17,10 @@ public:
     explicit Camera(QWidget *parent = nullptr);
     QCamera* getCamera ();
     QImageCapture* getImageCapture ();
-    QMediaCaptureSession* getCaptureSession ();
+    //QMediaCaptureSession* getCaptureSession ();
     void startCamera ();
     void stopCamera ();
+    void setVideoOutput (QVideoWidget* videoOutput);
 
 signals:
     void onPictureTaken (const QImage &img);
@@ -34,7 +36,7 @@ private:
     void initCaptureSession ();
     void processCapturedImage (int requestId, const QImage &img);
 
-    QMediaCaptureSession *mCaptureSession;
+    QMediaCaptureSession mCaptureSession;
     QImageCapture *mImageCapture;
 
     //QScopedPointer<QCamera> m_camera;
