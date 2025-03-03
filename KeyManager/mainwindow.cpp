@@ -65,6 +65,7 @@ void MainWindow::closeScannerView ()
     }
     if (mCameraInstance)
     {
+        mCameraInstance->stopCamera();
         delete mCameraInstance;
         mCameraInstance = 0;
     }
@@ -86,8 +87,9 @@ void MainWindow::showScannerView ()
     connect (mGrabTimer, SIGNAL(timeout()), mCameraInstance, SLOT(takePicture()));
     connect (mCameraInstance->getImageCapture(), &QImageCapture::imageCaptured, this, &MainWindow::decodeImage);
 
-    mScanView->setVideoOutput(mCameraInstance->getCaptureSession());
+    mCameraInstance->startCamera();
     mLayout->setCurrentWidget(mScanView);
+    mScanView->setVideoOutput(mCameraInstance->getCaptureSession());
     mGrabTimer->start();
 }
 
