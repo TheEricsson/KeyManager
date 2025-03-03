@@ -24,6 +24,7 @@ public:
     void setCamera (QCamera *cameraDevice);
     void startScanning ();
     void stopScanning ();
+    void setVideoOutput (QMediaCaptureSession *captureSession);
     ~ScannerView();
 
 private:

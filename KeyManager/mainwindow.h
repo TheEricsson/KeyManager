@@ -11,6 +11,7 @@ class Camera;
 class HomeView;
 class ScannerView;
 class KeyScannedView;
+class QTimer;
 
 #ifdef ENCODERTEST
 class QREncoderTest;
@@ -29,11 +30,11 @@ public:
 
 private slots:
     void showScannerView ();
-    void showHomeView ();
+    void closeScannerView ();
     void onSearchButtonReleased ();
     void onManageButtonReleased ();
     void onKeyScanned ();
-
+    void decodeImage (int requestId, const QImage &img);
 
 private:
     QPushButton* btnScan;
@@ -48,6 +49,7 @@ private:
     KeyScannedView *mKeyScannedView;
 
     Camera *mCameraInstance;
+    QTimer *mGrabTimer;
 
 #ifdef ENCODERTEST
     QREncoderTest* qrencoderTest;
