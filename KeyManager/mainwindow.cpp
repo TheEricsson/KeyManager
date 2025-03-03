@@ -21,6 +21,10 @@ MainWindow::MainWindow(QWidget *parent)
 {
     mCameraInstance = 0;
     mGrabTimer = 0;
+    mScanView = 0;
+    mHomeView = 0;
+    mKeyScannedView = 0;
+    mLayout = 0;
 
     mLayout = new QStackedLayout();
     setLayout(mLayout);
@@ -42,7 +46,7 @@ MainWindow::MainWindow(QWidget *parent)
 
     // handle signals by ScanView
     //connect (mScanView,SIGNAL(codeRetrieved(int)), this,SLOT(onKeyScanned()));
-    connect (mScanView, SIGNAL(closeScannerView()), this, SLOT (closeScannerView()));
+    connect (mScanView, SIGNAL(abortScanner()), this, SLOT (closeScannerView()));
 
     // handle signals by HomeView
     connect (mHomeView,SIGNAL(showScannerView()), this, SLOT(showScannerView()));
@@ -55,42 +59,41 @@ void MainWindow::onKeyScanned ()
 
 void MainWindow::closeScannerView ()
 {
-    mLayout->setCurrentWidget(mHomeView);
-
     if (mGrabTimer)
     {
         mGrabTimer->stop();
-        delete mGrabTimer;
-        mGrabTimer = 0;
     }
     if (mCameraInstance)
     {
         mCameraInstance->stopCamera();
-        delete mCameraInstance;
-        mCameraInstance = 0;
     }
+
+    mLayout->setCurrentWidget(mHomeView);
 }
 
 void MainWindow::showScannerView ()
 {
+    if (!mScanView)
+        return;
+
     if (!mCameraInstance)
     {
         mCameraInstance = new Camera ();
+        mCameraInstance->setVideoOutput(mScanView->getViewfinder());
+
+        connect (mCameraInstance->getImageCapture(), &QImageCapture::imageCaptured, this, &MainWindow::decodeImage);
     }
 
     if (!mGrabTimer)
     {
         mGrabTimer = new QTimer (this);
         mGrabTimer->setInterval(500);
+        connect (mGrabTimer, SIGNAL(timeout()), mCameraInstance, SLOT(takePicture()));
+        mGrabTimer->start();
     }
 
-    connect (mGrabTimer, SIGNAL(timeout()), mCameraInstance, SLOT(takePicture()));
-    connect (mCameraInstance->getImageCapture(), &QImageCapture::imageCaptured, this, &MainWindow::decodeImage);
-
-    mCameraInstance->startCamera();
     mLayout->setCurrentWidget(mScanView);
-    mScanView->setVideoOutput(mCameraInstance->getCaptureSession());
-    mGrabTimer->start();
+    mCameraInstance->startCamera();
 }
 
 void MainWindow::onSearchButtonReleased ()
