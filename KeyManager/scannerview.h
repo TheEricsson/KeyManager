@@ -25,6 +25,8 @@ public:
     void startScanning ();
     void stopScanning ();
     void setVideoOutput (QMediaCaptureSession *captureSession);
+    QVideoWidget* getViewfinder ();
+
     ~ScannerView();
 
 private:
@@ -51,7 +53,7 @@ private:
 signals:
     void closeWindow (int returnCode);
     void codeRetrieved (int code);
-    void closeScannerView ();
+    void abortScanner ();
 
 private slots:
     void onAbortBtnClicked ();

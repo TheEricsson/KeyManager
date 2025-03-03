@@ -27,7 +27,7 @@ ScannerView::ScannerView(QWidget *parent)
     m_ImageCapture = 0;
 
     m_DecoderTimer = 0;
-    m_scanFrequency = 5000;
+    //m_scanFrequency = 5000;
 
     // main Layout
     QVBoxLayout *layout = new QVBoxLayout;
@@ -55,8 +55,8 @@ ScannerView::ScannerView(QWidget *parent)
     // m_ImageCapture->setFileFormat(QImageCapture::JPEG);
     //connect(m_ImageCapture, &QImageCapture::imageCaptured, this, &ScannerView::processCapturedImage);
 
-    m_DecoderTimer = new QTimer (this);
-    connect (m_DecoderTimer, &QTimer::timeout, this, &ScannerView::takePicture);
+    //m_DecoderTimer = new QTimer (this);
+    //connect (m_DecoderTimer, &QTimer::timeout, this, &ScannerView::takePicture);
 
     connect (btnAbort, SIGNAL (clicked()), this, SLOT (onAbortBtnClicked()));
 }
@@ -64,27 +64,28 @@ ScannerView::ScannerView(QWidget *parent)
 void ScannerView::onAbortBtnClicked ()
 {
     stopScanning ();
-    emit closeScannerView ();
+    emit abortScanner ();
 }
 
 void ScannerView::startScanning ()
 {
-    if (0 != m_DecoderTimer)
-    {
-        m_DecoderTimer->start ();
-        m_DecoderTimer->setInterval(m_scanFrequency);
-    }
+    // if (0 != m_DecoderTimer)
+    // {
+    //     m_DecoderTimer->start ();
+    //     m_DecoderTimer->setInterval(m_scanFrequency);
+    // }
 }
 
 void ScannerView::stopScanning ()
 {
-    if (0 != m_DecoderTimer)
-        m_DecoderTimer->stop ();
+    // if (0 != m_DecoderTimer)
+    //     m_DecoderTimer->stop ();
 }
 
 void ScannerView::processCapturedImage(int requestId, const QImage &img)
 {
     return;
+
     Q_UNUSED(requestId);
 
     QImage scaledImage = img.scaled(m_viewfinder->size(), Qt::KeepAspectRatio, Qt::FastTransformation);
@@ -127,18 +128,30 @@ void ScannerView::processCapturedImage(int requestId, const QImage &img)
 
 void ScannerView::onScanButtonReleased()
 {
-    if (0 != m_DecoderTimer)
-    {
-        if (m_DecoderTimer->isActive())
-            m_DecoderTimer->stop();
-        else
-            m_DecoderTimer->start (m_scanFrequency);
-    }
+    // if (0 != m_DecoderTimer)
+    // {
+    //     if (m_DecoderTimer->isActive())
+    //         m_DecoderTimer->stop();
+    //     else
+    //         m_DecoderTimer->start (m_scanFrequency);
+    // }
+}
+
+QVideoWidget* ScannerView::getViewfinder ()
+{
+    if (!m_viewfinder)
+        return 0;
+    return m_viewfinder;
 }
 
 void ScannerView::setVideoOutput (QMediaCaptureSession *captureSession)
 {
+    if (!captureSession)
+        return;
+
+    qDebug () << "ScannerView::setVideoOutput called";
     captureSession->setVideoOutput(m_viewfinder);
+
 }
 
 //void ScannerView::setCamera (const QCameraDevice &cameraDevice)
@@ -165,8 +178,8 @@ ScannerView::~ScannerView()
         delete m_viewfinder;
     }
 
-    if (m_DecoderTimer != 0)
-    {
-        delete m_DecoderTimer;
-    }
+    // if (m_DecoderTimer != 0)
+    // {
+    //     delete m_DecoderTimer;
+    // }
 }
