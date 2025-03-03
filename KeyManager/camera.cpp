@@ -15,6 +15,8 @@ Camera::Camera (QWidget *parent)
     : QWidget{parent}
 {
     mCamera = 0;
+    mImageCapture = 0;
+    mImageCapture = 0;
 
     init ();
 }
@@ -23,13 +25,25 @@ void Camera::takePicture ()
 {
     qDebug () << "Camera::takePicture () called";
 
+    if (!mImageCapture)
+    {
+        qFatal () << "Camera::takePicture ():" << "mImageCapture is Null";
+        return;
+    }
+
     if (mImageCapture->isReadyForCapture())
         mImageCapture->capture();
 }
 
 QImageCapture* Camera::getImageCapture ()
 {
-    return mImageCapture;
+    if (mImageCapture)
+        return mImageCapture;
+    else
+    {
+        qFatal () << "Camera::getImageCapture ():" << "mImageCapture is Null";
+    }
+    return 0;
 }
 
 void Camera::init ()
@@ -38,7 +52,6 @@ void Camera::init ()
     checkAvailableCams ();
     setCamera(QMediaDevices::defaultVideoInput());
     initCaptureSession ();
-    mCamera->start();
 }
 
 void Camera::checkPermissions ()
@@ -82,14 +95,12 @@ void Camera::setCamera (const QCameraDevice &cameraDevice)
 
     mCamera = new QCamera(cameraDevice);
 
-    mCamera->setExposureMode(QCamera::ExposurePortrait);
-    mCamera->setManualExposureTime(0.02);
-    mCamera->setManualIsoSensitivity(100);
-    //mCamera->setAutoIsoSensitivity();
-    //mCamera->setAutoExposureTime();
+    mCamera->setExposureMode(QCamera::ExposureAuto);
+    mCamera->setAutoIsoSensitivity();
+    mCamera->setAutoExposureTime();
     mCamera->setWhiteBalanceMode(QCamera::WhiteBalanceAuto);
     mCamera->setFocusMode(QCamera::FocusModeAuto);
-    mCamera->setExposureCompensation(-75);
+    //mCamera->setExposureCompensation(-75);
 
     QCameraDevice camDevice = mCamera->cameraDevice();
     QList<QCameraFormat> camFormatList = camDevice.videoFormats();
@@ -111,17 +122,38 @@ void Camera::setCamera (const QCameraDevice &cameraDevice)
 void Camera::initCaptureSession ()
 {
     mImageCapture = new QImageCapture ();
-    mCaptureSession = new QMediaCaptureSession;
-    mCaptureSession->setImageCapture(mImageCapture);
+    mCaptureSession = new QMediaCaptureSession ();
+
     mImageCapture->setQuality(QImageCapture::HighQuality);
     mImageCapture->setFileFormat(QImageCapture::JPEG);
+    mCaptureSession->setImageCapture(mImageCapture);
 
     connect(mImageCapture, &QImageCapture::imageCaptured, this, &Camera::processCapturedImage);
 }
 
+void Camera::startCamera ()
+{
+    if (mCamera)
+        mCamera->start();
+    else
+        qFatal () << "Camera::startCamera ():" << "mCamera is Null";
+}
+
+void Camera::stopCamera()
+{
+    if (mCamera)
+        mCamera->stop();
+    else
+        qFatal () << "Camera::stopCamera ():" << "mCamera is Null";
+}
+
 QMediaCaptureSession* Camera::getCaptureSession ()
 {
-    return mCaptureSession;
+    if (mCaptureSession)
+        return mCaptureSession;
+    else
+        qFatal () << "Camera::getCaptureSession ():" << "mCaptureSession is Null";
+    return 0;
 }
 
 void Camera::processCapturedImage (int requestId, const QImage &img)
@@ -132,5 +164,9 @@ void Camera::processCapturedImage (int requestId, const QImage &img)
 
 QCamera* Camera::getCamera ()
 {
-    return mCamera;
+    if (mCamera)
+        return mCamera;
+    else
+        qFatal () << "Camera::getCamera ():" << "mCamera is Null";
+    return 0;
 }

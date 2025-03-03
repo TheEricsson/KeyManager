@@ -17,7 +17,8 @@ public:
     QCamera* getCamera ();
     QImageCapture* getImageCapture ();
     QMediaCaptureSession* getCaptureSession ();
-    //void takePicture ();
+    void startCamera ();
+    void stopCamera ();
 
 signals:
     void onPictureTaken (const QImage &img);
