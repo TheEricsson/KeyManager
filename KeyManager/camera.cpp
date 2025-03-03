@@ -16,7 +16,6 @@ Camera::Camera (QWidget *parent)
 {
     mCamera = 0;
     mImageCapture = 0;
-    mImageCapture = 0;
 
     init ();
 }
@@ -121,6 +120,12 @@ void Camera::setCamera (const QCameraDevice &cameraDevice)
 
 void Camera::initCaptureSession ()
 {
+    if (mImageCapture)
+        delete mImageCapture;
+
+    if (mCaptureSession)
+        delete mCaptureSession;
+
     mImageCapture = new QImageCapture ();
     mCaptureSession = new QMediaCaptureSession ();
 
