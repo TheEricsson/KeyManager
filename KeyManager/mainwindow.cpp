@@ -33,14 +33,9 @@ MainWindow::MainWindow(QWidget *parent)
     mScanView = new ScannerView ();
     mKeyScannedView = new KeyScannedView ();
 
-    //mScanView->setCamera(mCameraInstance->getCamera());
-
     mLayout->addWidget(mHomeView);
     mLayout->addWidget(mScanView);
     mLayout->addWidget(mKeyScannedView);
-
-    //mLayout->setCurrentWidget(scanView);
-    //scanView->startScanning();
 
     mLayout->setCurrentWidget(mHomeView);
 

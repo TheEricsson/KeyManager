@@ -25,9 +25,6 @@ public:
     explicit MainWindow(QWidget *parent = nullptr);
     ~MainWindow();
 
-/*public slots:
-    void onCloseScanner ();*/
-
 private slots:
     void showScannerView ();
     void closeScannerView ();
@@ -41,7 +38,6 @@ private:
     QPushButton* btnSearch;
     QPushButton* btnManage;
     QPushButton* btnExit;
-    //QGridLayout* mainLayout;
     QStackedLayout* mLayout;
 
     HomeView *mHomeView;

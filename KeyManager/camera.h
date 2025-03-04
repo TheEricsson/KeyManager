@@ -17,7 +17,6 @@ public:
     explicit Camera(QWidget *parent = nullptr);
     QCamera* getCamera ();
     QImageCapture* getImageCapture ();
-    //QMediaCaptureSession* getCaptureSession ();
     void startCamera ();
     void stopCamera ();
     void setVideoOutput (QVideoWidget* videoOutput);
@@ -39,7 +38,6 @@ private:
     QMediaCaptureSession mCaptureSession;
     QImageCapture *mImageCapture;
 
-    //QScopedPointer<QCamera> m_camera;
     QCamera *mCamera;
 };
 

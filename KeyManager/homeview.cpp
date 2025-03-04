@@ -40,14 +40,7 @@ HomeView::HomeView(QWidget *parent)
     mBtnExit->setIcon(QIcon(":/images/exit.svg"));
     mBtnExit->setIconSize(QSize(desiredDim,desiredDim));
 
-    /*QHBoxLayout *buttonLayout = new QHBoxLayout;
-    buttonLayout->addWidget(mBtnScan,0);
-    buttonLayout->addWidget(mBtnSearch,1);
-    buttonLayout->addWidget(mBtnManage,2);
-    buttonLayout->addWidget(mBtnExit,3);*/
-
     mLayout = new QGridLayout;
-    //mLayout->addLayout(buttonLayout,1,0);
     mLayout->addWidget(label,0,0,1,2);
     mLayout->addWidget(mBtnScan,1,0);
     mLayout->addWidget(mBtnSearch,1,1);

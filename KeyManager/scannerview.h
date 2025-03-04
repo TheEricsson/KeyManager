@@ -32,11 +32,9 @@ public:
 private:
     void checkAvailableCams ();
     void checkPermissions ();
-    //void setCamera (const QCameraDevice &cameraDevice);
     void takePicture ();
 
     QMediaDevices m_devices;
-    //QScopedPointer<QImageCapture> m_imageCapture;
     QImageCapture *m_ImageCapture;
     QMediaCaptureSession m_captureSession;
     QVideoWidget *m_viewfinder;
