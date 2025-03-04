@@ -10,6 +10,7 @@
 #include <QCamera>
 #include <QCameraDevice>
 #include <QImage>
+#include <QSize>
 
 class QTimer;
 class QVideoWidget;
@@ -26,6 +27,7 @@ public:
     void stopScanning ();
     void setVideoOutput (QMediaCaptureSession *captureSession);
     QVideoWidget* getViewfinder ();
+    QSize ScannerView::getViewfinderSize ();
 
     ~ScannerView();
 

@@ -82,6 +82,11 @@ void ScannerView::stopScanning ()
     //     m_DecoderTimer->stop ();
 }
 
+QSize ScannerView::getViewfinderSize ()
+{
+    return m_viewfinder->size();
+}
+
 void ScannerView::processCapturedImage(int requestId, const QImage &img)
 {
     return;
