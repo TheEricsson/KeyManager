@@ -83,12 +83,13 @@ void MainWindow::showScannerView ()
     {
         mGrabTimer = new QTimer (this);
         mGrabTimer->setInterval(500);
-        connect (mGrabTimer, SIGNAL(timeout()), mCameraInstance, SLOT(takePicture()));
-        mGrabTimer->start();
+        connect (mGrabTimer, SIGNAL(timeout()), mCameraInstance, SLOT(takePicture()));      
     }
 
     mLayout->setCurrentWidget(mScanView);
+
     mCameraInstance->startCamera();
+    mGrabTimer->start();
 }
 
 void MainWindow::onSearchButtonReleased ()
