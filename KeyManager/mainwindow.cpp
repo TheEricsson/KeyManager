@@ -1,5 +1,5 @@
 #include "mainwindow.h"
-#include "scannerView.h"
+#include "scannerview.h"
 #include <QPushButton>
 #include <QGridLayout>
 #include <QCoreApplication>
