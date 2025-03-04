@@ -7,6 +7,7 @@
 #include <QCamera>
 #include <QImageCapture>
 #include <QVideoWidget>
+#include <QVideoSink>
 
 #if QT_CONFIG(permissions)
     #include <QPermission>
@@ -17,6 +18,7 @@ Camera::Camera (QWidget *parent)
 {
     mCamera = 0;
     mImageCapture = 0;
+    mVideoWidget = 0;
 
     init ();
 }
@@ -142,6 +144,13 @@ void Camera::setVideoOutput (QVideoWidget* videoOutput)
     qDebug () << "Camera::setVideoOutput:" << "ok";
 
     mCaptureSession.setVideoOutput(videoOutput);
+
+    mVideoWidget = videoOutput;
+}
+
+QImage Camera::getImageFromVideoframe ()
+{
+    return mVideoWidget->videoSink()->videoFrame().toImage();
 }
 
 void Camera::processCapturedImage (int requestId, const QImage &img)

@@ -32,6 +32,7 @@ private slots:
     void onManageButtonReleased ();
     void onKeyScanned ();
     void decodeImage (int requestId, const QImage &img);
+    void decodeFromVideoFrame ();
 
 private:
     QPushButton* btnScan;

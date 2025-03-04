@@ -83,14 +83,15 @@ void MainWindow::showScannerView ()
         mCameraInstance = new Camera ();
         mCameraInstance->setVideoOutput(mScanView->getViewfinder());
 
-        connect (mCameraInstance->getImageCapture(), &QImageCapture::imageCaptured, this, &MainWindow::decodeImage);
+        //connect (mCameraInstance->getImageCapture(), &QImageCapture::imageCaptured, this, &MainWindow::decodeImage);
     }
 
     if (!mGrabTimer)
     {
         mGrabTimer = new QTimer (this);
         mGrabTimer->setInterval(500);
-        connect (mGrabTimer, SIGNAL(timeout()), mCameraInstance, SLOT(takePicture()));      
+        //connect (mGrabTimer, SIGNAL(timeout()), mCameraInstance, SLOT(takePicture()));
+        connect (mGrabTimer, SIGNAL(timeout()), this, SLOT(decodeFromVideoFrame()));
     }
 
     mLayout->setCurrentWidget(mScanView);
@@ -107,6 +108,13 @@ void MainWindow::onSearchButtonReleased ()
 void MainWindow::onManageButtonReleased ()
 {
 
+}
+
+void MainWindow::decodeFromVideoFrame ()
+{
+    qDebug () << "decode Video Frame called";
+
+    decodeImage (0, mCameraInstance->getImageFromVideoframe());
 }
 
 void MainWindow::decodeImage (int requestId, const QImage &img)

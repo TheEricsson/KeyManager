@@ -3,11 +3,11 @@
 
 #include <QWidget>
 #include <QMediaCaptureSession>
+#include <QImage>
 
 class QCameraDevice;
 class QCamera;
 class QImageCapture;
-class QImage;
 class QVideoWidget;
 
 class Camera : public QWidget
@@ -20,6 +20,7 @@ public:
     void startCamera ();
     void stopCamera ();
     void setVideoOutput (QVideoWidget* videoOutput);
+    QImage getImageFromVideoframe ();
 
 signals:
     void onPictureTaken (const QImage &img);
@@ -37,6 +38,7 @@ private:
 
     QMediaCaptureSession mCaptureSession;
     QImageCapture *mImageCapture;
+    QVideoWidget* mVideoWidget;
 
     QCamera *mCamera;
 };
