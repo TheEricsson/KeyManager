@@ -12,6 +12,12 @@
 #include "camera.h"
 #include "keyScannedView.h"
 
+#include "QZXing.h"
+
+#ifndef GMANDANTID
+    #define GMANDANTID 1
+#endif
+
 #ifdef ENCODERTEST
 #include "tests/qrencodertest.h"
 #endif
@@ -106,22 +112,27 @@ void MainWindow::decodeImage (int requestId, const QImage &img)
 {
     qDebug () << "MainWindow::decodeImage called";
 
-    // Q_UNUSED(requestId);
+    Q_UNUSED(requestId);
 
-    // QImage scaledImage = img.scaled(m_viewfinder->size(), Qt::KeepAspectRatio, Qt::FastTransformation);
+    QImage scaledImg = img.scaled(mScanView->getViewfinderSize(), Qt::KeepAspectRatio, Qt::FastTransformation);
 
-    // QZXing decoder;
-    // //mandatory settings
-    // decoder.setDecoder(QZXing::DecoderFormat_CODE_128);
+    QZXing decoder;
+
+    decoder.setDecoder(QZXing::DecoderFormat_CODE_128);
 
     // //optional settings
-    // decoder.setSourceFilterType(QZXing::SourceFilter_ImageNormal);
-    // decoder.setTryHarderBehaviour(QZXing::TryHarderBehaviour_ThoroughScanning | QZXing::TryHarderBehaviour_Rotate);
+    decoder.setSourceFilterType(QZXing::SourceFilter_ImageNormal);
+    decoder.setTryHarderBehaviour(QZXing::TryHarderBehaviour_ThoroughScanning | QZXing::TryHarderBehaviour_Rotate);
 
-    // m_lastPhoto->setPixmap(QPixmap::fromImage(scaledImage));
-    // ;
-    // //trigger decode
-    // QString result = decoder.decodeImage(scaledImage);
+    //trigger decode
+    QString result = decoder.decodeImage(scaledImg);
+
+    QString mandantId = result.mid (1, 4);
+    QString keyId = result.mid (6, 4);
+
+    qDebug () << "Data:" << result.toStdString();
+    qDebug () << "Mandant Id:" << mandantId.toInt() << "(Configured:" << GMANDANTID << ")";
+    qDebug () << "Key Id:" << keyId.toInt();
 
     // qDebug () << "Data: " << result.toStdString();
 
