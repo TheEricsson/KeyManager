@@ -7,6 +7,7 @@
 #include <QListWidget>
 #include <QStackedLayout>
 #include <QTimer>
+#include <QImageCapture>
 
 #include "homeview.h"
 #include "camera.h"
