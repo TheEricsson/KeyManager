@@ -27,7 +27,7 @@ public:
     void stopScanning ();
     void setVideoOutput (QMediaCaptureSession *captureSession);
     QVideoWidget* getViewfinder ();
-    QSize ScannerView::getViewfinderSize ();
+    QSize getViewfinderSize ();
 
     ~ScannerView();
 
