@@ -20,9 +20,11 @@ private:
 
 private slots:
     void onScanButtonReleased();
+    void onSearchButtonReleased();
 
 signals:
     void showScannerView ();
+    void showTableView ();
 };
 
 #endif // HOMEVIEW_H

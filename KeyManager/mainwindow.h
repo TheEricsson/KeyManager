@@ -13,6 +13,7 @@ class ScannerView;
 class KeyScannedView;
 class QTimer;
 class DatabaseImpl;
+class TableView;
 
 #ifdef ENCODERTEST
 class QREncoderTest;
@@ -29,6 +30,7 @@ public:
 
 private slots:
     void showScannerView ();
+    void showTableView ();
     void closeScannerView ();
     void onSearchButtonReleased ();
     void onManageButtonReleased ();
@@ -50,6 +52,7 @@ private:
     HomeView *mHomeView;
     ScannerView *mScanView;
     KeyScannedView *mKeyScannedView;
+    TableView *mTableView;
 
     Camera *mCameraInstance;
     QTimer *mGrabTimer;

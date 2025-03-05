@@ -18,6 +18,7 @@ SOURCES += \
     main.cpp \
     mainwindow.cpp \
     scannerview.cpp \
+    tableview.cpp \
     tests/qrencodertest.cpp
 
 HEADERS += \
@@ -28,6 +29,7 @@ HEADERS += \
     keyscannedview.h \
     mainwindow.h \
     scannerview.h \
+    tableview.h \
     tests/qrencodertest.h
 
 TRANSLATIONS += \

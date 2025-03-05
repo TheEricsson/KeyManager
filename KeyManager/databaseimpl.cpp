@@ -1,6 +1,7 @@
 #include "databaseimpl.h"
 #include <QSettings>
 #include <QSqlQuery>
+#include <QDir>
 
 DatabaseImpl::DatabaseImpl()
 {
@@ -25,14 +26,26 @@ DatabaseImpl::DatabaseImpl()
     // db.setPassword(dbPassword);
 
     QSqlDatabase mDb = QSqlDatabase::addDatabase("QSQLITE");
-    mDb.setHostName("Standard");
-    mDb.setDatabaseName("KeyManager");
-    mDb.setUserName("dbUser");
-    mDb.setPassword("12345");
+    mDb.setDatabaseName("db.sqlite");
 
-    bool ok = mDb.open();
+    bool ok = mDb.open ();
+
+    qDebug () << QDir::currentPath();
 
     qDebug () << "db.open () returned: " << ok;
+    qDebug () << mDb.isOpen();
+    qDebug () << mDb.isOpenError();
+
+    qDebug () << "mDb.databaseName(): " << mDb.databaseName();
+    qDebug () << "mDb.connectionName(): " << mDb.connectionName();
+    QStringList tables = mDb.tables();
+
+    qDebug () << "number of entries: " << tables.count();
+
+    for (int i=0;i<tables.count();i++)
+    {
+        qDebug () << "entry: " << tables [i];
+    }
 }
 
 bool DatabaseImpl::findKeyId(const QString& aKeyId)

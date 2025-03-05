@@ -50,7 +50,8 @@ HomeView::HomeView(QWidget *parent)
     setLayout(mLayout);
     setWindowTitle(tr("Key-Manager"));
 
-    connect (mBtnScan,SIGNAL(released()), this, SLOT (onScanButtonReleased()));
+    connect (mBtnScan, SIGNAL(released()), this, SLOT (onScanButtonReleased()));
+    connect (mBtnSearch, SIGNAL(released()), this, SLOT (onSearchButtonReleased()));
 
     /*connect (btnScan,SIGNAL(released()), this, SLOT (onScanButtonReleased()));
     connect (btnSearch,SIGNAL(released()), this, SLOT (onSearchButtonReleased()));
@@ -61,4 +62,9 @@ HomeView::HomeView(QWidget *parent)
 void HomeView::onScanButtonReleased()
 {
     emit showScannerView ();
+}
+
+void HomeView::onSearchButtonReleased()
+{
+    emit showTableView ();
 }

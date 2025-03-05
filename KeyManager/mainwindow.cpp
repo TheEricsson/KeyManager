@@ -15,6 +15,7 @@
 #include "camera.h"
 #include "keyScannedView.h"
 #include "databaseimpl.h"
+#include "tableview.h"
 
 #include "QZXing.h"
 
@@ -34,8 +35,12 @@ MainWindow::MainWindow(QWidget *parent)
     mScanView = 0;
     mHomeView = 0;
     mKeyScannedView = 0;
+    mTableView = 0;
+
     mLayout = 0;
     mDatabase = 0;
+
+    initDatabase ();
 
     mLayout = new QStackedLayout();
     setLayout(mLayout);
@@ -43,10 +48,12 @@ MainWindow::MainWindow(QWidget *parent)
     mHomeView = new HomeView ();
     mScanView = new ScannerView ();
     mKeyScannedView = new KeyScannedView ();
+    mTableView = new TableView ("addresses");
 
     mLayout->addWidget(mHomeView);
     mLayout->addWidget(mScanView);
     mLayout->addWidget(mKeyScannedView);
+    mLayout->addWidget(mTableView);
 
     mLayout->setCurrentWidget(mHomeView);
 
@@ -57,12 +64,12 @@ MainWindow::MainWindow(QWidget *parent)
 
     // handle signals by HomeView
     connect (mHomeView,SIGNAL(showScannerView()), this, SLOT(showScannerView ()));
-
-    initDatabase ();
+    connect (mHomeView,SIGNAL(showTableView()), this, SLOT(showTableView ()));
 }
 
 void MainWindow::initDatabase ()
 {
+    qDebug () << "MainWindow::initDatabase ()";
     mDatabase = new DatabaseImpl ();
 }
 
@@ -129,6 +136,11 @@ void MainWindow::showScannerView ()
     mCameraInstance->startCamera();
     mGrabTimer->start();
     mScanView->setScannerState(ScannerState::SCANNING);
+}
+
+void MainWindow::showTableView ()
+{
+    mLayout->setCurrentWidget(mTableView);
 }
 
 void MainWindow::onSearchButtonReleased ()
