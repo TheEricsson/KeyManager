@@ -28,7 +28,7 @@ ScannerView::ScannerView(QWidget *parent)
     QVBoxLayout *layout = new QVBoxLayout;
     setLayout(layout);
 
-    QLabel* header = new QLabel("Code Scanner");
+    QLabel* header = new QLabel("Scannen Sie einen Barcode");
     layout->addWidget(header);
 
     // layout for the cam video/ pic screen
