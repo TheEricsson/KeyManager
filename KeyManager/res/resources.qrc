@@ -5,6 +5,7 @@
         <file>settings.svg</file>
         <file>exit.svg</file>
         <file>logo.png</file>
+        <file>barcode.png</file>
     </qresource>
     <qresource prefix="/sounds">
         <file>scanner_beep.mp3</file>

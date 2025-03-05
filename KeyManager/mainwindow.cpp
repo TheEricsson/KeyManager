@@ -8,6 +8,8 @@
 #include <QStackedLayout>
 #include <QTimer>
 #include <QImageCapture>
+#include <QAudioOutput>
+#include <QMediaPlayer>
 
 #include "homeview.h"
 #include "camera.h"
@@ -82,15 +84,12 @@ void MainWindow::showScannerView ()
     {
         mCameraInstance = new Camera ();
         mCameraInstance->setVideoOutput(mScanView->getViewfinder());
-
-        //connect (mCameraInstance->getImageCapture(), &QImageCapture::imageCaptured, this, &MainWindow::decodeImage);
     }
 
     if (!mGrabTimer)
     {
         mGrabTimer = new QTimer (this);
         mGrabTimer->setInterval(500);
-        //connect (mGrabTimer, SIGNAL(timeout()), mCameraInstance, SLOT(takePicture()));
         connect (mGrabTimer, SIGNAL(timeout()), this, SLOT(decodeFromVideoFrame()));
     }
 
@@ -112,8 +111,6 @@ void MainWindow::onManageButtonReleased ()
 
 void MainWindow::decodeFromVideoFrame ()
 {
-    qDebug () << "decode Video Frame called";
-
     decodeImage (0, mCameraInstance->getImageFromVideoframe());
 }
 
@@ -123,7 +120,11 @@ void MainWindow::decodeImage (int requestId, const QImage &img)
 
     Q_UNUSED(requestId);
 
+#ifdef NOCAM_ENCODE
+    QImage scaledImg (":/images/barcode.png");
+#else
     QImage scaledImg = img.scaled(mScanView->getViewfinderSize(), Qt::KeepAspectRatio, Qt::FastTransformation);
+#endif
 
     QZXing decoder;
 
@@ -136,12 +137,19 @@ void MainWindow::decodeImage (int requestId, const QImage &img)
     //trigger decode
     QString result = decoder.decodeImage(scaledImg);
 
-    QString mandantId = result.mid (1, 4);
-    QString keyId = result.mid (6, 4);
+    int mandantId = result.mid (1, 4).toInt();
+    int keyId = result.mid (6, 4).toInt();
 
     qDebug () << "Data:" << result.toStdString();
-    qDebug () << "Mandant Id:" << mandantId.toInt() << "(Configured:" << GMANDANTID << ")";
-    qDebug () << "Key Id:" << keyId.toInt();
+    qDebug () << "Mandant Id:" << mandantId << "(Configured:" << GMANDANTID << ")";
+    qDebug () << "Key Id:" << keyId;
+
+    if (mandantId == GMANDANTID)
+    {
+        // code recognized: play a supermarket beep sound :)
+        playSound ();
+        processScannedKey (keyId);
+    }
 
     // qDebug () << "Data: " << result.toStdString();
 
@@ -164,6 +172,22 @@ void MainWindow::decodeImage (int requestId, const QImage &img)
 
     //     emit codeRetrieved (code);
     // }
+}
+
+void MainWindow::playSound ()
+{
+    QMediaPlayer *player = new QMediaPlayer;
+    QAudioOutput *audioOut = new QAudioOutput;
+    player->setAudioOutput(audioOut);
+    QUrl filelocation ("qrc:/sounds/scanner_beep.mp3");
+    player->setSource(filelocation);
+    audioOut->setVolume(100);
+    player->play();
+}
+
+void MainWindow::processScannedKey (int aKey)
+{
+    closeScannerView ();
 }
 
 MainWindow::~MainWindow()

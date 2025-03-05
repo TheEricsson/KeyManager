@@ -35,6 +35,8 @@ private slots:
     void decodeFromVideoFrame ();
 
 private:
+    void playSound ();
+    void processScannedKey (int aKey);
     QPushButton* btnScan;
     QPushButton* btnSearch;
     QPushButton* btnManage;
