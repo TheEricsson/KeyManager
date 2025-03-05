@@ -14,7 +14,7 @@ public:
 
 signals:
 private:
-    QSqlTableModel *mTableModel;
+    QSqlTableModel *mAdresses;
 };
 
 #endif // TABLEVIEW_H

@@ -7,20 +7,19 @@
 TableView::TableView(const QString &tableName, QWidget *parent)
     : QWidget{parent}
 {
-    mTableModel = new QSqlTableModel(this);
-    mTableModel->setTable(tableName);
-    //mTableModel->setEditStrategy(QSqlTableModel::OnManualSubmit);
-    mTableModel->setEditStrategy(QSqlTableModel::OnFieldChange);
-    mTableModel->select();
+    mAdresses = new QSqlTableModel(this);
+    mAdresses->setTable(tableName);
+    mAdresses->setEditStrategy(QSqlTableModel::OnFieldChange);
+    mAdresses->select();
 
-    mTableModel->setHeaderData(0, Qt::Horizontal, tr("ID"));
-    mTableModel->setHeaderData(1, Qt::Horizontal, tr("Straße"));
-    mTableModel->setHeaderData(2, Qt::Horizontal, tr("Hausnummer"));
-    mTableModel->setHeaderData(3, Qt::Horizontal, tr("PLZ"));
-    mTableModel->setHeaderData(4, Qt::Horizontal, tr("Ort"));
+    mAdresses->setHeaderData(0, Qt::Horizontal, tr("ID"));
+    mAdresses->setHeaderData(1, Qt::Horizontal, tr("Straße"));
+    mAdresses->setHeaderData(2, Qt::Horizontal, tr("Hausnummer"));
+    mAdresses->setHeaderData(3, Qt::Horizontal, tr("PLZ"));
+    mAdresses->setHeaderData(4, Qt::Horizontal, tr("Ort"));
 
     QTableView *view = new QTableView;
-    view->setModel(mTableModel);
+    view->setModel(mAdresses);
     view->resizeColumnsToContents();
 
     QHBoxLayout *mainLayout = new QHBoxLayout;
