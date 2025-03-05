@@ -6,6 +6,9 @@
         <file>exit.svg</file>
         <file>logo.png</file>
         <file>barcode.png</file>
+        <file>menu_back.png</file>
+        <file>menu_next.png</file>
+        <file>menu_retry.png</file>
     </qresource>
     <qresource prefix="/sounds">
         <file>scanner_beep.mp3</file>

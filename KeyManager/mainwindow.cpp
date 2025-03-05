@@ -49,16 +49,22 @@ MainWindow::MainWindow(QWidget *parent)
     mLayout->setCurrentWidget(mHomeView);
 
     // handle signals by ScanView
-    //connect (mScanView,SIGNAL(codeRetrieved(int)), this,SLOT(onKeyScanned()));
-    connect (mScanView, SIGNAL(abortScanner()), this, SLOT (closeScannerView()));
+    connect (mScanView, SIGNAL (scanButtonClicked()), this, SLOT (showScannerView()));
+    connect (mScanView, SIGNAL(previousButtonClicked()), this, SLOT (closeScannerView()));
+    connect (mScanView, SIGNAL(nextButtonClicked()), this, SLOT (handleScannedKey()));
 
     // handle signals by HomeView
-    connect (mHomeView,SIGNAL(showScannerView()), this, SLOT(showScannerView()));
+    connect (mHomeView,SIGNAL(showScannerView()), this, SLOT(showScannerView ()));
 }
 
 void MainWindow::onKeyScanned ()
 {
     mLayout->setCurrentWidget(mKeyScannedView);
+}
+
+void MainWindow::handleScannedKey()
+{
+    //get current values
 }
 
 void MainWindow::closeScannerView ()
@@ -97,6 +103,7 @@ void MainWindow::showScannerView ()
 
     mCameraInstance->startCamera();
     mGrabTimer->start();
+    mScanView->setScannerState(ScannerState::SCANNING);
 }
 
 void MainWindow::onSearchButtonReleased ()
@@ -137,41 +144,23 @@ void MainWindow::decodeImage (int requestId, const QImage &img)
     //trigger decode
     QString result = decoder.decodeImage(scaledImg);
 
-    int mandantId = result.mid (1, 4).toInt();
-    int keyId = result.mid (6, 4).toInt();
+    QString customerId = result.mid (1, 4);
+    QString keyId = result.mid (6, 4);
 
     qDebug () << "Data:" << result.toStdString();
-    qDebug () << "Mandant Id:" << mandantId << "(Configured:" << GMANDANTID << ")";
+    qDebug () << "Mandant Id:" << customerId << "(Configured:" << GMANDANTID << ")";
     qDebug () << "Key Id:" << keyId;
 
-    if (mandantId == GMANDANTID)
+    if (customerId.toInt() == GMANDANTID)
     {
         // code recognized: play a supermarket beep sound :)
         playSound ();
-        processScannedKey (keyId);
+
+        // set scanview ui state
+        mScanView->setScannerState(ScannerState::SCANSUCCEEDED);
+        mScanView->setCustomerLabel(customerId);
+        mScanView->setKeyLabel(keyId);
     }
-
-    // qDebug () << "Data: " << result.toStdString();
-
-    // if (result.contains("M0100", Qt::CaseInsensitive))
-    // {
-    //     qDebug () << "Success! Code is valid: " << result;
-
-    //     // code recognized: play a supermarket beep sound :)
-    //     QMediaPlayer *player = new QMediaPlayer;
-    //     QAudioOutput *audioOut = new QAudioOutput;
-    //     player->setAudioOutput(audioOut);
-    //     QUrl filelocation ("qrc:/sounds/scanner_beep.mp3");
-    //     player->setSource(filelocation);
-    //     audioOut->setVolume(100);
-    //     player->play();
-
-    //     m_DecoderTimer->stop();
-
-    //     int code = 50;
-
-    //     emit codeRetrieved (code);
-    // }
 }
 
 void MainWindow::playSound ()
@@ -183,11 +172,6 @@ void MainWindow::playSound ()
     player->setSource(filelocation);
     audioOut->setVolume(100);
     player->play();
-}
-
-void MainWindow::processScannedKey (int aKey)
-{
-    closeScannerView ();
 }
 
 MainWindow::~MainWindow()

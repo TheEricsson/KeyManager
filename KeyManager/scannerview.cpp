@@ -9,11 +9,11 @@
 #include <QVideoWidget>
 #include <QPermission>
 #include <QApplication>
-#include "QZXing.h"
 #include <QTimer>
 #include <QMediaPlayer>
 #include <QAudioOutput>
 #include <QScreenCapture>
+#include <QLineEdit>
 
 #if QT_CONFIG(permissions)
 #include <QPermission>
@@ -35,18 +35,97 @@ ScannerView::ScannerView(QWidget *parent)
     m_viewfinder = new QVideoWidget ();
 
     layout->addWidget(m_viewfinder);
+    layout->setStretch(1,2);
 
-    layout->setStretch(1, 5);
+    // mandant text field
+    QHBoxLayout *mandantIdLayout = new QHBoxLayout;
+    QLabel *mandantDescr = new QLabel ("Mandant", this);
+    mCustomerLabel = new QLabel (this);
+    mandantIdLayout->addWidget (mandantDescr);
+    mandantIdLayout->addWidget(mCustomerLabel);
 
-    QPushButton* btnAbort = new QPushButton ("Abbrechen");
-    layout->addWidget(btnAbort);
+    layout->addLayout(mandantIdLayout);
 
-    connect (btnAbort, SIGNAL (clicked()), this, SLOT (onAbortBtnClicked()));
+    // key text field
+    QHBoxLayout *keyIdLayout = new QHBoxLayout;
+    QLabel *keyDescr = new QLabel ("Schlüssel", this);
+    mKeyLabel = new QLabel (this);
+    keyIdLayout->addWidget (keyDescr);
+    keyIdLayout->addWidget(mKeyLabel);
+
+    layout->addLayout(keyIdLayout);
+
+    //prev+retry+next button
+    QHBoxLayout *menuLayout = new QHBoxLayout;
+
+    QPushButton* btnPrevious = new QPushButton ();
+    btnPrevious->setIcon(QIcon(":/images/menu_back.png"));
+    btnPrevious->setIconSize(QSize(75,75));
+
+    mBtnNext = new QPushButton ();
+    mBtnNext->setIcon(QIcon(":/images/menu_next.png"));
+    mBtnNext->setIconSize(QSize(75,75));
+    mBtnNext->setDisabled(true);
+
+    mBtnScan = new QPushButton ();
+    mBtnScan->setIcon(QIcon(":/images/menu_retry.png"));
+    mBtnScan->setIconSize(QSize(75,75));
+    mBtnScan->setDisabled(true);
+
+    menuLayout->addWidget(btnPrevious);
+    menuLayout->addWidget(mBtnScan);
+    menuLayout->addWidget(mBtnNext);
+
+    layout->addLayout(menuLayout);
+
+    connect (btnPrevious, SIGNAL (clicked()), this, SLOT (onPreviousBtnClicked()));
+    connect (mBtnScan, SIGNAL (clicked()), this, SLOT (onScanBtnClicked()));
+    connect (mBtnNext, SIGNAL (clicked()), this, SLOT (onNextBtnClicked()));
+
+    setScannerState (ScannerState::READY);
 }
 
-void ScannerView::onAbortBtnClicked ()
+void ScannerView::setScannerState (ScannerState aStatus)
 {
-    emit abortScanner ();
+    mScannerState = aStatus;
+
+    switch (mScannerState)
+    {
+        case READY:
+            qDebug () << "ScannerState is READY";
+            mCustomerLabel->setText("---");
+            mKeyLabel->setText("---");
+            mBtnNext->setDisabled(true);
+            mBtnScan->setDisabled(false);
+            break;
+        case SCANNING:
+            mCustomerLabel->setText("---");
+            mKeyLabel->setText("---");
+            qDebug() <<  "ScannerState is SCANNING";
+            mBtnNext->setDisabled(true);
+            mBtnScan->setDisabled(true);
+            break;
+        case SCANSUCCEEDED:
+            qDebug() <<  "ScannerState is SCANSUCCEEDED";
+            mBtnNext->setDisabled(false);
+            mBtnScan->setDisabled(false);
+            break;
+    }
+}
+
+void ScannerView::onPreviousBtnClicked ()
+{
+    emit previousButtonClicked ();
+}
+
+void ScannerView::onScanBtnClicked ()
+{
+    emit scanButtonClicked ();
+}
+
+void ScannerView::onNextBtnClicked()
+{
+    emit nextButtonClicked ();
 }
 
 QSize ScannerView::getViewfinderSize ()
@@ -59,6 +138,16 @@ QVideoWidget* ScannerView::getViewfinder ()
     if (!m_viewfinder)
         return 0;
     return m_viewfinder;
+}
+
+void ScannerView::setCustomerLabel (QString aCustomerId)
+{
+    mCustomerLabel->setText(aCustomerId);
+}
+
+void ScannerView::setKeyLabel (QString aKeyId)
+{
+    mKeyLabel->setText(aKeyId);
 }
 
 ScannerView::~ScannerView()

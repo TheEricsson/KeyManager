@@ -36,7 +36,9 @@ private slots:
 
 private:
     void playSound ();
-    void processScannedKey (int aKey);
+    //void processScannedKey (const QString &aCustomerId, const QString &aKeyId);
+    void handleScannedKey();
+
     QPushButton* btnScan;
     QPushButton* btnSearch;
     QPushButton* btnManage;
