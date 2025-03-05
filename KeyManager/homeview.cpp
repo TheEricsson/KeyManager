@@ -19,7 +19,7 @@ HomeView::HomeView(QWidget *parent)
     label->setScaledContents(true);
     label->setMaximumHeight(100);
     label->setMaximumWidth(300);
-    label->setPixmap(logo);
+    label->setPixmap(logo);    
 
     mBtnScan = new QPushButton (/*tr("Code Scannen")*/);
     mBtnSearch = new QPushButton (/*tr("Manuell Suchen")*/);
@@ -41,7 +41,7 @@ HomeView::HomeView(QWidget *parent)
     mBtnExit->setIconSize(QSize(desiredDim,desiredDim));
 
     mLayout = new QGridLayout;
-    mLayout->addWidget(label,0,0,1,2);
+    mLayout->addWidget(label,0,0,1,2,Qt::AlignHCenter);
     mLayout->addWidget(mBtnScan,1,0);
     mLayout->addWidget(mBtnSearch,1,1);
     mLayout->addWidget(mBtnManage,2,0);

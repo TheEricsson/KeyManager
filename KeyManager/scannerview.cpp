@@ -150,6 +150,16 @@ void ScannerView::setKeyLabel (QString aKeyId)
     mKeyLabel->setText(aKeyId);
 }
 
+const QString ScannerView::getCustomerLabel ()
+{
+    return mCustomerLabel->text();
+}
+
+const QString ScannerView::getKeyLabel()
+{
+    return mKeyLabel->text();
+}
+
 ScannerView::~ScannerView()
 {
     if (m_viewfinder != 0)

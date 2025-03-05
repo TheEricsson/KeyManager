@@ -14,6 +14,7 @@
 #include "homeview.h"
 #include "camera.h"
 #include "keyScannedView.h"
+#include "databaseimpl.h"
 
 #include "QZXing.h"
 
@@ -34,6 +35,7 @@ MainWindow::MainWindow(QWidget *parent)
     mHomeView = 0;
     mKeyScannedView = 0;
     mLayout = 0;
+    mDatabase = 0;
 
     mLayout = new QStackedLayout();
     setLayout(mLayout);
@@ -55,11 +57,34 @@ MainWindow::MainWindow(QWidget *parent)
 
     // handle signals by HomeView
     connect (mHomeView,SIGNAL(showScannerView()), this, SLOT(showScannerView ()));
+
+    initDatabase ();
 }
 
-void MainWindow::onKeyScanned ()
+void MainWindow::initDatabase ()
 {
-    mLayout->setCurrentWidget(mKeyScannedView);
+    mDatabase = new DatabaseImpl ();
+}
+
+void MainWindow::searchKey (const QString& aCustomer, const QString& aKey)
+{
+    Q_UNUSED(aCustomer);
+
+    if (mDatabase)
+    {
+        if (mDatabase->findKeyId(aKey))
+        {
+            qDebug () << "Key " << aKey << " is unknown";
+            // create dialog to add a new key
+            // ...
+        }
+        else
+        {
+            qDebug () << "Key " << aKey << " found in database";
+            // create a dialog to hand out a key or to take it back
+            // ...
+        }
+    }
 }
 
 void MainWindow::handleScannedKey()
@@ -123,7 +148,7 @@ void MainWindow::decodeFromVideoFrame ()
 
 void MainWindow::decodeImage (int requestId, const QImage &img)
 {
-    qDebug () << "MainWindow::decodeImage called";
+    //qDebug () << "MainWindow::decodeImage called";
 
     Q_UNUSED(requestId);
 
@@ -147,12 +172,17 @@ void MainWindow::decodeImage (int requestId, const QImage &img)
     QString customerId = result.mid (1, 4);
     QString keyId = result.mid (6, 4);
 
-    qDebug () << "Data:" << result.toStdString();
-    qDebug () << "Mandant Id:" << customerId << "(Configured:" << GMANDANTID << ")";
-    qDebug () << "Key Id:" << keyId;
+    if ("" != result.toStdString())
+    {
+        qDebug () << "Data:" << result.toStdString();
+        qDebug () << "Mandant Id:" << customerId << "(Configured:" << GMANDANTID << ")";
+        qDebug () << "Key Id:" << keyId;
+    }
 
     if (customerId.toInt() == GMANDANTID)
     {
+        mGrabTimer->stop ();
+
         // code recognized: play a supermarket beep sound :)
         playSound ();
 
@@ -160,6 +190,9 @@ void MainWindow::decodeImage (int requestId, const QImage &img)
         mScanView->setScannerState(ScannerState::SCANSUCCEEDED);
         mScanView->setCustomerLabel(customerId);
         mScanView->setKeyLabel(keyId);
+
+        // search key in database
+        searchKey(mScanView->getCustomerLabel(), mScanView->getKeyLabel());
     }
 }
 
@@ -176,6 +209,8 @@ void MainWindow::playSound ()
 
 MainWindow::~MainWindow()
 {
+    if (mDatabase)
+        delete mDatabase;
     // if (0 != btnScan)
     //     delete btnScan;
 

@@ -12,6 +12,7 @@ class HomeView;
 class ScannerView;
 class KeyScannedView;
 class QTimer;
+class DatabaseImpl;
 
 #ifdef ENCODERTEST
 class QREncoderTest;
@@ -23,6 +24,7 @@ class MainWindow : public QWidget
 
 public:
     explicit MainWindow(QWidget *parent = nullptr);
+    void initDatabase ();
     ~MainWindow();
 
 private slots:
@@ -30,7 +32,7 @@ private slots:
     void closeScannerView ();
     void onSearchButtonReleased ();
     void onManageButtonReleased ();
-    void onKeyScanned ();
+    void searchKey (const QString& aCustomer, const QString& aKey);
     void decodeImage (int requestId, const QImage &img);
     void decodeFromVideoFrame ();
 
@@ -51,6 +53,7 @@ private:
 
     Camera *mCameraInstance;
     QTimer *mGrabTimer;
+    DatabaseImpl *mDatabase;
 
 #ifdef ENCODERTEST
     QREncoderTest* qrencoderTest;

@@ -24,6 +24,8 @@ public:
     QSize getViewfinderSize ();
     void setCustomerLabel (QString aCustomerId);
     void setKeyLabel (QString aKeyId);
+    const QString getCustomerLabel ();
+    const QString getKeyLabel();
     ~ScannerView();
 
 private:

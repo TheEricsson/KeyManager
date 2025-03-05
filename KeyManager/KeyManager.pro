@@ -1,4 +1,4 @@
-QT       += core gui multimediawidgets
+QT       += core gui multimediawidgets sql
 
 greaterThan(QT_MAJOR_VERSION, 4): QT += widgets
 
@@ -12,6 +12,7 @@ include(../QZXing/QZXing.pri)
 
 SOURCES += \
     camera.cpp \
+    databaseimpl.cpp \
     homeview.cpp \
     keyscannedview.cpp \
     main.cpp \
@@ -21,7 +22,9 @@ SOURCES += \
 
 HEADERS += \
     camera.h \
+    databaseimpl.h \
     homeview.h \
+    initdb.h \
     keyscannedview.h \
     mainwindow.h \
     scannerview.h \
@@ -38,6 +41,7 @@ else: unix:!android: target.path = /opt/$${TARGET}/bin
 !isEmpty(target.path): INSTALLS += target
 
 # DEFINES += ENCODERTEST
+# DEFINES += NOCAM_ENCODE
 
 RESOURCES += \
     res/resources.qrc
