@@ -16,6 +16,7 @@
 #include "keyScannedView.h"
 #include "databaseimpl.h"
 #include "tableview.h"
+//#include <QtCore/private/qandroidextras_p.h>
 
 #include "QZXing.h"
 
@@ -63,9 +64,45 @@ MainWindow::MainWindow(QWidget *parent)
     connect (mScanView, SIGNAL(nextButtonClicked()), this, SLOT (handleScannedKey()));
 
     // handle signals by HomeView
-    connect (mHomeView,SIGNAL(showScannerView()), this, SLOT(showScannerView ()));
-    connect (mHomeView,SIGNAL(showTableView()), this, SLOT(showTableView ()));
+    connect (mHomeView,SIGNAL(showScannerView()), this, SLOT(showScannerView()));
+    connect (mHomeView,SIGNAL(showTableView()), this, SLOT(showTableView()));
 }
+
+// bool MainWindow::checkPermissions ()
+// {
+//     bool success = true;
+//     if(QtAndroidPrivate::androidSdkVersion() >= 23)
+//     {
+//         static const QVector<QString> permissions({
+//             "android.permission.READ_EXTERNAL_STORAGE"
+//         });
+
+//         for(const QString &permission : permissions)
+//         {
+//             // check if permission is granded
+//             auto result = QtAndroidPrivate::checkPermission(permission);
+//             if(result != QtAndroidPrivate::PermissionResult::Granted)
+//             {
+//                 // request permission
+//                 auto resultHash = QtAndroidPrivate::requestPermissionsSync(QStringList({permission}));
+//                 if(resultHash[permission] != QtAndroidPrivate::PermissionResult::Granted)
+//                 {
+//                     qDebug() << "Fail to get permission" << permission;
+//                     success = false;
+//                 }
+//                 else
+//                 {
+//                     qDebug() << "Permission" << permission << "granted!";
+//                 }
+//             }
+//             else
+//             {
+//                 qDebug() << "Permission" << permission << "already granted!";
+//             }
+//         }
+//     }
+//     return success;
+// }
 
 void MainWindow::initDatabase ()
 {

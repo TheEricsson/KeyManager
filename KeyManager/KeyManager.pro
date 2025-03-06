@@ -1,4 +1,4 @@
-QT       += core gui multimediawidgets sql
+QT       += core gui multimediawidgets sql core-private
 
 greaterThan(QT_MAJOR_VERSION, 4): QT += widgets
 

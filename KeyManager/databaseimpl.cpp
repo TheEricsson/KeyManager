@@ -26,7 +26,16 @@ DatabaseImpl::DatabaseImpl()
     // db.setPassword(dbPassword);
 
     QSqlDatabase mDb = QSqlDatabase::addDatabase("QSQLITE");
-    mDb.setDatabaseName("db.sqlite");
+    //mDb.setDatabaseName("/data/data/org.qtproject.example.KeyManager/files/db.sqlite");
+    //mDb.setDatabaseName("db.sqlite");
+
+
+    QSettings settings (QString(":/config/config.ini"), QSettings::IniFormat);
+    QString dbLocation = settings.value("database/dbLocation", "error").toString();
+
+    qDebug () << "dbLocation: " << dbLocation;
+
+    mDb.setDatabaseName(dbLocation);
 
     bool ok = mDb.open ();
 
