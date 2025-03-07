@@ -7,7 +7,7 @@ class DatabaseImpl
 {
 public:
     DatabaseImpl();
-    bool findKeyId(const QString &aKeyId);
+    bool findKey(int aKeyId);
 private:
     QSqlDatabase mDb;
 };

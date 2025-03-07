@@ -17,7 +17,6 @@
 #include "keyScannedView.h"
 #include "databaseimpl.h"
 #include "tableview.h"
-#include <QtCore/private/qandroidextras_p.h>
 
 #include "QZXing.h"
 
@@ -77,13 +76,13 @@ void MainWindow::initDatabase ()
     mDatabase = new DatabaseImpl ();
 }
 
-void MainWindow::searchKey (const QString& aCustomer, const QString& aKey)
+void MainWindow::searchKey (int aCustomer, int aKey)
 {
     Q_UNUSED(aCustomer);
 
     if (mDatabase)
     {
-        if (mDatabase->findKeyId(aKey))
+        if (mDatabase->findKey(aKey))
         {
             qDebug () << "Key " << aKey << " is unknown";
             // create dialog to add a new key
@@ -173,7 +172,8 @@ void MainWindow::decodeImage (int requestId, const QImage &img)
 
     Q_UNUSED(requestId);
 
-#ifdef NOCAM_ENCODE
+// no cam on windows pc -> use image for debugging
+#ifdef Q_OS_WIN64
     QImage scaledImg (":/images/barcode.png");
 #else
     QImage scaledImg = img.scaled(mScanView->getViewfinderSize(), Qt::KeepAspectRatio, Qt::FastTransformation);
@@ -213,7 +213,7 @@ void MainWindow::decodeImage (int requestId, const QImage &img)
         mScanView->setKeyLabel(keyId);
 
         // search key in database
-        searchKey(mScanView->getCustomerLabel(), mScanView->getKeyLabel());
+        searchKey(mScanView->getCustomerLabel().toInt(), mScanView->getKeyLabel().toInt());
     }
 }
 

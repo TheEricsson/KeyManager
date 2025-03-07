@@ -29,8 +29,13 @@ DatabaseImpl::DatabaseImpl()
 
     QSqlDatabase mDb = QSqlDatabase::addDatabase("QSQLITE");
 
-    // todo: location is hardcoded
+    // todo: location is hardcoded by now..
+#ifdef Q_OS_ANDROID
     QString dbLocation = "/storage/emulated/0/Android/data/org.qtproject.example.KeyManager/files/db.sqlite";
+#endif
+#ifdef Q_OS_WIN64
+    QString dbLocation = "db.sqlite";
+#endif
 
     qDebug () << "dbLocation: " << dbLocation;
 
@@ -63,16 +68,19 @@ DatabaseImpl::DatabaseImpl()
     }
 }
 
-bool DatabaseImpl::findKeyId(const QString& aKeyId)
+bool DatabaseImpl::findKey(int aKeyId)
 {
     mDb.transaction();
 
     QSqlQuery query;
     QString command;
     command.append("SELECT * FROM keys WHERE id = '");
-    command.append(aKeyId);
+    command.append(QString::number(aKeyId));
     command.append("'");
     query.exec(command);
+
+    qDebug () << "DatabaseImpl::findKey(int aKeyId)";
+    qDebug () << "command: " << command;
 
     if (query.next())
     {
