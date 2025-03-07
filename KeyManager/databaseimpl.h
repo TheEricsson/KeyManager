@@ -7,7 +7,8 @@ class DatabaseImpl
 {
 public:
     DatabaseImpl();
-    bool findKey(int aKeyId);
+    bool findBarcode(int aClientId, int aKeyId);
+
 private:
     QSqlDatabase mDb;
 };

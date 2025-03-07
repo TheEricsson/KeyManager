@@ -76,27 +76,6 @@ void MainWindow::initDatabase ()
     mDatabase = new DatabaseImpl ();
 }
 
-void MainWindow::searchKey (int aCustomer, int aKey)
-{
-    Q_UNUSED(aCustomer);
-
-    if (mDatabase)
-    {
-        if (mDatabase->findKey(aKey))
-        {
-            qDebug () << "Key " << aKey << " is unknown";
-            // create dialog to add a new key
-            // ...
-        }
-        else
-        {
-            qDebug () << "Key " << aKey << " found in database";
-            // create a dialog to hand out a key or to take it back
-            // ...
-        }
-    }
-}
-
 void MainWindow::handleScannedKey()
 {
     //get current values
@@ -213,7 +192,19 @@ void MainWindow::decodeImage (int requestId, const QImage &img)
         mScanView->setKeyLabel(keyId);
 
         // search key in database
-        searchKey(mScanView->getCustomerLabel().toInt(), mScanView->getKeyLabel().toInt());
+        bool result = mDatabase->findBarcode(mScanView->getCustomerLabel().toInt(), mScanView->getKeyLabel().toInt());
+
+        // check if barcode is known
+        if (!result)
+        {
+            //barcode is recognised, but unknown in database
+            //-> dialog - add to db...
+        }
+        else
+        {
+            //barcode is recognised and found in database
+            //-> show status with further options
+        }
     }
 }
 

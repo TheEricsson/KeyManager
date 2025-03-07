@@ -35,7 +35,6 @@ private slots:
     void closeTableView ();
     void onSearchButtonReleased ();
     void onManageButtonReleased ();
-    void searchKey (int aCustomer, int aKey);
     void decodeImage (int requestId, const QImage &img);
     void decodeFromVideoFrame ();
 

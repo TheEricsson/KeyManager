@@ -68,24 +68,22 @@ DatabaseImpl::DatabaseImpl()
     }
 }
 
-bool DatabaseImpl::findKey(int aKeyId)
+bool DatabaseImpl::findBarcode(int aClientId, int aKeyId)
 {
     mDb.transaction();
 
     QSqlQuery query;
-    QString command;
-    command.append("SELECT * FROM keys WHERE id = '");
-    command.append(QString::number(aKeyId));
-    command.append("'");
-    query.exec(command);
-
-    qDebug () << "DatabaseImpl::findKey(int aKeyId)";
-    qDebug () << "command: " << command;
+    query.prepare("SELECT id FROM keys WHERE barcodeClientId = ? AND barcodeKeyId = ?");
+    query.bindValue(0, aClientId);
+    query.bindValue(1, aKeyId);
+    query.exec();
 
     if (query.next())
     {
+        qDebug () << "internal id of the key is: " << query.value(0).toString();
         return true;
     }
 
+    qDebug () << "DatabaseImpl::findBarcode: Barcode not found: " << "Client: " << aClientId << ", Key: " << aKeyId;
     return false;
 }
