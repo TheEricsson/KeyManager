@@ -32,6 +32,7 @@ private slots:
     void showScannerView ();
     void showTableView ();
     void closeScannerView ();
+    void closeTableView ();
     void onSearchButtonReleased ();
     void onManageButtonReleased ();
     void searchKey (const QString& aCustomer, const QString& aKey);
@@ -40,7 +41,6 @@ private slots:
 
 private:
     void playSound ();
-    //void processScannedKey (const QString &aCustomerId, const QString &aKeyId);
     void handleScannedKey();
 
     QPushButton* btnScan;

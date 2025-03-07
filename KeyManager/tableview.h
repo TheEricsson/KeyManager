@@ -13,8 +13,13 @@ public:
     explicit TableView(const QString &tableName, QWidget *parent = nullptr);
 
 signals:
+    void previousButtonClicked ();
 private:
     QSqlTableModel *mAdresses;
+    QSqlTableModel *mKeys;
+
+private slots:
+    void onPreviousBtnClicked();
 };
 
 #endif // TABLEVIEW_H

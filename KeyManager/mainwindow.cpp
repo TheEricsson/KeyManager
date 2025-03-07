@@ -10,13 +10,14 @@
 #include <QImageCapture>
 #include <QAudioOutput>
 #include <QMediaPlayer>
+#include <QStringList>
 
 #include "homeview.h"
 #include "camera.h"
 #include "keyScannedView.h"
 #include "databaseimpl.h"
 #include "tableview.h"
-//#include <QtCore/private/qandroidextras_p.h>
+#include <QtCore/private/qandroidextras_p.h>
 
 #include "QZXing.h"
 
@@ -66,47 +67,13 @@ MainWindow::MainWindow(QWidget *parent)
     // handle signals by HomeView
     connect (mHomeView,SIGNAL(showScannerView()), this, SLOT(showScannerView()));
     connect (mHomeView,SIGNAL(showTableView()), this, SLOT(showTableView()));
+
+    // handle signals by TableView
+    connect (mTableView, SIGNAL(previousButtonClicked()), this, SLOT (closeTableView()));
 }
-
-// bool MainWindow::checkPermissions ()
-// {
-//     bool success = true;
-//     if(QtAndroidPrivate::androidSdkVersion() >= 23)
-//     {
-//         static const QVector<QString> permissions({
-//             "android.permission.READ_EXTERNAL_STORAGE"
-//         });
-
-//         for(const QString &permission : permissions)
-//         {
-//             // check if permission is granded
-//             auto result = QtAndroidPrivate::checkPermission(permission);
-//             if(result != QtAndroidPrivate::PermissionResult::Granted)
-//             {
-//                 // request permission
-//                 auto resultHash = QtAndroidPrivate::requestPermissionsSync(QStringList({permission}));
-//                 if(resultHash[permission] != QtAndroidPrivate::PermissionResult::Granted)
-//                 {
-//                     qDebug() << "Fail to get permission" << permission;
-//                     success = false;
-//                 }
-//                 else
-//                 {
-//                     qDebug() << "Permission" << permission << "granted!";
-//                 }
-//             }
-//             else
-//             {
-//                 qDebug() << "Permission" << permission << "already granted!";
-//             }
-//         }
-//     }
-//     return success;
-// }
 
 void MainWindow::initDatabase ()
 {
-    qDebug () << "MainWindow::initDatabase ()";
     mDatabase = new DatabaseImpl ();
 }
 
@@ -147,6 +114,11 @@ void MainWindow::closeScannerView ()
         mCameraInstance->stopCamera();
     }
 
+    mLayout->setCurrentWidget(mHomeView);
+}
+
+void MainWindow::closeTableView ()
+{
     mLayout->setCurrentWidget(mHomeView);
 }
 

@@ -2,6 +2,8 @@
 #include <QSettings>
 #include <QSqlQuery>
 #include <QDir>
+#include <QFile>
+#include <QStandardPaths>
 
 DatabaseImpl::DatabaseImpl()
 {
@@ -26,34 +28,38 @@ DatabaseImpl::DatabaseImpl()
     // db.setPassword(dbPassword);
 
     QSqlDatabase mDb = QSqlDatabase::addDatabase("QSQLITE");
-    //mDb.setDatabaseName("/data/data/org.qtproject.example.KeyManager/files/db.sqlite");
-    //mDb.setDatabaseName("db.sqlite");
 
-
-    QSettings settings (QString(":/config/config.ini"), QSettings::IniFormat);
-    QString dbLocation = settings.value("database/dbLocation", "error").toString();
+    // todo: location is hardcoded
+    QString dbLocation = "/storage/emulated/0/Android/data/org.qtproject.example.KeyManager/files/db.sqlite";
 
     qDebug () << "dbLocation: " << dbLocation;
+
+    // todo: path is wrong ->
+    // const auto standardPath = QStandardPaths::writableLocation(QStandardPaths::AppDataLocation);
+    // const auto dbName = standardPath + "/db.sqlite";
 
     mDb.setDatabaseName(dbLocation);
 
     bool ok = mDb.open ();
 
-    qDebug () << QDir::currentPath();
+    if(!ok)
+    {
+        qDebug () << "AppDataLocation + filename = " << dbLocation;
+        qDebug () << "db.open () returned: " << ok;
+        qDebug () << mDb.isOpen();
+        qDebug () << mDb.isOpenError();
 
-    qDebug () << "db.open () returned: " << ok;
-    qDebug () << mDb.isOpen();
-    qDebug () << mDb.isOpenError();
+        qDebug () << "mDb.databaseName(): " << mDb.databaseName();
+        qDebug () << "mDb.connectionName(): " << mDb.connectionName();
+    }
 
-    qDebug () << "mDb.databaseName(): " << mDb.databaseName();
-    qDebug () << "mDb.connectionName(): " << mDb.connectionName();
     QStringList tables = mDb.tables();
 
-    qDebug () << "number of entries: " << tables.count();
+    qDebug () << "number of tables: " << tables.count();
 
     for (int i=0;i<tables.count();i++)
     {
-        qDebug () << "entry: " << tables [i];
+        qDebug () << "table: " << tables [i];
     }
 }
 
