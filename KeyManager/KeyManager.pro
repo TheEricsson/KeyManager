@@ -14,6 +14,7 @@ SOURCES += \
     camera.cpp \
     databaseimpl.cpp \
     homeview.cpp \
+    keychainstatusview.cpp \
     keyscannedview.cpp \
     main.cpp \
     mainwindow.cpp \
@@ -26,6 +27,7 @@ HEADERS += \
     databaseimpl.h \
     homeview.h \
     initdb.h \
+    keychainstatusview.h \
     keyscannedview.h \
     mainwindow.h \
     scannerview.h \
@@ -48,14 +50,14 @@ else: unix:!android: target.path = /opt/$${TARGET}/bin
 RESOURCES += \
     res/resources.qrc
 
-DISTFILES += \
-    android/AndroidManifest.xml \
-    android/build.gradle \
-    android/res/values/libs.xml \
-    android/res/xml/qtprovider_paths.xml \
-    dbexample/db.sqlite
+# DISTFILES += \
+#     android/AndroidManifest.xml \
+#     android/build.gradle \
+#     android/res/values/libs.xml \
+#     android/res/xml/qtprovider_paths.xml \
+#     dbexample/db.sqlite
 
-contains(ANDROID_TARGET_ARCH,arm64-v8a) {
-    ANDROID_PACKAGE_SOURCE_DIR = \
-        $$PWD/../KeyManager.pro
-}
+# contains(ANDROID_TARGET_ARCH,arm64-v8a) {
+#     ANDROID_PACKAGE_SOURCE_DIR = \
+#         $$PWD/../KeyManager.pro
+#}

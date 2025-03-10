@@ -73,14 +73,14 @@ bool DatabaseImpl::findBarcode(int aClientId, int aKeyId)
     mDb.transaction();
 
     QSqlQuery query;
-    query.prepare("SELECT id FROM keys WHERE barcodeClientId = ? AND barcodeKeyId = ?");
+    query.prepare("SELECT id FROM keychains WHERE barcodeLocale = ? AND barcodeKeychainId = ?");
     query.bindValue(0, aClientId);
     query.bindValue(1, aKeyId);
     query.exec();
 
     if (query.next())
     {
-        qDebug () << "internal id of the key is: " << query.value(0).toString();
+        qDebug () << "found the Barcode!";
         return true;
     }
 

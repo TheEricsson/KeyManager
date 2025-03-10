@@ -17,6 +17,7 @@
 #include "keyScannedView.h"
 #include "databaseimpl.h"
 #include "tableview.h"
+#include "keychainstatusview.h"
 
 #include "QZXing.h"
 
@@ -37,6 +38,7 @@ MainWindow::MainWindow(QWidget *parent)
     mHomeView = 0;
     mKeyScannedView = 0;
     mTableView = 0;
+    mKeychainStatusView = 0;
 
     mLayout = 0;
     mDatabase = 0;
@@ -130,6 +132,26 @@ void MainWindow::showTableView ()
     mLayout->setCurrentWidget(mTableView);
 }
 
+void MainWindow::showKeychainStatusView (int aLocale, int aKeychainId)
+{
+    Q_UNUSED(aLocale);
+    Q_UNUSED(aKeychainId);
+
+    if (!mKeychainStatusView)
+    {
+        mKeychainStatusView = new KeychainStatusView ();
+        mLayout->addWidget(mKeychainStatusView);
+        connect (mKeychainStatusView, SIGNAL(previousButtonClicked()), this, SLOT (closeKeychainStatusView()));
+    }
+
+    mLayout->setCurrentWidget(mKeychainStatusView);
+}
+
+void MainWindow::closeKeychainStatusView ()
+{
+    mLayout->setCurrentWidget(mHomeView);
+}
+
 void MainWindow::onSearchButtonReleased ()
 {
 
@@ -169,8 +191,8 @@ void MainWindow::decodeImage (int requestId, const QImage &img)
     //trigger decode
     QString result = decoder.decodeImage(scaledImg);
 
-    QString customerId = result.mid (1, 4);
-    QString keyId = result.mid (6, 4);
+    QString customerId = result.mid (0, 5);
+    QString keyId = result.mid (6, 5);
 
     if ("" != result.toStdString())
     {
@@ -203,7 +225,7 @@ void MainWindow::decodeImage (int requestId, const QImage &img)
         else
         {
             //barcode is recognised and found in database
-            //-> show status with further options
+            showKeychainStatusView(customerId.toInt(), keyId.toInt());
         }
     }
 }

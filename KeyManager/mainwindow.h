@@ -14,6 +14,7 @@ class KeyScannedView;
 class QTimer;
 class DatabaseImpl;
 class TableView;
+class KeychainStatusView;
 
 #ifdef ENCODERTEST
 class QREncoderTest;
@@ -31,6 +32,8 @@ public:
 private slots:
     void showScannerView ();
     void showTableView ();
+    void showKeychainStatusView (int aLocale, int aKeychainId);
+    void closeKeychainStatusView ();
     void closeScannerView ();
     void closeTableView ();
     void onSearchButtonReleased ();
@@ -52,6 +55,7 @@ private:
     ScannerView *mScanView;
     KeyScannedView *mKeyScannedView;
     TableView *mTableView;
+    KeychainStatusView *mKeychainStatusView;
 
     Camera *mCameraInstance;
     QTimer *mGrabTimer;
