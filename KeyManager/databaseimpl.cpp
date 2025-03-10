@@ -4,6 +4,7 @@
 #include <QDir>
 #include <QFile>
 #include <QStandardPaths>
+#include <QImage>
 
 DatabaseImpl::DatabaseImpl()
 {
@@ -68,7 +69,7 @@ DatabaseImpl::DatabaseImpl()
     }
 }
 
-bool DatabaseImpl::findBarcode(int aClientId, int aKeyId)
+bool DatabaseImpl::findKeyCode(int aClientId, int aKeyId)
 {
     mDb.transaction();
 
@@ -86,4 +87,143 @@ bool DatabaseImpl::findBarcode(int aClientId, int aKeyId)
 
     qDebug () << "DatabaseImpl::findBarcode: Barcode not found: " << "Client: " << aClientId << ", Key: " << aKeyId;
     return false;
+}
+
+bool DatabaseImpl::setKeyCode (int aClientId, int aKeyId)
+{
+    qDebug () << "DatabaseImpl::setKeyCode (int aClientId, int aKeyId)";
+
+    mDb.transaction();
+
+    QSqlQuery query;
+    query.setForwardOnly(true);
+    query.prepare("SELECT id, keychainStatusId, internalLocation, image FROM keychains WHERE barcodeLocale = ? AND barcodeKeychainId = ?");
+    query.bindValue(0, aClientId);
+    query.bindValue(1, aKeyId);
+    query.exec();
+
+    if (query.next())
+    {
+        qDebug () << "ok";
+        mKeychainId = query.value(0).toInt();
+        mKeychainInternalLocation = query.value(2).toInt();
+        mKeychainImg = QImage::fromData(query.value(3).toByteArray(), "jpg");
+
+        int keychainStatusId = query.value(1).toInt();
+        query.prepare("SELECT status FROM keychainStates WHERE id = ?");
+        query.bindValue(0, keychainStatusId);
+        query.exec();
+
+        // set keychain status
+        if (query.next())
+        {
+            qDebug () << "ok";
+            mKeychainStatus = query.value(0).toString();
+        }
+        else
+        {
+            return false;
+        }
+
+        // get all keys of the keychain
+        query.prepare("SELECT id, addressId, categoryId, statusId, description FROM keys WHERE keychainId = :ref_id");
+        query.bindValue(":ref_id", mKeychainId);
+        query.exec();
+
+        int count = 0;
+
+        mKeychainItems.clear();
+
+        while (query.next()) // todo: always returns only 1 value
+        {
+            count++;
+            qDebug () << "ok: " << count;
+
+            int keyId = query.value(0).toInt();
+            int addressId = query.value(1).toInt();
+            int categoryId = query.value(2).toInt();
+            int statusId = query.value(3).toInt();
+            QString description = query.value(4).toString();
+
+            //get address from id
+            query.prepare("SELECT street, streetNumber, areaCode, city FROM keyAddresses WHERE id = ?");
+            query.bindValue(0, addressId);
+            query.exec();
+
+            QString street = "";
+            QString streetNumber = "";
+            int areaCode = 0;
+            QString city = "";
+
+            if (query.next())
+            {
+                qDebug () << "okA";
+                street = query.value(0).toString();
+                streetNumber = query.value(1).toString();
+                areaCode = query.value(2).toInt();
+                city = query.value(3).toString();
+            }
+            else
+                return false;
+
+            // get category
+            query.prepare("SELECT category FROM keyCategories WHERE id = ?");
+            query.bindValue(0, categoryId);
+            query.exec();
+
+            QString category ("");
+
+            if (query.next())
+            {
+                qDebug () << "okB";
+                category = query.value(0).toString();
+            }
+            else
+                return false;
+
+            // get status
+            query.prepare("SELECT status FROM keyStates WHERE id = ?");
+            query.bindValue(0, statusId);
+            query.exec();
+
+            QString status ("");
+
+            if (query.next())
+            {
+                qDebug () << "okC";
+                status = query.value(0).toString();
+            }
+            else
+                return false;
+
+            mKey key;
+            key.street = street;
+            key.streetNumber = streetNumber;
+            key.areaCode = areaCode;
+            key.category = category;
+            key.dbId = keyId;
+            key.description = description;
+            key.keychainId = mKeychainId;
+            key.status = status;
+
+            mKeychainItems.append(key);
+        }
+    }
+    else
+        return false;
+    {
+        for (int i = 0; i < mKeychainItems.count(); i++)
+        {
+            qDebug () << "mKeychainItems[i].street: " << mKeychainItems[i].street;
+            qDebug () << "mKeychainItems[i].streetNumber: " << mKeychainItems[i].streetNumber;
+            qDebug () << "mKeychainItems[i].areaCode: " << mKeychainItems[i].areaCode;
+            qDebug () << "mKeychainItems[i].category: " << mKeychainItems[i].category;
+            qDebug () << "mKeychainItems[i].dbId: " << mKeychainItems[i].dbId;
+            qDebug () << "mKeychainItems[i].description: " << mKeychainItems[i].description;
+            qDebug () << "mKeychainItems[i].keychainId: " << mKeychainItems[i].keychainId;
+            qDebug () << "mKeychainItems[i].status: " << mKeychainItems[i].status;
+
+        }
+    }
+    return true;
 }

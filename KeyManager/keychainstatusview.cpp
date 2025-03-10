@@ -21,7 +21,7 @@ KeychainStatusView::KeychainStatusView(int aLocaleId, int aKeychainId, QWidget *
 void KeychainStatusView::init()
 {
     mKeyStatus = new QSqlRelationalTableModel(this);
-    mKeyStatus->setTable("keychains");
+    mKeyStatus->setTable("keys");
     mKeyStatus->select();
 
     QTableView *keychain = new QTableView;

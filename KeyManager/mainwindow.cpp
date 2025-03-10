@@ -210,7 +210,7 @@ void MainWindow::decodeImage (int requestId, const QImage &img)
         mScanView->setKeyLabel(keyId);
 
         // search key in database
-        bool result = mDatabase->findBarcode(mScanView->getCustomerLabel().toInt(), mScanView->getKeyLabel().toInt());
+        bool result = mDatabase->findKeyCode(mScanView->getCustomerLabel().toInt(), mScanView->getKeyLabel().toInt());
 
         // check if barcode is known
         if (!result)
@@ -221,6 +221,8 @@ void MainWindow::decodeImage (int requestId, const QImage &img)
         else
         {
             //barcode is recognised and found in database
+            bool retVal = mDatabase->setKeyCode(customerId.toInt(), keyId.toInt());
+            qDebug () << "mDatabase->setKeyCode" << retVal;
             showKeychainStatusView(customerId.toInt(), keyId.toInt());
         }
     }
