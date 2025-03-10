@@ -15,7 +15,6 @@ SOURCES += \
     databaseimpl.cpp \
     homeview.cpp \
     keychainstatusview.cpp \
-    keyscannedview.cpp \
     main.cpp \
     mainwindow.cpp \
     scannerview.cpp \
@@ -28,7 +27,6 @@ HEADERS += \
     homeview.h \
     initdb.h \
     keychainstatusview.h \
-    keyscannedview.h \
     mainwindow.h \
     scannerview.h \
     tableview.h \

@@ -14,7 +14,6 @@
 
 #include "homeview.h"
 #include "camera.h"
-#include "keyScannedView.h"
 #include "databaseimpl.h"
 #include "tableview.h"
 #include "keychainstatusview.h"
@@ -36,7 +35,6 @@ MainWindow::MainWindow(QWidget *parent)
     mGrabTimer = 0;
     mScanView = 0;
     mHomeView = 0;
-    mKeyScannedView = 0;
     mTableView = 0;
     mKeychainStatusView = 0;
 
@@ -50,12 +48,10 @@ MainWindow::MainWindow(QWidget *parent)
 
     mHomeView = new HomeView ();
     mScanView = new ScannerView ();
-    mKeyScannedView = new KeyScannedView ();
     mTableView = new TableView ("addresses");
 
     mLayout->addWidget(mHomeView);
     mLayout->addWidget(mScanView);
-    mLayout->addWidget(mKeyScannedView);
     mLayout->addWidget(mTableView);
 
     mLayout->setCurrentWidget(mHomeView);

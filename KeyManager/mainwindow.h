@@ -10,7 +10,6 @@ class QStackedLayout;
 class Camera;
 class HomeView;
 class ScannerView;
-class KeyScannedView;
 class QTimer;
 class DatabaseImpl;
 class TableView;
@@ -53,7 +52,6 @@ private:
 
     HomeView *mHomeView;
     ScannerView *mScanView;
-    KeyScannedView *mKeyScannedView;
     TableView *mTableView;
     KeychainStatusView *mKeychainStatusView;
 
