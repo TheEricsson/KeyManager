@@ -5,6 +5,7 @@
 #include <QFile>
 #include <QStandardPaths>
 #include <QImage>
+#include <QSqlQueryModel>
 
 DatabaseImpl::DatabaseImpl()
 {
@@ -228,4 +229,35 @@ bool DatabaseImpl::setKeyCode (int aClientId, int aKeyId)
         }
     }
     return true;
+}
+
+bool DatabaseImpl::initializeKeyOverviewModel (QSqlQueryModel *model, int aClientId, int aKeyId)
+{
+    qDebug () << "initializeKeyOverviewModel (QSqlQueryModel *model, int aClientId, int aKeyId)";
+
+    if (model)
+    {
+        qDebug () << "ok";
+
+        if (setKeyCode (aClientId, aKeyId))
+        {
+            qDebug () << "blabla";
+
+            mDb.transaction();
+
+            QSqlQuery query;
+            query.prepare("SELECT * FROM keys WHERE keychainId = ? INNER JOIN keyCategories ON keys.categoryId = keyCategories.category");
+            query.bindValue(0, aKeyId);
+
+            //model->setQuery("SELECT * FROM keys WHERE keychainId = 1");
+            model->setQuery("SELECT category, status, description \
+                            FROM keys \
+                            INNER JOIN keyCategories ON keyCategories.id = keys.categoryId \
+                            INNER JOIN keyStates ON keyStates.id = keys.statusId \
+                            WHERE keychainId = 1");
+
+            return true;
+        }
+    }
+    return false;
 }

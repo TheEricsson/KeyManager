@@ -4,7 +4,9 @@
 #include <QObject>
 #include <QWidget>
 
-class QSqlRelationalTableModel;
+class QLabel;
+class QSqlQueryModel;
+class QTableView;
 
 class KeychainStatusView : public QWidget
 {
@@ -12,14 +14,25 @@ class KeychainStatusView : public QWidget
 public:
     explicit KeychainStatusView(QWidget *parent = nullptr);
     explicit KeychainStatusView(int aLocaleId, int aKeychainId, QWidget *parent = nullptr);
+    void setModel (QSqlQueryModel* model);
 
 signals:
     void previousButtonClicked ();
 private slots:
     void onPreviousBtnClicked();
 private:
-    QSqlRelationalTableModel *mKeyStatus;
     void init ();
+
+    QSqlQueryModel *mKeyOverview;
+    QTableView *mKeys;
+    QLabel *mIdLocale;
+    QLabel *mIdBarcode;
+    QLabel *mStreet;
+    QLabel *mStreetNr;
+    QLabel *mAreaCode;
+    QLabel *mCity;
+    QLabel *mQuantityKeys;
+    QImage *mKeychainImage;
 };
 
 #endif // KEYCHAINSTATUSVIEW_H

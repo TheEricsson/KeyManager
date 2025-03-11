@@ -3,6 +3,7 @@
 
 #include <QSqlDatabase>
 #include <QImage>
+class QSqlQueryModel;
 
 class DatabaseImpl
 {
@@ -22,6 +23,7 @@ public:
     DatabaseImpl();
     bool findKeyCode(int aClientId, int aKeyId);
     bool setKeyCode(int aClientId, int aKeyId);
+    bool initializeKeyOverviewModel (QSqlQueryModel *model, int aClientId, int aKeyId);
 
 private:
     QSqlDatabase mDb;

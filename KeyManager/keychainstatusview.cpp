@@ -4,10 +4,12 @@
 #include <QPushButton>
 #include <QVBoxLayout>
 #include <QWidget>
+#include <QSqlQuery>
 
 KeychainStatusView::KeychainStatusView(QWidget *parent)
     : QWidget{parent}
 {
+    mKeys = 0;
     init ();
 }
 
@@ -18,35 +20,36 @@ KeychainStatusView::KeychainStatusView(int aLocaleId, int aKeychainId, QWidget *
     //todo: implement use of aLocaleId, aKeychainId
 }
 
+void KeychainStatusView::setModel (QSqlQueryModel* model)
+{
+    if (model)
+    {
+        if (mKeys)
+        {
+            qDebug () << "KeychainStatusView::setModel";
+            mKeys->setModel(model);
+            mKeys->show();
+            mKeys->resizeColumnsToContents();
+        }
+    }
+}
+
 void KeychainStatusView::init()
 {
-    mKeyStatus = new QSqlRelationalTableModel(this);
-    mKeyStatus->setTable("keys");
-    mKeyStatus->select();
-
-    QTableView *keychain = new QTableView;
-    keychain->setModel(mKeyStatus);
-
-    // mKeyStatus->setHeaderData(0, Qt::Horizontal, tr("ID"));
-    // mKeyStatus->setHeaderData(1, Qt::Horizontal, tr("Straße"));
-    // mKeyStatus->setHeaderData(2, Qt::Horizontal, tr("Hausnummer"));
-    // mKeyStatus->setHeaderData(3, Qt::Horizontal, tr("PLZ"));
-    // mKeyStatus->setHeaderData(4, Qt::Horizontal, tr("Ort"));
-
     QPushButton* btnPrevious = new QPushButton ();
     btnPrevious->setIcon(QIcon(":/images/menu_back.png"));
     btnPrevious->setIconSize(QSize(75,75));
 
     QVBoxLayout *mainLayout = new QVBoxLayout;
 
-    mainLayout->addWidget(keychain);
+    mKeys = new QTableView ();
+
+    mainLayout->addWidget(mKeys);
     mainLayout->addWidget(btnPrevious);
 
     setLayout(mainLayout);
     setWindowTitle(tr("Übersicht"));
     show();
-
-    keychain->resizeColumnsToContents();
 
     connect (btnPrevious, SIGNAL (clicked()), this, SLOT (onPreviousBtnClicked()));
 }

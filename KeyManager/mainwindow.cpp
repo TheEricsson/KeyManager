@@ -11,6 +11,7 @@
 #include <QAudioOutput>
 #include <QMediaPlayer>
 #include <QStringList>
+#include <QSqlQueryModel>
 
 #include "homeview.h"
 #include "camera.h"
@@ -137,8 +138,12 @@ void MainWindow::showKeychainStatusView (int aLocale, int aKeychainId)
     {
         mKeychainStatusView = new KeychainStatusView ();
         mLayout->addWidget(mKeychainStatusView);
+
         connect (mKeychainStatusView, SIGNAL(previousButtonClicked()), this, SLOT (closeKeychainStatusView()));
     }
+
+    if (mDatabase->initializeKeyOverviewModel (&mKcStatusModel, aLocale, aKeychainId))
+        mKeychainStatusView->setModel(&mKcStatusModel);
 
     mLayout->setCurrentWidget(mKeychainStatusView);
 }

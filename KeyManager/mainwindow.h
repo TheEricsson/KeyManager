@@ -2,6 +2,7 @@
 #define MAINWINDOW_H
 
 #include <QWidget>
+#include <QSqlQueryModel>
 
 class QPushButton;
 class QGridLayout;
@@ -58,6 +59,8 @@ private:
     Camera *mCameraInstance;
     QTimer *mGrabTimer;
     DatabaseImpl *mDatabase;
+
+    QSqlQueryModel mKcStatusModel;
 
 #ifdef ENCODERTEST
     QREncoderTest* qrencoderTest;
