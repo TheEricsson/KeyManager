@@ -24,6 +24,7 @@ SOURCES += \
 HEADERS += \
     camera.h \
     databaseimpl.h \
+    globals.h \
     homeview.h \
     initdb.h \
     keychainstatusview.h \

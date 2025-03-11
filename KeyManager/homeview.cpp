@@ -5,6 +5,8 @@
 #include <QPixmap>
 #include <QLabel>
 
+#include "globals.h"
+
 HomeView::HomeView(QWidget *parent)
     : QWidget{parent}
 {
@@ -17,8 +19,8 @@ HomeView::HomeView(QWidget *parent)
     QPixmap logo (":/images/logo.png");
     QLabel *label = new QLabel();
     label->setScaledContents(true);
-    label->setMaximumHeight(100);
-    label->setMaximumWidth(300);
+    label->setMaximumHeight(UiDimensions::logoHeight);
+    label->setMaximumWidth(UiDimensions::logoWidth);
     label->setPixmap(logo);    
 
     mBtnScan = new QPushButton (/*tr("Code Scannen")*/);
@@ -29,16 +31,16 @@ HomeView::HomeView(QWidget *parent)
     int desiredDim = 75;
 
     mBtnScan->setIcon(QIcon(":/images/shutter.svg"));
-    mBtnScan->setIconSize(QSize(desiredDim,desiredDim));
+    mBtnScan->setIconSize(QSize(UiDimensions::buttonWidth,UiDimensions::buttonHeight));
 
     mBtnSearch->setIcon(QIcon(":/images/search.svg"));
-    mBtnSearch->setIconSize(QSize(desiredDim,desiredDim));
+    mBtnSearch->setIconSize(QSize(UiDimensions::buttonWidth,UiDimensions::buttonHeight));
 
     mBtnManage->setIcon(QIcon(":/images/settings.svg"));
-    mBtnManage->setIconSize(QSize(desiredDim,desiredDim));
+    mBtnManage->setIconSize(QSize(UiDimensions::buttonWidth,UiDimensions::buttonHeight));
 
     mBtnExit->setIcon(QIcon(":/images/exit.svg"));
-    mBtnExit->setIconSize(QSize(desiredDim,desiredDim));
+    mBtnExit->setIconSize(QSize(UiDimensions::buttonWidth,UiDimensions::buttonHeight));
 
     mLayout = new QGridLayout;
     mLayout->addWidget(label,0,0,1,2,Qt::AlignHCenter);
