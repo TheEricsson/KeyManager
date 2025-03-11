@@ -145,53 +145,55 @@ bool DatabaseImpl::setKeyCode (int aClientId, int aKeyId)
             int statusId = query.value(3).toInt();
             QString description = query.value(4).toString();
 
+            QSqlQuery queryKeyContents;
+
             //get address from id
-            query.prepare("SELECT street, streetNumber, areaCode, city FROM keyAddresses WHERE id = ?");
-            query.bindValue(0, addressId);
-            query.exec();
+            queryKeyContents.prepare("SELECT street, streetNumber, areaCode, city FROM keyAddresses WHERE id = ?");
+            queryKeyContents.bindValue(0, addressId);
+            queryKeyContents.exec();
 
             QString street = "";
             QString streetNumber = "";
             int areaCode = 0;
             QString city = "";
 
-            if (query.next())
+            if (queryKeyContents.next())
             {
                 qDebug () << "okA";
-                street = query.value(0).toString();
-                streetNumber = query.value(1).toString();
-                areaCode = query.value(2).toInt();
-                city = query.value(3).toString();
+                street = queryKeyContents.value(0).toString();
+                streetNumber = queryKeyContents.value(1).toString();
+                areaCode = queryKeyContents.value(2).toInt();
+                city = queryKeyContents.value(3).toString();
             }
             else
                 return false;
 
             // get category
-            query.prepare("SELECT category FROM keyCategories WHERE id = ?");
-            query.bindValue(0, categoryId);
-            query.exec();
+            queryKeyContents.prepare("SELECT category FROM keyCategories WHERE id = ?");
+            queryKeyContents.bindValue(0, categoryId);
+            queryKeyContents.exec();
 
             QString category ("");
 
-            if (query.next())
+            if (queryKeyContents.next())
             {
                 qDebug () << "okB";
-                category = query.value(0).toString();
+                category = queryKeyContents.value(0).toString();
             }
             else
                 return false;
 
             // get status
-            query.prepare("SELECT status FROM keyStates WHERE id = ?");
-            query.bindValue(0, statusId);
-            query.exec();
+            queryKeyContents.prepare("SELECT status FROM keyStates WHERE id = ?");
+            queryKeyContents.bindValue(0, statusId);
+            queryKeyContents.exec();
 
             QString status ("");
 
-            if (query.next())
+            if (queryKeyContents.next())
             {
                 qDebug () << "okC";
-                status = query.value(0).toString();
+                status = queryKeyContents.value(0).toString();
             }
             else
                 return false;
