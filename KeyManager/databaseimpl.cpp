@@ -6,6 +6,14 @@
 #include <QStandardPaths>
 #include <QImage>
 #include <QSqlQueryModel>
+#include <QSqlRelationalTableModel>
+#include <QSqlError>
+#include <QMessageBox>
+
+#ifdef Q_OS_ANDROID
+    #include <QCoreApplication>
+    #include <QtCore/private/qandroidextras_p.h>
+#endif
 
 DatabaseImpl::DatabaseImpl()
 {
@@ -29,11 +37,29 @@ DatabaseImpl::DatabaseImpl()
     // db.setUserName(dbUserName);
     // db.setPassword(dbPassword);
 
+    qDebug () << "paths:";
+    qDebug () << "QStandardPaths::AppConfigLocation" << QStandardPaths::writableLocation(QStandardPaths::AppConfigLocation);
+    qDebug () << "QStandardPaths::AppDataLocation" << QStandardPaths::writableLocation(QStandardPaths::AppDataLocation);
+    qDebug () << "QStandardPaths::AppLocalDataLocation" << QStandardPaths::writableLocation(QStandardPaths::AppLocalDataLocation);
+    qDebug () << "QStandardPaths::ApplicationsLocation" << QStandardPaths::writableLocation(QStandardPaths::ApplicationsLocation);
+    qDebug () << "QStandardPaths::RuntimeLocation" << QStandardPaths::writableLocation(QStandardPaths::RuntimeLocation);
+    qDebug () << "QStandardPaths::DocumentsLocation" << QStandardPaths::writableLocation(QStandardPaths::DocumentsLocation);
+
+    mKeychainStatusId = -1;
+
     QSqlDatabase mDb = QSqlDatabase::addDatabase("QSQLITE");
 
     // todo: location is hardcoded by now..
 #ifdef Q_OS_ANDROID
-    QString dbLocation = "/storage/emulated/0/Android/data/org.qtproject.example.KeyManager/files/db.sqlite";
+    //QString dbLocation = "/storage/emulated/0/Android/data/org.qtproject.example.KeyManager/files/db.sqlite";
+
+    //QString dbLocation = QStandardPaths::writableLocation(QStandardPaths::AppDataLocation);
+    QString dbLocation = QStandardPaths::writableLocation(QStandardPaths::DocumentsLocation);
+    dbLocation.append("/db.sqlite");
+
+    if (!checkPermission())
+        qDebug () << "DatabaseImpl::checkPermissions failed!";
+
 #endif
 #ifdef Q_OS_WIN64
     QString dbLocation = "db.sqlite";
@@ -41,16 +67,18 @@ DatabaseImpl::DatabaseImpl()
 
     qDebug () << "dbLocation: " << dbLocation;
 
-    // todo: path is wrong ->
-    // const auto standardPath = QStandardPaths::writableLocation(QStandardPaths::AppDataLocation);
-    // const auto dbName = standardPath + "/db.sqlite";
-
     mDb.setDatabaseName(dbLocation);
 
     bool ok = mDb.open ();
 
     if(!ok)
     {
+        QMessageBox::critical(0, "Cannot open database",
+                              "Unable to establish a database connection.\n"
+                                 "This example needs SQLite support. Please read "
+                                 "the Qt SQL driver documentation for information how "
+                                 "to build it.", QMessageBox::Cancel);
+
         qDebug () << "AppDataLocation + filename = " << dbLocation;
         qDebug () << "db.open () returned: " << ok;
         qDebug () << mDb.isOpen();
@@ -68,16 +96,74 @@ DatabaseImpl::DatabaseImpl()
     {
         qDebug () << "table: " << tables [i];
     }
+
+    // database is empty -> create
+    if (0 == tables.count())
+    {
+        QSqlQuery query;
+
+        query.exec ("CREATE TABLE keyAddresses ( \
+                   id           INTEGER PRIMARY KEY AUTOINCREMENT \
+                   UNIQUE, \
+                   street       TEXT, \
+                   streetNumber TEXT, \
+                   areaCode     INTEGER, \
+                   city         TEXT)");
+
+        // query.exec ("CREATE TABLE handovers ( \
+        //     id            INTEGER PRIMARY KEY AUTOINCREMENT \
+        //         UNIQUE, \
+        //     keychainId    INTEGER REFERENCES keychains (barcode), \
+        //     dateHandover  TEXT, \
+        //     dateDeadline  TEXT, \
+        //     recipientId   INTEGER REFERENCES recipientAddresses (id), \
+        //     signatureName TEXT, \
+        //     signature     BLOB)");
+    }
 }
 
-bool DatabaseImpl::findKeyCode(int aClientId, int aKeyId)
+#ifdef Q_OS_ANDROID
+bool DatabaseImpl::checkPermission()
+{
+    QList<bool> permissions;
+
+    auto r = QtAndroidPrivate::checkPermission("android.permission.READ_EXTERNAL_STORAGE").result();
+    if (r != QtAndroidPrivate::Authorized)
+    {
+        r = QtAndroidPrivate::requestPermission("android.permission.READ_EXTERNAL_STORAGE").result();
+        if (r == QtAndroidPrivate::Denied)
+            permissions.append(false);
+    }
+    r = QtAndroidPrivate::checkPermission("android.permission.WRITE_EXTERNAL_STORAGE").result();
+    if (r != QtAndroidPrivate::Authorized)
+    {
+        r = QtAndroidPrivate::requestPermission("android.permission.WRITE_EXTERNAL_STORAGE").result();
+        if (r == QtAndroidPrivate::Denied)
+            permissions.append(false);
+    }
+    r = QtAndroidPrivate::checkPermission("android.permission.READ_MEDIA_IMAGES").result();
+    if (r != QtAndroidPrivate::Authorized)
+    {
+        r = QtAndroidPrivate::requestPermission("android.permission.READ_MEDIA_IMAGES").result();
+        if (r == QtAndroidPrivate::Denied)
+            permissions.append(false);
+    }
+
+    for (int i = 0; i < permissions.count(); i++)
+    {
+        qDebug () << "permissions[i]" << permissions.at(i);
+    }
+    return (permissions.count() != 3);
+}
+#endif
+
+bool DatabaseImpl::findKeyCode(int aCode)
 {
     mDb.transaction();
 
     QSqlQuery query;
-    query.prepare("SELECT id FROM keychains WHERE barcodeLocale = ? AND barcodeKeychainId = ?");
-    query.bindValue(0, aClientId);
-    query.bindValue(1, aKeyId);
+    query.prepare("SELECT barcode FROM keychains WHERE barcode = ?");
+    query.bindValue(0, aCode);
     query.exec();
 
     if (query.next())
@@ -85,30 +171,29 @@ bool DatabaseImpl::findKeyCode(int aClientId, int aKeyId)
         qDebug () << "found the Barcode!";
         return true;
     }
-
-    qDebug () << "DatabaseImpl::findBarcode: Barcode not found: " << "Client: " << aClientId << ", Key: " << aKeyId;
     return false;
 }
 
-bool DatabaseImpl::setKeyCode (int aClientId, int aKeyId)
+bool DatabaseImpl::setKeyCode (int aCode)
 {
-    qDebug () << "DatabaseImpl::setKeyCode (int aClientId, int aKeyId)";
+    qDebug () << "DatabaseImpl::setKeyCode";
 
     mDb.transaction();
 
     QSqlQuery query;
     query.setForwardOnly(true);
-    query.prepare("SELECT id, keychainStatusId, internalLocation, image FROM keychains WHERE barcodeLocale = ? AND barcodeKeychainId = ?");
-    query.bindValue(0, aClientId);
-    query.bindValue(1, aKeyId);
+    query.prepare("SELECT barcode, keychainStatusId, addressId, internalLocation, image FROM keychains WHERE barcode = ?");
+    query.bindValue(0, aCode);
     query.exec();
 
     if (query.next())
     {
         qDebug () << "ok";
         mKeychainId = query.value(0).toInt();
-        mKeychainInternalLocation = query.value(2).toInt();
-        mKeychainImg = QImage::fromData(query.value(3).toByteArray(), "jpg");
+        qDebug () << "mKeychainId: " << mKeychainId;
+        mKeychainInternalLocation = query.value(3).toInt();
+        mKeychainImg = QImage::fromData(query.value(4).toByteArray(), "jpg");
+        int addressId = query.value(2).toInt();
 
         int keychainStatusId = query.value(1).toInt();
         query.prepare("SELECT status FROM keychainStates WHERE id = ?");
@@ -127,8 +212,8 @@ bool DatabaseImpl::setKeyCode (int aClientId, int aKeyId)
         }
 
         // get all keys of the keychain
-        query.prepare("SELECT id, addressId, categoryId, statusId, description FROM keys WHERE keychainId = :ref_id");
-        query.bindValue(":ref_id", mKeychainId);
+        query.prepare("SELECT id, categoryId, statusId, description FROM keys WHERE keychainId = ?");
+        query.bindValue(0, mKeychainId);
         query.exec();
 
         int count = 0;
@@ -141,10 +226,9 @@ bool DatabaseImpl::setKeyCode (int aClientId, int aKeyId)
             qDebug () << "ok: " << count;
 
             int keyId = query.value(0).toInt();
-            int addressId = query.value(1).toInt();
-            int categoryId = query.value(2).toInt();
-            int statusId = query.value(3).toInt();
-            QString description = query.value(4).toString();
+            int categoryId = query.value(1).toInt();
+            int statusId = query.value(2).toInt();
+            QString description = query.value(3).toString();
 
             QSqlQuery queryKeyContents;
 
@@ -231,33 +315,83 @@ bool DatabaseImpl::setKeyCode (int aClientId, int aKeyId)
     return true;
 }
 
-bool DatabaseImpl::initializeKeyOverviewModel (QSqlQueryModel *model, int aClientId, int aKeyId)
+int DatabaseImpl::getKeychainStatusId (int aId)
 {
-    qDebug () << "initializeKeyOverviewModel (QSqlQueryModel *model, int aClientId, int aKeyId)";
+    qDebug () << "DatabaseImpl::getKeychainStatusId (int aId): " << aId;
 
+    mDb.transaction();
+
+    QSqlQuery query;
+    query.setForwardOnly(true);
+
+    // get all keys of the keychain
+    query.prepare("SELECT keychainStatusId FROM keychains WHERE barcode = ?");
+    query.bindValue(0, aId);
+    query.exec();
+
+    // set keychain status
+    if (query.next())
+    {
+        mKeychainStatusId = query.value(0).toInt();
+    }
+    qDebug () << "mKeychainStatusId: " << mKeychainStatusId;
+    return mKeychainStatusId;
+}
+
+bool DatabaseImpl::initKeyOverviewModel (QSqlRelationalTableModel *model, int aId)
+{
     if (model)
     {
-        qDebug () << "ok";
-
-        if (setKeyCode (aClientId, aKeyId))
-        {
-            qDebug () << "blabla";
-
-            mDb.transaction();
-
-            QSqlQuery query;
-            query.prepare("SELECT * FROM keys WHERE keychainId = ? INNER JOIN keyCategories ON keys.categoryId = keyCategories.category");
-            query.bindValue(0, aKeyId);
-
-            //model->setQuery("SELECT * FROM keys WHERE keychainId = 1");
-            model->setQuery("SELECT category, status, description \
-                            FROM keys \
-                            INNER JOIN keyCategories ON keyCategories.id = keys.categoryId \
-                            INNER JOIN keyStates ON keyStates.id = keys.statusId \
-                            WHERE keychainId = 1");
-
-            return true;
-        }
+        model->setTable("keys");
+        model->setRelation(2, QSqlRelation ("keyCategories", "id", "category"));
+        model->setRelation(3, QSqlRelation("keyStates", "id", "status"));
+        model->setFilter(QString::number(aId));
+        model->select();
+        return true;
     }
-    return false;
+    else return false;
 }
+
+bool DatabaseImpl::initKeychainModel (QSqlRelationalTableModel *model, int aId)
+{
+    if (model)
+    {
+        model->setTable("keychains");
+        model->setRelation(1, QSqlRelation ("keychainStates", "id", "status"));
+        model->setRelation(3, QSqlRelation("keyAddresses", "id", "street, streetNumber, areaCode, city"));
+        model->setFilter(QString::number(aId));
+        model->select();
+        return true;
+    }
+    else return false;
+}
+// bool DatabaseImpl::initializeKeyOverviewModel (QSqlQueryModel *model, int aCode)
+// {
+//     qDebug () << "initializeKeyOverviewModel (QSqlQueryModel *model, int aClientId, int aKeyId)";
+
+//     if (model)
+//     {
+//         qDebug () << "ok";
+
+//         if (setKeyCode (aCode))
+//         {
+//             qDebug () << "blabla";
+
+//             mDb.transaction();
+
+//             QSqlQuery query;
+//             query.prepare("SELECT * FROM keys WHERE keychainId = ? INNER JOIN keyCategories ON keys.categoryId = keyCategories.category");
+//             query.bindValue(0, aCode);
+
+//             //model->setQuery("SELECT * FROM keys WHERE keychainId = 1");
+//             model->setQuery("SELECT category, status, description \
+//                             FROM keys \
+//                             INNER JOIN keyCategories ON keyCategories.id = keys.categoryId \
+//                             INNER JOIN keyStates ON keyStates.id = keys.statusId \
+//                             WHERE keychainId = 1");
+
+//             return true;
+//         }
+//     }
+//     return false;
+// }

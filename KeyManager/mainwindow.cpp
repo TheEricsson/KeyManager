@@ -12,12 +12,15 @@
 #include <QMediaPlayer>
 #include <QStringList>
 #include <QSqlQueryModel>
+#include <QSqlRelationalTableModel>
+#include <QFile>
 
 #include "homeview.h"
 #include "camera.h"
 #include "databaseimpl.h"
 #include "tableview.h"
 #include "keychainstatusview.h"
+#include "handoverview.h"
 
 #include "QZXing.h"
 
@@ -38,6 +41,9 @@ MainWindow::MainWindow(QWidget *parent)
     mHomeView = 0;
     mTableView = 0;
     mKeychainStatusView = 0;
+    mKeysOverviewModel = 0;
+    mKeychainModel = 0;
+    mHandoverView = 0;
 
     mLayout = 0;
     mDatabase = 0;
@@ -129,27 +135,71 @@ void MainWindow::showTableView ()
     mLayout->setCurrentWidget(mTableView);
 }
 
-void MainWindow::showKeychainStatusView (int aLocale, int aKeychainId)
+void MainWindow::showHandoverView ()
 {
-    Q_UNUSED(aLocale);
-    Q_UNUSED(aKeychainId);
+    if (!mHandoverView)
+    {
+        mHandoverView = new HandoverView ();
+        mLayout->addWidget(mHandoverView);
+        mLayout->setCurrentWidget(mHandoverView);
+    }
+}
 
+bool MainWindow::showKeychainStatusView (int aBarcode)
+{
     if (!mKeychainStatusView)
     {
         mKeychainStatusView = new KeychainStatusView ();
         mLayout->addWidget(mKeychainStatusView);
 
         connect (mKeychainStatusView, SIGNAL(previousButtonClicked()), this, SLOT (closeKeychainStatusView()));
+        connect (mKeychainStatusView, SIGNAL(nextButtonClicked()), this, SLOT (closeKeychainStatusView()));
+        connect (mKeychainStatusView, SIGNAL(nextButtonClicked()), this, SLOT (showHandoverView()));
     }
 
-    if (mDatabase->initializeKeyOverviewModel (&mKcStatusModel, aLocale, aKeychainId))
-        mKeychainStatusView->setModel(&mKcStatusModel);
+    if (!mKeysOverviewModel)
+        mKeysOverviewModel = new QSqlRelationalTableModel ();
 
-    mLayout->setCurrentWidget(mKeychainStatusView);
+    if(!mKeychainModel)
+        mKeychainModel = new QSqlRelationalTableModel ();
+
+    if (mDatabase->initKeyOverviewModel(mKeysOverviewModel, aBarcode))
+    {
+        bool retVal = mKeychainStatusView->setKeysModel(mKeysOverviewModel);
+        if (false == retVal)
+            return false;
+
+        if (mDatabase->initKeychainModel(mKeychainModel, aBarcode))
+        {
+            retVal = mKeychainStatusView->setKeychainModel(mKeychainModel);
+            mLayout->setCurrentWidget(mKeychainStatusView);
+
+            int keyChainStatus = mDatabase->getKeychainStatusId (aBarcode);
+            mKeychainStatusView->setKeychainStatus (keyChainStatus);
+        }
+        else
+            return false;
+
+        return retVal;
+    }
+    else
+        return false;
 }
 
 void MainWindow::closeKeychainStatusView ()
 {
+    if (mKeysOverviewModel)
+    {
+        delete mKeysOverviewModel;
+        mKeysOverviewModel = 0;
+    }
+
+    if (mKeychainModel)
+    {
+        delete mKeychainModel;
+        mKeychainModel = 0;
+    }
+
     mLayout->setCurrentWidget(mHomeView);
 }
 
@@ -190,64 +240,76 @@ void MainWindow::decodeImage (int requestId, const QImage &img)
     decoder.setTryHarderBehaviour(QZXing::TryHarderBehaviour_ThoroughScanning | QZXing::TryHarderBehaviour_Rotate);
 
     //trigger decode
-    QString result = decoder.decodeImage(scaledImg);
+    QString barcode = decoder.decodeImage(scaledImg);
+    QString barcodeAsNumber = barcode.mid (0, 5);
+    barcodeAsNumber.append(barcode.mid(6, 5));
+    int barcodeAsInt = barcodeAsNumber.toInt();
 
-    QString customerId = result.mid (0, 5);
-    QString keyId = result.mid (6, 5);
-
-    if ("" != result.toStdString())
+    if ("" != barcode.toStdString())
     {
-        qDebug () << "Data:" << result.toStdString();
-        qDebug () << "Mandant Id:" << customerId << "(Configured:" << GMANDANTID << ")";
-        qDebug () << "Key Id:" << keyId;
+        qDebug () << "barcode:" << barcode;
+        qDebug () << "barcodeAsNumber:" << barcodeAsNumber;
+        qDebug () << "barcodeAsId: = " << barcodeAsInt;
     }
 
-    if (customerId.toInt() == GMANDANTID)
+    QString customerId = barcode.mid (0, 5);
+    QString keyId = barcode.mid (6, 5);
+
+    if (customerId == "00001" && 5 == keyId.length())
     {
         mGrabTimer->stop ();
 
         // code recognized: play a supermarket beep sound :)
         playSound ();
 
+        mScanView->setKeyLabel(barcodeAsNumber);
+
         // set scanview ui state
         mScanView->setScannerState(ScannerState::SCANSUCCEEDED);
-        mScanView->setCustomerLabel(customerId);
-        mScanView->setKeyLabel(keyId);
 
         // search key in database
-        bool result = mDatabase->findKeyCode(mScanView->getCustomerLabel().toInt(), mScanView->getKeyLabel().toInt());
-
-        // check if barcode is known
-        if (!result)
+        if (mDatabase->findKeyCode(barcodeAsInt))
         {
-            //barcode is recognised, but unknown in database
-            //-> dialog - add to db...
+            //barcode is recognised and found in database
+            bool retVal = mDatabase->setKeyCode(barcodeAsInt);
+
+            retVal = showKeychainStatusView(barcodeAsInt);
+            qDebug () << "MainWindow::showKeychainStatusView: " << retVal;
         }
         else
         {
-            //barcode is recognised and found in database
-            bool retVal = mDatabase->setKeyCode(customerId.toInt(), keyId.toInt());
-            qDebug () << "mDatabase->setKeyCode" << retVal;
-            showKeychainStatusView(customerId.toInt(), keyId.toInt());
+            // todo: recognised unknown barcode with a legit barcode format -> create dialog to add this keychain to db
+            return;
         }
+
     }
 }
 
 void MainWindow::playSound ()
 {
-    QMediaPlayer *player = new QMediaPlayer;
-    QAudioOutput *audioOut = new QAudioOutput;
-    player->setAudioOutput(audioOut);
+    QMediaPlayer player;
+    QAudioOutput audioOut;
+    player.setAudioOutput(&audioOut);
     QUrl filelocation ("qrc:/sounds/scanner_beep.mp3");
-    player->setSource(filelocation);
-    audioOut->setVolume(100);
-    player->play();
+    player.setSource(filelocation);
+    audioOut.setVolume(100);
+    player.play();
 }
 
 MainWindow::~MainWindow()
 {
     if (mDatabase)
         delete mDatabase;
+
+    if (mKeychainStatusView)
+        delete mKeychainStatusView;
+
+    if (mKeysOverviewModel)
+        delete mKeysOverviewModel;
+
+    // if (mKeysOverviewModel)
+    //     delete mKeysOverviewModel;
+
     // if (0 != btnScan)
     //     delete btnScan;
 

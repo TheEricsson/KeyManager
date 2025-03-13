@@ -3,6 +3,7 @@
 
 #include <QWidget>
 #include <QSqlQueryModel>
+#include <QSqlRelationalTableModel>
 
 class QPushButton;
 class QGridLayout;
@@ -15,6 +16,7 @@ class QTimer;
 class DatabaseImpl;
 class TableView;
 class KeychainStatusView;
+class HandoverView;
 
 #ifdef ENCODERTEST
 class QREncoderTest;
@@ -32,7 +34,8 @@ public:
 private slots:
     void showScannerView ();
     void showTableView ();
-    void showKeychainStatusView (int aLocale, int aKeychainId);
+    void showHandoverView ();
+    bool showKeychainStatusView (int aBarcode);
     void closeKeychainStatusView ();
     void closeScannerView ();
     void closeTableView ();
@@ -55,12 +58,15 @@ private:
     ScannerView *mScanView;
     TableView *mTableView;
     KeychainStatusView *mKeychainStatusView;
+    HandoverView *mHandoverView;
 
     Camera *mCameraInstance;
     QTimer *mGrabTimer;
     DatabaseImpl *mDatabase;
 
-    QSqlQueryModel mKcStatusModel;
+    //QSqlQueryModel mKcStatusModel;
+    QSqlRelationalTableModel *mKeysOverviewModel;
+    QSqlRelationalTableModel *mKeychainModel;
 
 #ifdef ENCODERTEST
     QREncoderTest* qrencoderTest;

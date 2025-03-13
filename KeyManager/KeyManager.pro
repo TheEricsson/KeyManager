@@ -13,6 +13,7 @@ include(../QZXing/QZXing.pri)
 SOURCES += \
     camera.cpp \
     databaseimpl.cpp \
+    handoverview.cpp \
     homeview.cpp \
     keychainstatusview.cpp \
     main.cpp \
@@ -25,6 +26,7 @@ HEADERS += \
     camera.h \
     databaseimpl.h \
     globals.h \
+    handoverview.h \
     homeview.h \
     initdb.h \
     keychainstatusview.h \
@@ -49,14 +51,16 @@ else: unix:!android: target.path = /opt/$${TARGET}/bin
 RESOURCES += \
     res/resources.qrc
 
-# DISTFILES += \
-#     android/AndroidManifest.xml \
-#     android/build.gradle \
-#     android/res/values/libs.xml \
-#     android/res/xml/qtprovider_paths.xml \
-#     dbexample/db.sqlite
+DISTFILES += \
+    android/AndroidManifest.xml \
+    android/build.gradle \
+    android/res/values/libs.xml \
+    android/res/xml/qtprovider_paths.xml
 
-# contains(ANDROID_TARGET_ARCH,arm64-v8a) {
-#     ANDROID_PACKAGE_SOURCE_DIR = \
-#         $$PWD/../KeyManager.pro
-#}
+contains(ANDROID_TARGET_ARCH,arm64-v8a) {
+    ANDROID_PACKAGE_SOURCE_DIR = \
+        $$PWD/android
+}
+
+#ANDROID_VERSION_CODE = "0.1"
+#ANDROID_VERSION_NAME = "0.1"

@@ -7,25 +7,30 @@
 class QLabel;
 class QSqlQueryModel;
 class QTableView;
+class QSqlRelationalTableModel;
+class QPushButton;
 
 class KeychainStatusView : public QWidget
 {
     Q_OBJECT
 public:
     explicit KeychainStatusView(QWidget *parent = nullptr);
-    explicit KeychainStatusView(int aLocaleId, int aKeychainId, QWidget *parent = nullptr);
-    void setModel (QSqlQueryModel* model);
+    void setKeychainStatus (const int &statusId);
+    bool setKeychainModel (QSqlRelationalTableModel* model);
+    bool setKeysModel (QSqlRelationalTableModel* model);
 
 signals:
     void previousButtonClicked ();
+    void nextButtonClicked ();
+
 private slots:
     void onPreviousBtnClicked();
+    void onNextBtnClicked();
 private:
-    void init ();
 
     QSqlQueryModel *mKeyOverview;
     QTableView *mKeys;
-    QLabel *mIdLocale;
+    QTableView *mKeychain;
     QLabel *mIdBarcode;
     QLabel *mStreet;
     QLabel *mStreetNr;
@@ -33,6 +38,7 @@ private:
     QLabel *mCity;
     QLabel *mQuantityKeys;
     QImage *mKeychainImage;
+    QPushButton *mButtonNext;
 };
 
 #endif // KEYCHAINSTATUSVIEW_H

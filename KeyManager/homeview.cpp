@@ -28,8 +28,6 @@ HomeView::HomeView(QWidget *parent)
     mBtnManage = new QPushButton (/*tr("Einstellungen")*/);
     mBtnExit = new QPushButton (/*tr("Beenden")*/);
 
-    int desiredDim = 75;
-
     mBtnScan->setIcon(QIcon(":/images/shutter.svg"));
     mBtnScan->setIconSize(QSize(UiDimensions::buttonWidth,UiDimensions::buttonHeight));
 
