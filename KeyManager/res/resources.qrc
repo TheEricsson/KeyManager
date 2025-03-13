@@ -12,6 +12,7 @@
         <file>menu_keyBack.png</file>
         <file>menu_keyOut.png</file>
         <file>icon.png</file>
+        <file>scan_barcode.png</file>
     </qresource>
     <qresource prefix="/sounds">
         <file>scanner_beep.mp3</file>

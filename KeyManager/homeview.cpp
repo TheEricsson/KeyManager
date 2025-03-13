@@ -28,7 +28,7 @@ HomeView::HomeView(QWidget *parent)
     mBtnManage = new QPushButton (/*tr("Einstellungen")*/);
     mBtnExit = new QPushButton (/*tr("Beenden")*/);
 
-    mBtnScan->setIcon(QIcon(":/images/shutter.svg"));
+    mBtnScan->setIcon(QIcon(":/images/scan_barcode.png"));
     mBtnScan->setIconSize(QSize(UiDimensions::buttonWidth,UiDimensions::buttonHeight));
 
     mBtnSearch->setIcon(QIcon(":/images/search.svg"));

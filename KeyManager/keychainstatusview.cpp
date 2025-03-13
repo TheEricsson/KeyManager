@@ -27,10 +27,10 @@ KeychainStatusView::KeychainStatusView(QWidget *parent)
 
     QVBoxLayout *mainLayout = new QVBoxLayout (this);
 
-    mKeychain = new QTableView ();
+    mKeychain = new QTableView;
     mainLayout->addWidget(mKeychain);
 
-    mKeys = new QTableView ();
+    mKeys = new QTableView;
     mainLayout->addWidget(mKeys);
 
     QHBoxLayout *btnLayout = new QHBoxLayout ();
@@ -91,8 +91,12 @@ bool KeychainStatusView::setKeychainModel (QSqlRelationalTableModel* model)
             mKeychain->setEditTriggers(QTableView::NoEditTriggers);
             mKeychain->setSelectionMode(QTableView::NoSelection);
             mKeychain->verticalHeader()->hide();
+
             mKeychain->show();
-            mKeychain->setSizePolicy (QSizePolicy::Maximum, QSizePolicy::Maximum);
+
+            mKeychain->setSizeAdjustPolicy(QAbstractScrollArea::AdjustToContents);
+            mKeychain->setSizePolicy(QSizePolicy::Preferred, QSizePolicy::Maximum);
+
             mKeychain->resizeColumnsToContents();
 
             return true;
@@ -120,7 +124,10 @@ bool KeychainStatusView::setKeysModel (QSqlRelationalTableModel* model)
             mKeys->hideColumn(1); // hide barcode id
             mKeys->setItemDelegate(new QSqlRelationalDelegate(mKeys));
             mKeys->show();
-            mKeys->setSizePolicy (QSizePolicy::Maximum, QSizePolicy::Maximum);
+
+            mKeys->setSizeAdjustPolicy(QAbstractScrollArea::AdjustToContents);
+            mKeys->setSizePolicy(QSizePolicy::Preferred, QSizePolicy::Maximum);
+
             mKeys->resizeColumnsToContents();
 
             return true;

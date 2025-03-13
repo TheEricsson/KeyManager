@@ -2,6 +2,7 @@
 #include <QApplication>
 #include <QLocale>
 #include <QTranslator>
+#include <QStyleFactory>
 #include "mainwindow.h"
 
 int main(int argc, char *argv[])
@@ -21,6 +22,9 @@ int main(int argc, char *argv[])
     //the app window
     MainWindow w;
     w.show();
+
+    QStyle * android=QStyleFactory::create("Android");
+    w.setStyle(android);
 
     return a.exec();
 }
