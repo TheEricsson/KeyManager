@@ -20,7 +20,8 @@
 #include "databaseimpl.h"
 #include "tableview.h"
 #include "keychainstatusview.h"
-#include "handoverview.h"
+#include "recipientview.h"
+#include "addrecipientview.h"
 
 #include "QZXing.h"
 
@@ -42,8 +43,10 @@ MainWindow::MainWindow(QWidget *parent)
     mTableView = 0;
     mKeychainStatusView = 0;
     mKeysOverviewModel = 0;
+    mRecipientsModel = 0;
     mKeychainModel = 0;
-    mHandoverView = 0;
+    mRecipientView = 0;
+    mAddRecipientView = 0;
 
     mLayout = 0;
     mDatabase = 0;
@@ -56,10 +59,16 @@ MainWindow::MainWindow(QWidget *parent)
     mHomeView = new HomeView ();
     mScanView = new ScannerView ();
     mTableView = new TableView ("addresses");
+    mRecipientView = new RecipientView ();
+    mKeychainStatusView = new KeychainStatusView ();
+    mAddRecipientView = new AddRecipientView ();
 
     mLayout->addWidget(mHomeView);
     mLayout->addWidget(mScanView);
     mLayout->addWidget(mTableView);
+    mLayout->addWidget(mRecipientView);
+    mLayout->addWidget(mKeychainStatusView);
+    mLayout->addWidget(mAddRecipientView);
 
     mLayout->setCurrentWidget(mHomeView);
 
@@ -74,6 +83,19 @@ MainWindow::MainWindow(QWidget *parent)
 
     // handle signals by TableView
     connect (mTableView, SIGNAL(previousButtonClicked()), this, SLOT (closeTableView()));
+
+    // handle signals by KeychainStatusView
+    connect (mKeychainStatusView, SIGNAL(previousButtonClicked()), this, SLOT (closeKeychainStatusView()));
+    //connect (mKeychainStatusView, SIGNAL(nextButtonClicked()), this, SLOT (closeKeychainStatusView()));
+    connect (mKeychainStatusView, SIGNAL(nextButtonClicked()), this, SLOT (showRecipientView()));
+
+    // handle signals by RecipientView
+    connect (mRecipientView, SIGNAL(previousButtonClicked()), this, SLOT (closeRecipientView()));
+    connect (mRecipientView, SIGNAL(newRecipientButtonClicked()), this, SLOT (showAddRecipientView()));
+
+    // handle signals by AddRecipientView
+    connect (mAddRecipientView, SIGNAL(previousButtonClicked()), this, SLOT (closeAddRecipientView()));
+    connect (mAddRecipientView, SIGNAL(okButtonClicked()), this, SLOT (addRecipientViewSubmitted()));
 }
 
 void MainWindow::initDatabase ()
@@ -135,27 +157,72 @@ void MainWindow::showTableView ()
     mLayout->setCurrentWidget(mTableView);
 }
 
-void MainWindow::showHandoverView ()
+void MainWindow::showRecipientView ()
 {
-    if (!mHandoverView)
+    if (!mRecipientView)
+        return;
+
+    if (!mRecipientsModel)
+        mRecipientsModel = new QSqlRelationalTableModel;
+
+    if (!mDatabase->initRecipientModel(mRecipientsModel))
+        return;
+
+    if  (!mRecipientView->setModel(mRecipientsModel))
+        return;
+
+    mLayout->setCurrentWidget(mRecipientView);
+}
+
+void MainWindow::closeRecipientView ()
+{
+    qDebug () << "MainWindow::closeRecipientView ()";
+    if (!mRecipientView)
     {
-        mHandoverView = new HandoverView ();
-        mLayout->addWidget(mHandoverView);
-        mLayout->setCurrentWidget(mHandoverView);
+        qDebug () << "MainWindow::closeRecipientView () - NULL pointer";
+        return;
     }
+
+    showScannerView();
+}
+
+void MainWindow::showAddRecipientView ()
+{
+    if (!mAddRecipientView)
+        return;
+
+    if (!mLayout)
+        return;
+
+    mLayout->setCurrentWidget(mAddRecipientView);
+}
+
+void MainWindow::closeAddRecipientView ()
+{
+    if (!mHomeView)
+        return;
+
+    if (!mLayout)
+        return;
+
+    mLayout->setCurrentWidget(mHomeView);
+}
+
+void MainWindow::addRecipientViewSubmitted ()
+{
+    if (!mAddRecipientView)
+        return;
+
+    if (!mDatabase)
+        return;
+
+    mDatabase->addNewRecipient (mAddRecipientView->getRecipientData());
 }
 
 bool MainWindow::showKeychainStatusView (int aBarcode)
 {
     if (!mKeychainStatusView)
-    {
-        mKeychainStatusView = new KeychainStatusView ();
-        mLayout->addWidget(mKeychainStatusView);
-
-        connect (mKeychainStatusView, SIGNAL(previousButtonClicked()), this, SLOT (closeKeychainStatusView()));
-        connect (mKeychainStatusView, SIGNAL(nextButtonClicked()), this, SLOT (closeKeychainStatusView()));
-        connect (mKeychainStatusView, SIGNAL(nextButtonClicked()), this, SLOT (showHandoverView()));
-    }
+        return false;
 
     if (!mKeysOverviewModel)
         mKeysOverviewModel = new QSqlRelationalTableModel ();
@@ -188,19 +255,7 @@ bool MainWindow::showKeychainStatusView (int aBarcode)
 
 void MainWindow::closeKeychainStatusView ()
 {
-    if (mKeysOverviewModel)
-    {
-        delete mKeysOverviewModel;
-        mKeysOverviewModel = 0;
-    }
-
-    if (mKeychainModel)
-    {
-        delete mKeychainModel;
-        mKeychainModel = 0;
-    }
-
-    mLayout->setCurrentWidget(mHomeView);
+    showScannerView();
 }
 
 void MainWindow::onSearchButtonReleased ()

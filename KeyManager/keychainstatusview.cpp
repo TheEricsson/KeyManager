@@ -9,6 +9,8 @@
 #include <QHeaderView>
 #include "globals.h"
 #include <QSizePolicy>
+#include <QLabel>
+#include <QSpacerItem>
 
 KeychainStatusView::KeychainStatusView(QWidget *parent)
     : QWidget{parent}
@@ -27,8 +29,17 @@ KeychainStatusView::KeychainStatusView(QWidget *parent)
 
     QVBoxLayout *mainLayout = new QVBoxLayout (this);
 
+    QLabel *keyChainHeader = new QLabel ("Schlüsselbund");
+    mainLayout->addWidget(keyChainHeader);
+
     mKeychain = new QTableView;
     mainLayout->addWidget(mKeychain);
+
+    QSpacerItem *spacer = new QSpacerItem (0, 0, QSizePolicy::Expanding,QSizePolicy::Expanding);
+    mainLayout->addSpacerItem(spacer);
+
+    QLabel *keysHeader = new QLabel ("Enthaltene Schlüssel");
+    mainLayout->addWidget(keysHeader);
 
     mKeys = new QTableView;
     mainLayout->addWidget(mKeys);
@@ -122,7 +133,9 @@ bool KeychainStatusView::setKeysModel (QSqlRelationalTableModel* model)
             mKeys->setModel(model);
             mKeys->hideColumn(0); // hide table id
             mKeys->hideColumn(1); // hide barcode id
-            mKeys->setItemDelegate(new QSqlRelationalDelegate(mKeys));
+            //mKeys->setItemDelegate(new QSqlRelationalDelegate(mKeys));
+            mKeys->setEditTriggers(QTableView::NoEditTriggers);
+            mKeys->setSelectionMode(QTableView::NoSelection);
             mKeys->show();
 
             mKeys->setSizeAdjustPolicy(QAbstractScrollArea::AdjustToContents);

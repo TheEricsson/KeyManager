@@ -11,26 +11,28 @@ CONFIG += c++17
 include(../QZXing/QZXing.pri)
 
 SOURCES += \
+    addrecipientview.cpp \
     camera.cpp \
     databaseimpl.cpp \
-    handoverview.cpp \
     homeview.cpp \
     keychainstatusview.cpp \
     main.cpp \
     mainwindow.cpp \
+    recipientview.cpp \
     scannerview.cpp \
     tableview.cpp \
     tests/qrencodertest.cpp
 
 HEADERS += \
+    addrecipientview.h \
     camera.h \
     databaseimpl.h \
     globals.h \
-    handoverview.h \
     homeview.h \
     initdb.h \
     keychainstatusview.h \
     mainwindow.h \
+    recipientview.h \
     scannerview.h \
     tableview.h \
     tests/qrencodertest.h

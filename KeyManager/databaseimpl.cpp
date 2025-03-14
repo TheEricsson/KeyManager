@@ -365,6 +365,51 @@ bool DatabaseImpl::initKeychainModel (QSqlRelationalTableModel *model, int aId)
     }
     else return false;
 }
+
+bool DatabaseImpl::initRecipientModel (QSqlRelationalTableModel *model)
+{
+    if (model)
+    {
+        model->setTable("recipientAddresses");
+        model->select();
+        return true;
+    }
+    else
+        return false;
+}
+
+bool DatabaseImpl::addNewRecipient(const QString& name, const QString& street, const QString& number, const QString& areaCode, const QString& city)
+{
+    mDb.transaction();
+
+    QSqlQuery query;
+    query.prepare("INSERT INTO recipientAddresses (name, street, houseNr, areaCode, city) \
+                    VALUES (?, ?, ?, ?, ?)");
+    query.bindValue(0, name);
+    query.bindValue(1, street);
+    query.bindValue(2, number);
+    query.bindValue(3, areaCode);
+    query.bindValue(4, city);
+
+    return query.exec();
+}
+
+bool DatabaseImpl::addNewRecipient (const RecipientData& data)
+{
+    mDb.transaction();
+
+    QSqlQuery query;
+    query.prepare("INSERT INTO recipientAddresses (name, street, houseNr, areaCode, city) \
+                    VALUES (?, ?, ?, ?, ?)");
+    query.bindValue(0, data.name);
+    query.bindValue(1, data.street);
+    query.bindValue(2, data.number);
+    query.bindValue(3, data.areaCode);
+    query.bindValue(4, data.city);
+
+    return query.exec();
+}
+
 // bool DatabaseImpl::initializeKeyOverviewModel (QSqlQueryModel *model, int aCode)
 // {
 //     qDebug () << "initializeKeyOverviewModel (QSqlQueryModel *model, int aClientId, int aKeyId)";

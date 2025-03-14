@@ -1,6 +1,8 @@
 #ifndef GLOBALS_H
 #define GLOBALS_H
 
+#include <QString>
+
 namespace UiDimensions
 {
     //button dimensions
@@ -27,5 +29,14 @@ namespace Database
         Lost = 5
     };
 }
+
+struct RecipientData
+{
+    QString name;
+    QString street;
+    QString number;
+    QString areaCode;
+    QString city;
+};
 
 #endif // GLOBALS_H

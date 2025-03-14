@@ -16,7 +16,8 @@ class QTimer;
 class DatabaseImpl;
 class TableView;
 class KeychainStatusView;
-class HandoverView;
+class RecipientView;
+class AddRecipientView;
 
 #ifdef ENCODERTEST
 class QREncoderTest;
@@ -34,7 +35,11 @@ public:
 private slots:
     void showScannerView ();
     void showTableView ();
-    void showHandoverView ();
+    void showRecipientView ();
+    void closeRecipientView ();
+    void showAddRecipientView ();
+    void closeAddRecipientView();
+    void addRecipientViewSubmitted ();
     bool showKeychainStatusView (int aBarcode);
     void closeKeychainStatusView ();
     void closeScannerView ();
@@ -58,15 +63,16 @@ private:
     ScannerView *mScanView;
     TableView *mTableView;
     KeychainStatusView *mKeychainStatusView;
-    HandoverView *mHandoverView;
+    RecipientView *mRecipientView;
+    AddRecipientView *mAddRecipientView;
 
     Camera *mCameraInstance;
     QTimer *mGrabTimer;
     DatabaseImpl *mDatabase;
 
-    //QSqlQueryModel mKcStatusModel;
     QSqlRelationalTableModel *mKeysOverviewModel;
     QSqlRelationalTableModel *mKeychainModel;
+    QSqlRelationalTableModel *mRecipientsModel;
 
 #ifdef ENCODERTEST
     QREncoderTest* qrencoderTest;
