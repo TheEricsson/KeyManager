@@ -30,8 +30,16 @@ namespace Database
     };
 }
 
+enum RecipientType
+{
+    Company = 0,
+    PrivatePerson = 1,
+    Employee = 2
+};
+
 struct RecipientData
 {
+    RecipientType type;
     QString name;
     QString street;
     QString number;

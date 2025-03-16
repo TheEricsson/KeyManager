@@ -371,6 +371,7 @@ bool DatabaseImpl::initRecipientModel (QSqlRelationalTableModel *model)
     if (model)
     {
         model->setTable("recipientAddresses");
+        model->setRelation(1, QSqlRelation ("recipientTypes", "id", "type"));
         model->select();
         return true;
     }
@@ -378,18 +379,19 @@ bool DatabaseImpl::initRecipientModel (QSqlRelationalTableModel *model)
         return false;
 }
 
-bool DatabaseImpl::addNewRecipient(const QString& name, const QString& street, const QString& number, const QString& areaCode, const QString& city)
+bool DatabaseImpl::addNewRecipient(const RecipientType& type, const QString& name, const QString& street, const QString& number, const QString& areaCode, const QString& city)
 {
     mDb.transaction();
 
     QSqlQuery query;
-    query.prepare("INSERT INTO recipientAddresses (name, street, houseNr, areaCode, city) \
-                    VALUES (?, ?, ?, ?, ?)");
-    query.bindValue(0, name);
-    query.bindValue(1, street);
-    query.bindValue(2, number);
-    query.bindValue(3, areaCode);
-    query.bindValue(4, city);
+    query.prepare("INSERT INTO recipientAddresses (type, name, street, houseNr, areaCode, city) \
+                    VALUES (?, ?, ?, ?, ?, ?)");
+    query.bindValue(0, type);
+    query.bindValue(2, name);
+    query.bindValue(3, street);
+    query.bindValue(4, number);
+    query.bindValue(5, areaCode);
+    query.bindValue(6, city);
 
     return query.exec();
 }
@@ -399,13 +401,14 @@ bool DatabaseImpl::addNewRecipient (const RecipientData& data)
     mDb.transaction();
 
     QSqlQuery query;
-    query.prepare("INSERT INTO recipientAddresses (name, street, houseNr, areaCode, city) \
-                    VALUES (?, ?, ?, ?, ?)");
-    query.bindValue(0, data.name);
-    query.bindValue(1, data.street);
-    query.bindValue(2, data.number);
-    query.bindValue(3, data.areaCode);
-    query.bindValue(4, data.city);
+    query.prepare("INSERT INTO recipientAddresses (type, name, street, houseNr, areaCode, city) \
+                    VALUES (?, ?, ?, ?, ?, ?)");
+    query.bindValue(0, data.type);
+    query.bindValue(1, data.name);
+    query.bindValue(2, data.street);
+    query.bindValue(3, data.number);
+    query.bindValue(4, data.areaCode);
+    query.bindValue(5, data.city);
 
     return query.exec();
 }

@@ -6,6 +6,8 @@
 
 #include "globals.h"
 
+class QLabel;
+
 class AddRecipientView : public QWidget
 {
     Q_OBJECT
@@ -24,14 +26,19 @@ signals:
 
 private slots:
     void toUpper(QString text);
-    void checkLineEditContent();
     void onPreviousBtnClicked ();
     void onOkBtnClicked ();
+    void onIsCompanyBtnClicked ();
+    void onIsPrivatePersonBtnClicked ();
+    void onIsEmployeeBtnClicked ();
 
 private:
 
+    QLabel* mLabelRecipientName;
+
     RecipientData mRecipientData;
 
+    RecipientType mRecipientType;
     QLineEdit* mRecipientNameEdit;
     QLineEdit* mStreetEdit;
     QLineEdit* mStreetNumberEdit;

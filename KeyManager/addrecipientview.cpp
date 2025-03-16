@@ -3,22 +3,37 @@
 #include <QLabel>
 #include <QLineEdit>
 #include <QPushButton>
+#include <QRadioButton>
+#include <QButtonGroup>
 #include <QRegularExpressionValidator>
+#include <QMessageBox>
 
 AddRecipientView::AddRecipientView(QWidget *parent)
     : QWidget{parent}
 {
+    mLabelRecipientName = 0;
+
     mRecipientNameEdit = 0;
     mStreetEdit = 0;
     mStreetNumberEdit = 0;
     mAreaCodeEdit = 0;
     mCityEdit = 0;
+    mRecipientType = RecipientType::Company; // usual case
 
     QGridLayout* layout = new QGridLayout (this);
 
     QLabel *header= new QLabel ("Empfänger anlegen", this);
 
-    QLabel *recipientName = new QLabel ("Name/Firma", this);
+    QRadioButton *isCompany = new QRadioButton ("Firma");
+    isCompany->setChecked(true); // this is the common case
+    QRadioButton *isPrivatePerson = new QRadioButton ("Privatperson");
+    QRadioButton *isEmployee = new QRadioButton ("Mitarbeiter");
+    QButtonGroup *btnGroup = new QButtonGroup (this);
+    btnGroup->addButton(isCompany, 0);
+    btnGroup->addButton(isPrivatePerson, 1);
+    btnGroup->addButton(isEmployee, 2);
+
+    mLabelRecipientName = new QLabel ("Firmenbezeichnung", this);
     mRecipientNameEdit = new QLineEdit (this);
 
     QLabel *street = new QLabel ("Straße", this);
@@ -58,36 +73,40 @@ AddRecipientView::AddRecipientView(QWidget *parent)
 
     connect (btnPrevious, SIGNAL (clicked()), this, SLOT (onPreviousBtnClicked()));
     connect (btnOk, SIGNAL (clicked()), this, SLOT (onOkBtnClicked()));
+    connect (isCompany, SIGNAL (clicked()), this, SLOT (onIsCompanyBtnClicked()));
+    connect (isPrivatePerson, SIGNAL (clicked()), this, SLOT (onIsPrivatePersonBtnClicked()));
+    connect (isEmployee, SIGNAL (clicked()), this, SLOT (onIsEmployeeBtnClicked()));
 
     layout->addWidget(header, 0, 0, 1, 2, Qt::AlignHCenter);
-    layout->addWidget(recipientName, 1, 0);
-    layout->addWidget(mRecipientNameEdit, 1, 1);
-    layout->addWidget(street, 2, 0);
-    layout->addWidget(mStreetEdit, 2, 1);
-    layout->addWidget(streetNumber, 3, 0);
-    layout->addWidget(mStreetNumberEdit, 3, 1);
-    layout->addWidget(areaCode, 4, 0);
-    layout->addWidget(mAreaCodeEdit, 4, 1);
-    layout->addWidget(city, 5, 0);
-    layout->addWidget(mCityEdit, 5, 1);
-    layout->addItem(spacer, 6, 0);
-    layout->addLayout(buttonLayout,7,0,1,2);
+    if (0 != btnGroup->button(0))
+        layout->addWidget(btnGroup->button(0), 1, 0);
+    if (0 != btnGroup->button(1))
+        layout->addWidget(btnGroup->button(1), 1, 1);
+    if (0 != btnGroup->button(2))
+        layout->addWidget(btnGroup->button(2), 1, 2);
+    layout->addWidget(mLabelRecipientName, 2, 0);
+    layout->addWidget(mRecipientNameEdit, 2, 1);
+    layout->addWidget(street, 3, 0);
+    layout->addWidget(mStreetEdit, 3, 1);
+    layout->addWidget(streetNumber, 4, 0);
+    layout->addWidget(mStreetNumberEdit, 4, 1);
+    layout->addWidget(areaCode, 5, 0);
+    layout->addWidget(mAreaCodeEdit, 5, 1);
+    layout->addWidget(city, 6, 0);
+    layout->addWidget(mCityEdit, 6, 1);
+    layout->addItem(spacer, 7, 0);
+    layout->addLayout(buttonLayout,8,0,1,2);
 
     setLayout(layout);
 
     // line edit manipulators
     // convert all chars to uppercase
     connect(mStreetNumberEdit, SIGNAL(textChanged(QString)), SLOT(toUpper(QString)));
-    // check if line edits are empty
-    connect(mRecipientNameEdit, SIGNAL(focusOutEvent(QFocusEvent*)), SLOT(checkLineEditContent()));
-    connect(mStreetEdit, SIGNAL(selectionChanged()), SLOT(checkLineEditContent()));
-    connect(mStreetNumberEdit, SIGNAL(selectionChanged()), SLOT(checkLineEditContent()));
-    connect(mAreaCodeEdit, SIGNAL(selectionChanged()), SLOT(checkLineEditContent()));
-    connect(mCityEdit, SIGNAL(selectionChanged()), SLOT(checkLineEditContent()));
 }
 
 const RecipientData AddRecipientView::getRecipientData ()
 {
+    mRecipientData.type = mRecipientType;
     mRecipientData.name = mRecipientNameEdit->displayText();
     mRecipientData.street = mStreetEdit->displayText();
     mRecipientData.number = mStreetNumberEdit->displayText();
@@ -107,21 +126,6 @@ void AddRecipientView::toUpper(QString text)
     lineEdit->setText(text.toUpper());
 }
 
-void AddRecipientView::checkLineEditContent()
-{
-    qDebug () << "checkLineEditContent";
-
-    QLineEdit *lineEdit = qobject_cast<QLineEdit *>(sender());
-
-    if (!lineEdit)
-        return;
-
-    if ("" == lineEdit->displayText())
-        lineEdit->setStyleSheet("border-style: solid;border-width: 2px;border-color: red");
-    else
-        lineEdit->setStyleSheet("");
-}
-
 void AddRecipientView::onPreviousBtnClicked ()
 {
     emit previousButtonClicked();
@@ -133,16 +137,71 @@ void AddRecipientView::onOkBtnClicked ()
 
     //check all line edits
     if ("" == mRecipientNameEdit->displayText())
+    {
+        mRecipientNameEdit->setStyleSheet("border-style: solid;border-width: 2px;border-color: red");
         fail = true;
+    }
+    else
+        mRecipientNameEdit->setStyleSheet("");
+
     if ("" == mStreetEdit->displayText())
+    {
+        mStreetEdit->setStyleSheet("border-style: solid;border-width: 2px;border-color: red");
         fail = true;
+    }
+    else
+        mStreetEdit->setStyleSheet("");
+
     if ("" == mStreetNumberEdit->displayText())
+    {
+        mStreetNumberEdit->setStyleSheet("border-style: solid;border-width: 2px;border-color: red");
         fail = true;
+    }
+    else
+        mStreetNumberEdit->setStyleSheet("");
+
     if ("" == mAreaCodeEdit->displayText())
+    {
+        mAreaCodeEdit->setStyleSheet("border-style: solid;border-width: 2px;border-color: red");
         fail = true;
+    }
+    else
+        mAreaCodeEdit->setStyleSheet("");
+
     if ("" == mCityEdit->displayText())
+    {
+        mCityEdit->setStyleSheet("border-style: solid;border-width: 2px;border-color: red");
         fail = true;
+    }
+    else
+        mCityEdit->setStyleSheet("");
+
+    if (fail)
+    {
+        QMessageBox::information(0, "Unvollständige Eingaben",
+                              "Einige erforderliche Felder wurden \n"
+                              "nicht angegeben. Bitte prüfen Sie \n "
+                              "Ihre Eingaben.", QMessageBox::Ok);
+    }
 
     if (!fail)
         emit okButtonClicked();
+}
+
+void AddRecipientView::onIsCompanyBtnClicked ()
+{
+    mLabelRecipientName->setText("Firmenbezeichnung");
+    mRecipientType = RecipientType::Company;
+}
+
+void AddRecipientView::onIsPrivatePersonBtnClicked ()
+{
+    mLabelRecipientName->setText("Empfängername");
+    mRecipientType = RecipientType::PrivatePerson;
+}
+
+void AddRecipientView::onIsEmployeeBtnClicked ()
+{
+    mLabelRecipientName->setText("Mitarbeitername");
+    mRecipientType = RecipientType::Employee;
 }

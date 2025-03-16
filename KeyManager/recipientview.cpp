@@ -27,25 +27,25 @@ RecipientView::RecipientView(QWidget *parent)
     searchLayout->addWidget(searchField);
     layout->addLayout(searchLayout);
 
-    mRecipients = new QTableView;
+    mRecipients = new QTableView (this);
     mRecipients->setModel(mFilteredModel);
     layout->addWidget(mRecipients);
 
-    QPushButton* btnNewRecipient = new QPushButton ();
+    QPushButton* btnNewRecipient = new QPushButton (this);
     btnNewRecipient->setIcon(QIcon(":/images/addRecipient.jpeg"));
     btnNewRecipient->setIconSize(QSize(UiDimensions::buttonWidth,UiDimensions::buttonHeight));
     layout->addWidget(btnNewRecipient);
 
-    QPushButton* btnPrevious = new QPushButton ();
+    QPushButton* btnPrevious = new QPushButton (this);
     btnPrevious->setIcon(QIcon(":/images/menu_back.png"));
     btnPrevious->setIconSize(QSize(UiDimensions::buttonWidth,UiDimensions::buttonHeight));
 
-    QPushButton* btnNext = new QPushButton ();
+    QPushButton* btnNext = new QPushButton (this);
     btnNext->setIcon(QIcon(":/images/menu_next.png"));
     btnNext->setIconSize(QSize(UiDimensions::buttonWidth,UiDimensions::buttonHeight));
     btnNext->setDisabled(true);
 
-    QHBoxLayout* hLayout = new QHBoxLayout;
+    QHBoxLayout* hLayout = new QHBoxLayout (this);
     hLayout->addWidget(btnPrevious);
     hLayout->addWidget(btnNext);
 
@@ -72,11 +72,12 @@ bool RecipientView::setModel (QSqlRelationalTableModel* model)
         return false;
 
     model->setHeaderData(0, Qt::Horizontal, tr("ID"), Qt::DisplayRole);
-    model->setHeaderData(1, Qt::Horizontal, tr("Name"), Qt::DisplayRole);
-    model->setHeaderData(2, Qt::Horizontal, tr("Straße"), Qt::DisplayRole);
-    model->setHeaderData(3, Qt::Horizontal, tr("Hausnummer"), Qt::DisplayRole);
-    model->setHeaderData(4, Qt::Horizontal, tr("PLZ"), Qt::DisplayRole);
-    model->setHeaderData(5, Qt::Horizontal, tr("Stadt"), Qt::DisplayRole);
+    model->setHeaderData(1, Qt::Horizontal, tr("Typ"), Qt::DisplayRole);
+    model->setHeaderData(2, Qt::Horizontal, tr("Name"), Qt::DisplayRole);
+    model->setHeaderData(3, Qt::Horizontal, tr("Straße"), Qt::DisplayRole);
+    model->setHeaderData(4, Qt::Horizontal, tr("Hausnummer"), Qt::DisplayRole);
+    model->setHeaderData(5, Qt::Horizontal, tr("PLZ"), Qt::DisplayRole);
+    model->setHeaderData(6, Qt::Horizontal, tr("Stadt"), Qt::DisplayRole);
 
     mFilteredModel->setSourceModel(model);
     mFilteredModel->setFilterKeyColumn(-1); //set filter to search in all columns
