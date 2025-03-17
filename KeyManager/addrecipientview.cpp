@@ -29,16 +29,24 @@ AddRecipientView::AddRecipientView(QWidget *parent)
     QRadioButton *isPrivatePerson = new QRadioButton ("Privatperson");
     QRadioButton *isEmployee = new QRadioButton ("Mitarbeiter");
     QButtonGroup *btnGroup = new QButtonGroup (this);
+
     btnGroup->addButton(isCompany, 0);
     btnGroup->addButton(isPrivatePerson, 1);
     btnGroup->addButton(isEmployee, 2);
+
+    QHBoxLayout *recipientTypeBtnBox = new QHBoxLayout (this);
+    recipientTypeBtnBox->addWidget(isCompany);
+    recipientTypeBtnBox->addWidget(isPrivatePerson);
+    recipientTypeBtnBox->addWidget(isEmployee);
+    QSpacerItem *btnSpacer = new QSpacerItem (0, 0, QSizePolicy::Expanding,QSizePolicy::Minimum);
+    recipientTypeBtnBox->addSpacerItem(btnSpacer);
 
     mLabelRecipientName = new QLabel ("Firmenbezeichnung", this);
     mRecipientNameEdit = new QLineEdit (this);
 
     QLabel *street = new QLabel ("Straße", this);
     mStreetEdit = new QLineEdit (this);
-    mStreetEdit->setValidator(new QRegularExpressionValidator(QRegularExpression("\\w+"), mStreetEdit));
+    //mStreetEdit->setValidator(new QRegularExpressionValidator(QRegularExpression("\\w+"), mStreetEdit));
 
     QLabel *streetNumber = new QLabel ("Hausnummer", this);
     mStreetNumberEdit = new QLineEdit (this);
@@ -52,22 +60,21 @@ AddRecipientView::AddRecipientView(QWidget *parent)
 
     QLabel *city= new QLabel ("Stadt", this);
     mCityEdit = new QLineEdit (this);
-    mCityEdit->setValidator(new QRegularExpressionValidator(QRegularExpression("\\w+"), mCityEdit));
+    //mCityEdit->setValidator(new QRegularExpressionValidator(QRegularExpression("\\w+\\^( |ß|-)\\w+\\^( |ß|-)"), mCityEdit));
 
     QSpacerItem *spacer = new QSpacerItem (0, 0, QSizePolicy::Expanding,QSizePolicy::Expanding);
 
-    //prev+retry+next button
-    QHBoxLayout *buttonLayout = new QHBoxLayout (this);
-
     QPushButton* btnPrevious = new QPushButton (this);
     btnPrevious->setIcon(QIcon(":/images/menu_back.png"));
-    btnPrevious->setIconSize(QSize(75,75));
+    btnPrevious->setIconSize(QSize(UiDimensions::buttonWidth,UiDimensions::buttonHeight));
 
     QPushButton* btnOk = new QPushButton (this);
     btnOk->setIcon(QIcon(":/images/btn_Ok.png"));
-    btnOk->setIconSize(QSize(75,75));
+    btnOk->setIconSize(QSize(UiDimensions::buttonWidth,UiDimensions::buttonHeight));
     //btnOk->setDisabled(true);
 
+    //prev+retry+next button layout
+    QHBoxLayout *buttonLayout = new QHBoxLayout (this);
     buttonLayout->addWidget(btnPrevious);
     buttonLayout->addWidget(btnOk);
 
@@ -77,25 +84,26 @@ AddRecipientView::AddRecipientView(QWidget *parent)
     connect (isPrivatePerson, SIGNAL (clicked()), this, SLOT (onIsPrivatePersonBtnClicked()));
     connect (isEmployee, SIGNAL (clicked()), this, SLOT (onIsEmployeeBtnClicked()));
 
-    layout->addWidget(header, 0, 0, 1, 2, Qt::AlignHCenter);
-    if (0 != btnGroup->button(0))
-        layout->addWidget(btnGroup->button(0), 1, 0);
-    if (0 != btnGroup->button(1))
-        layout->addWidget(btnGroup->button(1), 1, 1);
-    if (0 != btnGroup->button(2))
-        layout->addWidget(btnGroup->button(2), 1, 2);
-    layout->addWidget(mLabelRecipientName, 2, 0);
-    layout->addWidget(mRecipientNameEdit, 2, 1);
-    layout->addWidget(street, 3, 0);
-    layout->addWidget(mStreetEdit, 3, 1);
-    layout->addWidget(streetNumber, 4, 0);
-    layout->addWidget(mStreetNumberEdit, 4, 1);
-    layout->addWidget(areaCode, 5, 0);
-    layout->addWidget(mAreaCodeEdit, 5, 1);
-    layout->addWidget(city, 6, 0);
-    layout->addWidget(mCityEdit, 6, 1);
-    layout->addItem(spacer, 7, 0);
-    layout->addLayout(buttonLayout,8,0,1,2);
+    layout->addWidget(header, 0, 0, 1, 2, Qt::AlignCenter);
+    layout->addLayout(recipientTypeBtnBox, 1, 0, 1, 2);
+
+    layout->addWidget(mLabelRecipientName, 2, 0, 1, 1);
+    layout->addWidget(mRecipientNameEdit, 2, 1, 1, 1);
+
+    layout->addWidget(street, 3, 0, 1, 1);
+    layout->addWidget(mStreetEdit, 3, 1, 1, 1);
+
+    layout->addWidget(streetNumber, 4, 0, 1, 1);
+    layout->addWidget(mStreetNumberEdit, 4, 1, 1, 1);
+
+    layout->addWidget(areaCode, 5, 0, 1, 1);
+    layout->addWidget(mAreaCodeEdit, 5, 1, 1, 1);
+
+    layout->addWidget(city, 6, 0, 1, 1);
+    layout->addWidget(mCityEdit, 6, 1, 1, 1);
+
+    layout->addItem(spacer, 7, 0, 1, 1);
+    layout->addLayout(buttonLayout, 8, 0, 1, 2);
 
     setLayout(layout);
 
@@ -138,7 +146,7 @@ void AddRecipientView::onOkBtnClicked ()
     //check all line edits
     if ("" == mRecipientNameEdit->displayText())
     {
-        mRecipientNameEdit->setStyleSheet("border-style: solid;border-width: 2px;border-color: red");
+        mRecipientNameEdit->setStyleSheet("border-style: solid;border-width: 1px;border-color: red");
         fail = true;
     }
     else
@@ -146,7 +154,7 @@ void AddRecipientView::onOkBtnClicked ()
 
     if ("" == mStreetEdit->displayText())
     {
-        mStreetEdit->setStyleSheet("border-style: solid;border-width: 2px;border-color: red");
+        mStreetEdit->setStyleSheet("border-style: solid;border-width: 1px;border-color: red");
         fail = true;
     }
     else
@@ -154,7 +162,7 @@ void AddRecipientView::onOkBtnClicked ()
 
     if ("" == mStreetNumberEdit->displayText())
     {
-        mStreetNumberEdit->setStyleSheet("border-style: solid;border-width: 2px;border-color: red");
+        mStreetNumberEdit->setStyleSheet("border-style: solid;border-width: 1px;border-color: red");
         fail = true;
     }
     else
@@ -162,7 +170,7 @@ void AddRecipientView::onOkBtnClicked ()
 
     if ("" == mAreaCodeEdit->displayText())
     {
-        mAreaCodeEdit->setStyleSheet("border-style: solid;border-width: 2px;border-color: red");
+        mAreaCodeEdit->setStyleSheet("border-style: solid;border-width: 1px;border-color: red");
         fail = true;
     }
     else
@@ -170,7 +178,7 @@ void AddRecipientView::onOkBtnClicked ()
 
     if ("" == mCityEdit->displayText())
     {
-        mCityEdit->setStyleSheet("border-style: solid;border-width: 2px;border-color: red");
+        mCityEdit->setStyleSheet("border-style: solid;border-width: 1px;border-color: red");
         fail = true;
     }
     else
@@ -180,7 +188,7 @@ void AddRecipientView::onOkBtnClicked ()
     {
         QMessageBox::information(0, "Unvollständige Eingaben",
                               "Einige erforderliche Felder wurden \n"
-                              "nicht angegeben. Bitte prüfen Sie \n "
+                              "nicht ausgefüllt. Bitte prüfen Sie \n "
                               "Ihre Eingaben.", QMessageBox::Ok);
     }
 
