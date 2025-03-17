@@ -21,7 +21,8 @@ SOURCES += \
     recipientview.cpp \
     scannerview.cpp \
     tableview.cpp \
-    tests/qrencodertest.cpp
+    tests/qrencodertest.cpp \
+    winsubmenu.cpp
 
 HEADERS += \
     addrecipientview.h \
@@ -35,7 +36,8 @@ HEADERS += \
     recipientview.h \
     scannerview.h \
     tableview.h \
-    tests/qrencodertest.h
+    tests/qrencodertest.h \
+    winsubmenu.h
 
 TRANSLATIONS += \
     KeyManager_de_DE.ts
