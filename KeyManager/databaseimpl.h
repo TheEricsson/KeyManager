@@ -33,6 +33,7 @@ public:
     bool initRecipientModel (QSqlRelationalTableModel *model);
     bool addNewRecipient(const RecipientType& type, const QString& name, const QString& street, const QString& number, const QString& areaCode, const QString& city);
     bool addNewRecipient (const RecipientData& data);
+    const QString getKeychainImagePath (int aId);
     //bool initializeKeyOverviewModel (QSqlQueryModel *model, int aCode);
     //const QSqlQueryModel& getKeysModel (int aId);
 

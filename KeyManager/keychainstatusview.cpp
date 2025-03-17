@@ -18,6 +18,7 @@ KeychainStatusView::KeychainStatusView(QWidget *parent)
     mKeys = 0;
     mKeychain = 0;
     mButtonNext = 0;
+    mKeysImgPreview = 0;
 
     QPushButton* btnPrevious = new QPushButton ();
     btnPrevious->setIcon(QIcon(":/images/menu_back.png"));
@@ -35,11 +36,14 @@ KeychainStatusView::KeychainStatusView(QWidget *parent)
     mKeychain = new QTableView;
     mainLayout->addWidget(mKeychain);
 
-    QSpacerItem *spacer = new QSpacerItem (0, 0, QSizePolicy::Expanding,QSizePolicy::Expanding);
-    mainLayout->addSpacerItem(spacer);
-
     QLabel *keysHeader = new QLabel ("Enthaltene Schlüssel");
     mainLayout->addWidget(keysHeader);
+
+    mKeysImgPreview = new QPushButton ("Kein Bild vorhanden.");
+    mainLayout->addWidget(mKeysImgPreview);
+
+    QSpacerItem *spacer = new QSpacerItem (0, 0, QSizePolicy::Expanding,QSizePolicy::Expanding);
+    mainLayout->addSpacerItem(spacer);
 
     mKeys = new QTableView;
     mainLayout->addWidget(mKeys);
@@ -148,6 +152,19 @@ bool KeychainStatusView::setKeysModel (QSqlRelationalTableModel* model)
         return false;
     }
     return false;
+}
+
+void KeychainStatusView::setKeychainImagePath (const QString& imgPath)
+{
+    if ("" == imgPath)
+        return;
+
+    if (mKeysImgPreview)
+    {
+        QIcon icon (imgPath);
+        mKeysImgPreview->setIcon(icon);
+        mKeysImgPreview->resize(100,100);
+    }
 }
 
 void KeychainStatusView::onPreviousBtnClicked ()

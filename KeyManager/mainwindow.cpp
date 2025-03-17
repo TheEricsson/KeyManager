@@ -231,10 +231,13 @@ bool MainWindow::showKeychainStatusView (int aBarcode)
         if (mDatabase->initKeychainModel(mKeychainModel, aBarcode))
         {
             retVal = mKeychainStatusView->setKeychainModel(mKeychainModel);
-            setView(mKeychainStatusView);
 
             int keyChainStatus = mDatabase->getKeychainStatusId (aBarcode);
             mKeychainStatusView->setKeychainStatus (keyChainStatus);
+
+            mKeychainStatusView->setKeychainImagePath (mDatabase->getKeychainImagePath(aBarcode));
+
+            setView(mKeychainStatusView);
         }
         else
             return false;

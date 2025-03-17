@@ -413,6 +413,27 @@ bool DatabaseImpl::addNewRecipient (const RecipientData& data)
     return query.exec();
 }
 
+const QString DatabaseImpl::getKeychainImagePath (int aId)
+{
+    mDb.transaction();
+    QSqlQuery query;
+
+    // get all keys of the keychain
+    query.prepare("SELECT image FROM keychains WHERE barcode = ?");
+    query.bindValue(0, aId);
+    query.exec();
+
+    QString result ("");
+
+    // set keychain status
+    if (query.next())
+    {
+        result = query.value(0).toString();
+    }
+    qDebug () << "getKeychainImagePath: " << result;
+    return result;
+}
+
 // bool DatabaseImpl::initializeKeyOverviewModel (QSqlQueryModel *model, int aCode)
 // {
 //     qDebug () << "initializeKeyOverviewModel (QSqlQueryModel *model, int aClientId, int aKeyId)";

@@ -18,6 +18,7 @@ public:
     void setKeychainStatus (const int &statusId);
     bool setKeychainModel (QSqlRelationalTableModel* model);
     bool setKeysModel (QSqlRelationalTableModel* model);
+    void setKeychainImagePath (const QString& imgPath);
 
 signals:
     void previousButtonClicked ();
@@ -39,6 +40,7 @@ private:
     QLabel *mQuantityKeys;
     QImage *mKeychainImage;
     QPushButton *mButtonNext;
+    QPushButton *mKeysImgPreview;
 };
 
 #endif // KEYCHAINSTATUSVIEW_H
