@@ -8,6 +8,7 @@
 #include <QLabel>
 #include <QSortFilterProxyModel>
 #include <QSqlRelationalTableModel>
+#include <QItemSelection>
 #include "globals.h"
 
 RecipientView::RecipientView(QWidget *parent)
@@ -33,30 +34,30 @@ RecipientView::RecipientView(QWidget *parent)
 
     QPushButton* btnNewRecipient = new QPushButton (this);
     btnNewRecipient->setIcon(QIcon(":/images/addRecipient.jpeg"));
-    btnNewRecipient->setIconSize(QSize(UiDimensions::buttonWidth,UiDimensions::buttonHeight));
+    btnNewRecipient->setIconSize(QSize(UiSpecs::buttonWidth,UiSpecs::buttonHeight));
     layout->addWidget(btnNewRecipient);
 
     QPushButton* btnPrevious = new QPushButton (this);
     btnPrevious->setIcon(QIcon(":/images/menu_back.png"));
-    btnPrevious->setIconSize(QSize(UiDimensions::buttonWidth,UiDimensions::buttonHeight));
+    btnPrevious->setIconSize(QSize(UiSpecs::buttonWidth,UiSpecs::buttonHeight));
 
-    QPushButton* btnNext = new QPushButton (this);
-    btnNext->setIcon(QIcon(":/images/menu_next.png"));
-    btnNext->setIconSize(QSize(UiDimensions::buttonWidth,UiDimensions::buttonHeight));
-    btnNext->setDisabled(true);
+    mBtnNext = new QPushButton (this);
+    mBtnNext->setIcon(QIcon(":/images/menu_next.png"));
+    mBtnNext->setIconSize(QSize(UiSpecs::buttonWidth,UiSpecs::buttonHeight));
+    mBtnNext->setDisabled(true);
 
     QHBoxLayout* hLayout = new QHBoxLayout (this);
     hLayout->addWidget(btnPrevious);
-    hLayout->addWidget(btnNext);
+    hLayout->addWidget(mBtnNext);
 
     layout->addLayout(hLayout);
 
     setLayout(layout);
 
     connect (btnPrevious, SIGNAL (clicked()), this, SLOT (onPreviousBtnClicked()));
-    connect (btnNext, SIGNAL (clicked()), this, SLOT (onNextBtnClicked()));
+    connect (mBtnNext, SIGNAL (clicked()), this, SLOT (onNextBtnClicked()));
     connect (btnNewRecipient, SIGNAL (clicked()), this, SLOT (onNewRecipientBtnClicked()));
-
+    connect (mRecipients->selectionModel(), SIGNAL(selectionChanged(const QItemSelection &, const QItemSelection &)), this, SLOT(onTableSelectionChanged(const QItemSelection &, const QItemSelection &)));
     connect (searchField, SIGNAL (textChanged(const QString &)), this, SLOT (setTableFilter(const QString &)));
 }
 
@@ -101,6 +102,12 @@ bool RecipientView::setModel (QSqlRelationalTableModel* model)
     return true;
 }
 
+void RecipientView::reset()
+{
+    mBtnNext->setDisabled(true);
+    mRecipients->clearSelection();
+}
+
 void RecipientView::setTableFilter(const QString &text)
 {
     qDebug  () << "RecipientView::setTableFilter(const QString &text): " << text;
@@ -110,22 +117,6 @@ void RecipientView::setTableFilter(const QString &text)
 
     mFilteredModel->setFilterWildcard(text);
     mRecipients->update();
-
-    // QSqlRelationalTableModel *model = (QSqlRelationalTableModel*)mRecipients->model();
-
-    // if(model)
-    // {
-    //     QString searchString ("name='");
-    //     searchString.append(text);
-    //     searchString.append ("'");
-
-    //     qDebug () << "RecipientView::setTableFilter: " << searchString;
-
-    //     mFilteredModel->setFilterWildcard(text);
-    //     //model->setFilter(searchString);
-    //     model->select();
-    //     mRecipients->update();
-    // }
 }
 
 void RecipientView::onNextBtnClicked ()
@@ -141,4 +132,15 @@ void RecipientView::onPreviousBtnClicked ()
 void RecipientView::onNewRecipientBtnClicked ()
 {
     emit newRecipientButtonClicked();
+}
+
+void RecipientView::onTableSelectionChanged (const QItemSelection &itemNew, const QItemSelection &itemOld)
+{
+    Q_UNUSED(itemOld);
+    Q_UNUSED(itemNew);
+
+    if (!itemNew.isEmpty())
+        mBtnNext->setEnabled(true);
+    else
+        mBtnNext->setEnabled(false);
 }

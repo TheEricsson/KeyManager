@@ -66,14 +66,14 @@ AddRecipientView::AddRecipientView(QWidget *parent)
 
     QPushButton* btnPrevious = new QPushButton (this);
     btnPrevious->setIcon(QIcon(":/images/menu_back.png"));
-    btnPrevious->setIconSize(QSize(UiDimensions::buttonWidth,UiDimensions::buttonHeight));
+    btnPrevious->setIconSize(QSize(UiSpecs::buttonWidth,UiSpecs::buttonHeight));
 
     QPushButton* btnOk = new QPushButton (this);
     btnOk->setIcon(QIcon(":/images/btn_Ok.png"));
-    btnOk->setIconSize(QSize(UiDimensions::buttonWidth,UiDimensions::buttonHeight));
+    btnOk->setIconSize(QSize(UiSpecs::buttonWidth,UiSpecs::buttonHeight));
     //btnOk->setDisabled(true);
 
-    //prev+retry+next button layout
+    //prev+next button layout
     QHBoxLayout *buttonLayout = new QHBoxLayout (this);
     buttonLayout->addWidget(btnPrevious);
     buttonLayout->addWidget(btnOk);

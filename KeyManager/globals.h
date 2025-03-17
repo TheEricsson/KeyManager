@@ -3,7 +3,7 @@
 
 #include <QString>
 
-namespace UiDimensions
+namespace UiSpecs
 {
     //button dimensions
     const int buttonHeight = 90;
@@ -16,6 +16,16 @@ namespace UiDimensions
     //logo dimensions
     const int logoWidth = 300;
     const int logoHeight = 100;
+
+    //subwindow button layouts
+    enum eMenuButton
+    {
+        BackButton,
+        RepeatButton,
+        ForwardButton,
+        OkButton,
+        None,
+    };
 }
 
 namespace Database

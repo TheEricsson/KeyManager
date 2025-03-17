@@ -19,8 +19,8 @@ HomeView::HomeView(QWidget *parent)
     QPixmap logo (":/images/logo.png");
     QLabel *label = new QLabel();
     label->setScaledContents(true);
-    label->setMaximumHeight(UiDimensions::logoHeight);
-    label->setMaximumWidth(UiDimensions::logoWidth);
+    label->setMaximumHeight(UiSpecs::logoHeight);
+    label->setMaximumWidth(UiSpecs::logoWidth);
     label->setPixmap(logo);    
 
     mBtnScan = new QPushButton (/*tr("Code Scannen")*/);
@@ -29,16 +29,16 @@ HomeView::HomeView(QWidget *parent)
     mBtnExit = new QPushButton (/*tr("Beenden")*/);
 
     mBtnScan->setIcon(QIcon(":/images/scan_barcode.png"));
-    mBtnScan->setIconSize(QSize(UiDimensions::buttonWidth,UiDimensions::buttonHeight));
+    mBtnScan->setIconSize(QSize(UiSpecs::buttonWidth,UiSpecs::buttonHeight));
 
     mBtnSearch->setIcon(QIcon(":/images/search.svg"));
-    mBtnSearch->setIconSize(QSize(UiDimensions::buttonWidth,UiDimensions::buttonHeight));
+    mBtnSearch->setIconSize(QSize(UiSpecs::buttonWidth,UiSpecs::buttonHeight));
 
     mBtnManage->setIcon(QIcon(":/images/settings.svg"));
-    mBtnManage->setIconSize(QSize(UiDimensions::buttonWidth,UiDimensions::buttonHeight));
+    mBtnManage->setIconSize(QSize(UiSpecs::buttonWidth,UiSpecs::buttonHeight));
 
     mBtnExit->setIcon(QIcon(":/images/exit.svg"));
-    mBtnExit->setIconSize(QSize(UiDimensions::buttonWidth,UiDimensions::buttonHeight));
+    mBtnExit->setIconSize(QSize(UiSpecs::buttonWidth,UiSpecs::buttonHeight));
 
     mLayout = new QGridLayout;
     mLayout->addWidget(label,0,0,1,2,Qt::AlignHCenter);

@@ -22,11 +22,11 @@ KeychainStatusView::KeychainStatusView(QWidget *parent)
 
     QPushButton* btnPrevious = new QPushButton ();
     btnPrevious->setIcon(QIcon(":/images/menu_back.png"));
-    btnPrevious->setIconSize (QSize(UiDimensions::buttonWidth, UiDimensions::buttonHeight));
+    btnPrevious->setIconSize (QSize(UiSpecs::buttonWidth, UiSpecs::buttonHeight));
 
     mButtonNext = new QPushButton ();
     mButtonNext->setIcon(QIcon(":/images/menu_keyOut.png"));
-    mButtonNext->setIconSize (QSize(UiDimensions::buttonWidth, UiDimensions::buttonHeight));
+    mButtonNext->setIconSize (QSize(UiSpecs::buttonWidth, UiSpecs::buttonHeight));
 
     QVBoxLayout *mainLayout = new QVBoxLayout (this);
 

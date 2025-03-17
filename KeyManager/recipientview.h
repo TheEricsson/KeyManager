@@ -8,6 +8,8 @@
 class QTableView;
 class QSqlRelationalTableModel;
 class QSortFilterProxyModel;
+class QItemSelection;
+class QPushButton;
 
 class RecipientView : public QWidget
 {
@@ -15,6 +17,7 @@ class RecipientView : public QWidget
 public:
     explicit RecipientView(QWidget *parent = nullptr);
     bool setModel (QSqlRelationalTableModel* model);
+    void reset();
 
 public slots:
     void setTableFilter(const QString &);
@@ -29,10 +32,12 @@ private slots:
     void onNextBtnClicked ();
     void onPreviousBtnClicked ();
     void onNewRecipientBtnClicked ();
+    void onTableSelectionChanged (const QItemSelection &itemNew, const QItemSelection &itemOld);
 
 private:
     QTableView *mRecipients;
     QSortFilterProxyModel *mFilteredModel;
+    QPushButton *mBtnNext;
 };
 
 #endif // RECIPIENTVIEW_H

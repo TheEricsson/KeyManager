@@ -173,6 +173,7 @@ void MainWindow::showRecipientView ()
     if  (!mRecipientView->setModel(mRecipientsModel))
         return;
 
+    mRecipientView->reset();
     setView(mRecipientView);
 }
 
