@@ -72,8 +72,8 @@ bool RecipientView::setModel (QSqlRelationalTableModel* model)
         return false;
 
     model->setHeaderData(0, Qt::Horizontal, tr("ID"), Qt::DisplayRole);
-    model->setHeaderData(1, Qt::Horizontal, tr("Typ"), Qt::DisplayRole);
-    model->setHeaderData(2, Qt::Horizontal, tr("Name"), Qt::DisplayRole);
+    model->setHeaderData(1, Qt::Horizontal, tr("Name"), Qt::DisplayRole);
+    model->setHeaderData(2, Qt::Horizontal, tr("Typ"), Qt::DisplayRole);
     model->setHeaderData(3, Qt::Horizontal, tr("Straße"), Qt::DisplayRole);
     model->setHeaderData(4, Qt::Horizontal, tr("Hausnummer"), Qt::DisplayRole);
     model->setHeaderData(5, Qt::Horizontal, tr("PLZ"), Qt::DisplayRole);
@@ -86,8 +86,10 @@ bool RecipientView::setModel (QSqlRelationalTableModel* model)
     mRecipients->hideColumn(0); //don't show table index
 
     mRecipients->setSortingEnabled(true);
+    mRecipients->sortByColumn(1, Qt::AscendingOrder);
     mRecipients->setEditTriggers(QTableView::NoEditTriggers);
     mRecipients->setSelectionMode(QTableView::SingleSelection);
+    mRecipients->setSelectionBehavior(QTableView::SelectRows);
 
     mRecipients->show();
 

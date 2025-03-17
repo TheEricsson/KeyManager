@@ -371,7 +371,7 @@ bool DatabaseImpl::initRecipientModel (QSqlRelationalTableModel *model)
     if (model)
     {
         model->setTable("recipientAddresses");
-        model->setRelation(1, QSqlRelation ("recipientTypes", "id", "type"));
+        model->setRelation(2, QSqlRelation ("recipientTypes", "id", "type"));
         model->select();
         return true;
     }
@@ -384,14 +384,14 @@ bool DatabaseImpl::addNewRecipient(const RecipientType& type, const QString& nam
     mDb.transaction();
 
     QSqlQuery query;
-    query.prepare("INSERT INTO recipientAddresses (type, name, street, houseNr, areaCode, city) \
+    query.prepare("INSERT INTO recipientAddresses (name, type, street, houseNr, areaCode, city) \
                     VALUES (?, ?, ?, ?, ?, ?)");
-    query.bindValue(0, type);
-    query.bindValue(2, name);
-    query.bindValue(3, street);
-    query.bindValue(4, number);
-    query.bindValue(5, areaCode);
-    query.bindValue(6, city);
+    query.bindValue(0, name);
+    query.bindValue(1, type);
+    query.bindValue(2, street);
+    query.bindValue(3, number);
+    query.bindValue(4, areaCode);
+    query.bindValue(5, city);
 
     return query.exec();
 }
@@ -401,10 +401,10 @@ bool DatabaseImpl::addNewRecipient (const RecipientData& data)
     mDb.transaction();
 
     QSqlQuery query;
-    query.prepare("INSERT INTO recipientAddresses (type, name, street, houseNr, areaCode, city) \
+    query.prepare("INSERT INTO recipientAddresses (name, type, street, houseNr, areaCode, city) \
                     VALUES (?, ?, ?, ?, ?, ?)");
-    query.bindValue(0, data.type);
-    query.bindValue(1, data.name);
+    query.bindValue(0, data.name);
+    query.bindValue(1, data.type);
     query.bindValue(2, data.street);
     query.bindValue(3, data.number);
     query.bindValue(4, data.areaCode);
