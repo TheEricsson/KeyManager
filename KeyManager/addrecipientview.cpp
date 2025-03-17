@@ -11,8 +11,8 @@
 AddRecipientView::AddRecipientView(QWidget *parent)
     : QWidget{parent}
 {
+    mIsCompany = 0;
     mLabelRecipientName = 0;
-
     mRecipientNameEdit = 0;
     mStreetEdit = 0;
     mStreetNumberEdit = 0;
@@ -24,18 +24,18 @@ AddRecipientView::AddRecipientView(QWidget *parent)
 
     QLabel *header= new QLabel ("Empfänger anlegen", this);
 
-    QRadioButton *isCompany = new QRadioButton ("Firma");
-    isCompany->setChecked(true); // this is the common case
+    mIsCompany = new QRadioButton ("Firma");
+    mIsCompany->setChecked(true); // this is the common case
     QRadioButton *isPrivatePerson = new QRadioButton ("Privatperson");
     QRadioButton *isEmployee = new QRadioButton ("Mitarbeiter");
     QButtonGroup *btnGroup = new QButtonGroup (this);
 
-    btnGroup->addButton(isCompany, 0);
+    btnGroup->addButton(mIsCompany, 0);
     btnGroup->addButton(isPrivatePerson, 1);
     btnGroup->addButton(isEmployee, 2);
 
     QHBoxLayout *recipientTypeBtnBox = new QHBoxLayout (this);
-    recipientTypeBtnBox->addWidget(isCompany);
+    recipientTypeBtnBox->addWidget(mIsCompany);
     recipientTypeBtnBox->addWidget(isPrivatePerson);
     recipientTypeBtnBox->addWidget(isEmployee);
     QSpacerItem *btnSpacer = new QSpacerItem (0, 0, QSizePolicy::Expanding,QSizePolicy::Minimum);
@@ -80,7 +80,7 @@ AddRecipientView::AddRecipientView(QWidget *parent)
 
     connect (btnPrevious, SIGNAL (clicked()), this, SLOT (onPreviousBtnClicked()));
     connect (btnOk, SIGNAL (clicked()), this, SLOT (onOkBtnClicked()));
-    connect (isCompany, SIGNAL (clicked()), this, SLOT (onIsCompanyBtnClicked()));
+    connect (mIsCompany, SIGNAL (clicked()), this, SLOT (onIsCompanyBtnClicked()));
     connect (isPrivatePerson, SIGNAL (clicked()), this, SLOT (onIsPrivatePersonBtnClicked()));
     connect (isEmployee, SIGNAL (clicked()), this, SLOT (onIsEmployeeBtnClicked()));
 
@@ -110,6 +110,18 @@ AddRecipientView::AddRecipientView(QWidget *parent)
     // line edit manipulators
     // convert all chars to uppercase
     connect(mStreetNumberEdit, SIGNAL(textChanged(QString)), SLOT(toUpper(QString)));
+}
+
+void AddRecipientView::clearForm()
+{
+    mIsCompany->setChecked(true);
+    mLabelRecipientName->setText("Firmenbezeichnung");
+    mRecipientType = RecipientType::Company;
+    mRecipientNameEdit->setText("");
+    mStreetEdit->setText("");
+    mStreetNumberEdit->setText("");
+    mAreaCodeEdit->setText("");
+    mCityEdit->setText("");
 }
 
 const RecipientData AddRecipientView::getRecipientData ()

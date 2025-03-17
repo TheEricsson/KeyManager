@@ -7,12 +7,14 @@
 #include "globals.h"
 
 class QLabel;
+class QRadioButton;
 
 class AddRecipientView : public QWidget
 {
     Q_OBJECT
 public:
     explicit AddRecipientView(QWidget *parent = nullptr);
+    void clearForm();
     const RecipientData getRecipientData ();
     const QString getName ()    {return mRecipientNameEdit->displayText();};
     const QString getStreet ()  {return mStreetEdit->displayText();};
@@ -35,6 +37,7 @@ private slots:
 private:
 
     QLabel* mLabelRecipientName;
+    QRadioButton* mIsCompany;
 
     RecipientData mRecipientData;
 

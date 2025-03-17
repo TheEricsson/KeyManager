@@ -183,6 +183,7 @@ void MainWindow::closeRecipientView ()
 
 void MainWindow::showAddRecipientView ()
 {
+    mAddRecipientView->clearForm();
     setView(mAddRecipientView);
 }
 
