@@ -18,6 +18,7 @@ class TableView;
 class KeychainStatusView;
 class RecipientView;
 class AddRecipientView;
+class HandoverView;
 
 #ifdef ENCODERTEST
 class QREncoderTest;
@@ -53,6 +54,7 @@ private slots:
     void addRecipientViewSubmitted ();
     bool showKeychainStatusView (int aBarcode);
     void closeKeychainStatusView ();
+    void showHandoverView ();
     void closeScannerView ();
     void closeTableView ();
     void onSearchButtonReleased ();
@@ -79,6 +81,7 @@ private:
     KeychainStatusView *mKeychainStatusView;
     RecipientView *mRecipientView;
     AddRecipientView *mAddRecipientView;
+    HandoverView *mHandoverView;
 
     Camera *mCameraInstance;
     QTimer *mGrabTimer;

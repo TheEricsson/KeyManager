@@ -14,6 +14,7 @@ SOURCES += \
     addrecipientview.cpp \
     camera.cpp \
     databaseimpl.cpp \
+    handoverview.cpp \
     homeview.cpp \
     keychainstatusview.cpp \
     main.cpp \
@@ -29,6 +30,7 @@ HEADERS += \
     camera.h \
     databaseimpl.h \
     globals.h \
+    handoverview.h \
     homeview.h \
     initdb.h \
     keychainstatusview.h \

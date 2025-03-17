@@ -12,7 +12,7 @@ WinSubmenu::WinSubmenu(QWidget *parent)
     setLayout(mLayout);
 
     mHeaderLabel = new QLabel (this);
-    mLayout->addWidget(mHeaderLabel);
+    mLayout->addWidget(mHeaderLabel,0,Qt::AlignCenter);
 }
 
 void WinSubmenu::setHeader (const QString& label)

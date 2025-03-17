@@ -22,6 +22,7 @@
 #include "keychainstatusview.h"
 #include "recipientview.h"
 #include "addrecipientview.h"
+#include "handoverview.h"
 
 #include "QZXing.h"
 
@@ -64,6 +65,7 @@ MainWindow::MainWindow(QWidget *parent)
     mRecipientView = new RecipientView (this);
     mKeychainStatusView = new KeychainStatusView (this);
     mAddRecipientView = new AddRecipientView (this);
+    mHandoverView = new HandoverView (this);
 
     mLayout->addWidget(mHomeView);
     mLayout->addWidget(mScanView);
@@ -71,6 +73,7 @@ MainWindow::MainWindow(QWidget *parent)
     mLayout->addWidget(mRecipientView);
     mLayout->addWidget(mKeychainStatusView);
     mLayout->addWidget(mAddRecipientView);
+    mLayout->addWidget(mHandoverView);
 
     setView(mHomeView);
 
@@ -94,6 +97,7 @@ MainWindow::MainWindow(QWidget *parent)
     // handle signals by RecipientView
     connect (mRecipientView, SIGNAL(previousButtonClicked()), this, SLOT (closeRecipientView()));
     connect (mRecipientView, SIGNAL(newRecipientButtonClicked()), this, SLOT (showAddRecipientView()));
+    connect (mRecipientView, SIGNAL(nextButtonClicked()), this, SLOT (showHandoverView()));
 
     // handle signals by AddRecipientView
     connect (mAddRecipientView, SIGNAL(previousButtonClicked()), this, SLOT (closeAddRecipientView()));
@@ -252,6 +256,14 @@ bool MainWindow::showKeychainStatusView (int aBarcode)
 void MainWindow::closeKeychainStatusView ()
 {
     showScannerView();
+}
+
+void MainWindow::showHandoverView ()
+{
+    if (!mHandoverView)
+        return;
+    else
+        setView (mHandoverView);
 }
 
 void MainWindow::onSearchButtonReleased ()
