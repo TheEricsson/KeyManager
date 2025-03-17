@@ -36,6 +36,8 @@
 MainWindow::MainWindow(QWidget *parent)
     : QWidget(parent)
 {
+    mLastView = 0;
+    mViewState = eViewState::None;
     mCameraInstance = 0;
     mGrabTimer = 0;
     mScanView = 0;
@@ -56,12 +58,12 @@ MainWindow::MainWindow(QWidget *parent)
     mLayout = new QStackedLayout();
     setLayout(mLayout);
 
-    mHomeView = new HomeView ();
-    mScanView = new ScannerView ();
-    mTableView = new TableView ("addresses");
-    mRecipientView = new RecipientView ();
-    mKeychainStatusView = new KeychainStatusView ();
-    mAddRecipientView = new AddRecipientView ();
+    mHomeView = new HomeView (this);
+    mScanView = new ScannerView (this);
+    mTableView = new TableView ("addresses", this);
+    mRecipientView = new RecipientView (this);
+    mKeychainStatusView = new KeychainStatusView (this);
+    mAddRecipientView = new AddRecipientView (this);
 
     mLayout->addWidget(mHomeView);
     mLayout->addWidget(mScanView);
@@ -70,7 +72,7 @@ MainWindow::MainWindow(QWidget *parent)
     mLayout->addWidget(mKeychainStatusView);
     mLayout->addWidget(mAddRecipientView);
 
-    mLayout->setCurrentWidget(mHomeView);
+    setView(mHomeView);
 
     // handle signals by ScanView
     connect (mScanView, SIGNAL (scanButtonClicked()), this, SLOT (showScannerView()));
@@ -119,12 +121,12 @@ void MainWindow::closeScannerView ()
         mCameraInstance->stopCamera();
     }
 
-    mLayout->setCurrentWidget(mHomeView);
+    setView(mHomeView);
 }
 
 void MainWindow::closeTableView ()
 {
-    mLayout->setCurrentWidget(mHomeView);
+    setView(mHomeView);
 }
 
 void MainWindow::showScannerView ()
@@ -145,7 +147,7 @@ void MainWindow::showScannerView ()
         connect (mGrabTimer, SIGNAL(timeout()), this, SLOT(decodeFromVideoFrame()));
     }
 
-    mLayout->setCurrentWidget(mScanView);
+    setView(mScanView);
 
     mCameraInstance->startCamera();
     mGrabTimer->start();
@@ -154,7 +156,7 @@ void MainWindow::showScannerView ()
 
 void MainWindow::showTableView ()
 {
-    mLayout->setCurrentWidget(mTableView);
+    setView(mTableView);
 }
 
 void MainWindow::showRecipientView ()
@@ -171,41 +173,29 @@ void MainWindow::showRecipientView ()
     if  (!mRecipientView->setModel(mRecipientsModel))
         return;
 
-    mLayout->setCurrentWidget(mRecipientView);
+    setView(mRecipientView);
 }
 
 void MainWindow::closeRecipientView ()
 {
-    qDebug () << "MainWindow::closeRecipientView ()";
-    if (!mRecipientView)
-    {
-        qDebug () << "MainWindow::closeRecipientView () - NULL pointer";
-        return;
-    }
-
     showScannerView();
 }
 
 void MainWindow::showAddRecipientView ()
 {
-    if (!mAddRecipientView)
-        return;
-
-    if (!mLayout)
-        return;
-
-    mLayout->setCurrentWidget(mAddRecipientView);
+    setView(mAddRecipientView);
 }
 
 void MainWindow::closeAddRecipientView ()
 {
-    if (!mHomeView)
-        return;
-
-    if (!mLayout)
-        return;
-
-    mLayout->setCurrentWidget(mHomeView);
+    if (mLastView == eViewState::Recipient)
+    {
+        mRecipientView->setTableFilter (mAddRecipientView->getName ());
+        mRecipientView->update();
+        showRecipientView();
+    }
+    else
+        setView(mHomeView);
 }
 
 void MainWindow::addRecipientViewSubmitted ()
@@ -217,6 +207,7 @@ void MainWindow::addRecipientViewSubmitted ()
         return;
 
     mDatabase->addNewRecipient (mAddRecipientView->getRecipientData());
+    closeAddRecipientView ();
 }
 
 bool MainWindow::showKeychainStatusView (int aBarcode)
@@ -239,7 +230,7 @@ bool MainWindow::showKeychainStatusView (int aBarcode)
         if (mDatabase->initKeychainModel(mKeychainModel, aBarcode))
         {
             retVal = mKeychainStatusView->setKeychainModel(mKeychainModel);
-            mLayout->setCurrentWidget(mKeychainStatusView);
+            setView(mKeychainStatusView);
 
             int keyChainStatus = mDatabase->getKeychainStatusId (aBarcode);
             mKeychainStatusView->setKeychainStatus (keyChainStatus);
@@ -351,16 +342,28 @@ void MainWindow::playSound ()
     player.play();
 }
 
+void MainWindow::setView (QWidget* view)
+{
+    if (!view)
+        return;
+
+    if (!mLayout)
+        return;
+
+    mLastView = mLayout->currentIndex();
+    mLayout->setCurrentWidget (view);
+}
+
 MainWindow::~MainWindow()
 {
     if (mDatabase)
         delete mDatabase;
 
-    if (mKeychainStatusView)
-        delete mKeychainStatusView;
+    // if (mKeychainStatusView)
+    //     delete mKeychainStatusView;
 
-    if (mKeysOverviewModel)
-        delete mKeysOverviewModel;
+    // if (mKeysOverviewModel)
+    //     delete mKeysOverviewModel;
 
     // if (mKeysOverviewModel)
     //     delete mKeysOverviewModel;

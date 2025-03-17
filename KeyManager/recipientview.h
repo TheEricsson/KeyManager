@@ -16,13 +16,16 @@ public:
     explicit RecipientView(QWidget *parent = nullptr);
     bool setModel (QSqlRelationalTableModel* model);
 
+public slots:
+    void setTableFilter(const QString &);
+
 signals:
     void nextButtonClicked();
     void previousButtonClicked();
     void newRecipientButtonClicked();
 
 private slots:
-    void setTableFilter(const QString &);
+
     void onNextBtnClicked ();
     void onPreviousBtnClicked ();
     void onNewRecipientBtnClicked ();

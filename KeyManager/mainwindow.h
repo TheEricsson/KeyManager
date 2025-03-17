@@ -25,6 +25,17 @@ class QREncoderTest;
 
 class MainWindow : public QWidget
 {
+    enum eViewState
+    {
+        None = -1,
+        Home = 0,
+        Scanner = 1,
+        Search = 2,
+        Recipient = 3,
+        Keychain = 4,
+        AddRecipient = 5
+    };
+
     Q_OBJECT
 
 public:
@@ -50,8 +61,11 @@ private slots:
     void decodeFromVideoFrame ();
 
 private:
+    void setView (QWidget* view);
     void playSound ();
     void handleScannedKey();
+
+    int mLastView;
 
     QPushButton* btnScan;
     QPushButton* btnSearch;
@@ -73,6 +87,8 @@ private:
     QSqlRelationalTableModel *mKeysOverviewModel;
     QSqlRelationalTableModel *mKeychainModel;
     QSqlRelationalTableModel *mRecipientsModel;
+
+    eViewState mViewState;
 
 #ifdef ENCODERTEST
     QREncoderTest* qrencoderTest;
