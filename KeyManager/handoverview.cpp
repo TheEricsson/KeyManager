@@ -2,16 +2,29 @@
 #include "signaturepad.h"
 #include <QLayout>
 #include <QPushButton>
+#include <QLabel>
+#include <QLineEdit>
 
 HandoverView::HandoverView (QWidget *parent)
     : WinSubmenu {parent}
 {
     setHeader("Ausgabe abschließen");
+
+    QHBoxLayout *recipientNameLayout = new QHBoxLayout (this);
+
+    QLabel* recipientNameLabel = new QLabel ("Empfängername", this);
+    mRecipientName = new QLineEdit (this);
+    recipientNameLayout->addWidget(recipientNameLabel);
+    recipientNameLayout->addWidget(mRecipientName);
+    mRecipientName->setEnabled(false);
+
+    layout()->addItem(recipientNameLayout);
+
     mSigPad = new SignaturePad ();
-    this->layout()->addWidget(mSigPad);
+    layout()->addWidget(mSigPad);
 
     QPushButton *btnClear = new QPushButton ("Reset");
-    this->layout()->addWidget(btnClear);
+    layout()->addWidget(btnClear);
 
     setMenuButtons(UiSpecs::BackButton, UiSpecs::OkButton);
     disableButton(1, true);

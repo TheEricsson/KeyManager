@@ -19,6 +19,7 @@ RecipientView::RecipientView(QWidget *parent)
 {
     mRecipients = 0;
     mFilteredModel = 0;
+    mRowSelected = false;
 
     mFilteredModel = new QSortFilterProxyModel (this);
 
@@ -34,14 +35,6 @@ RecipientView::RecipientView(QWidget *parent)
     mRecipients = new QTableView (this);
     mRecipients->setModel(mFilteredModel);
     layout->addWidget(mRecipients);
-
-    QHBoxLayout *recipientNameLayout = new QHBoxLayout (this);
-    QLabel* recipientNameLabel = new QLabel ("Empfängername", this);
-    mRecipientName = new QLineEdit (this);
-    recipientNameLayout->addWidget(recipientNameLabel);
-    recipientNameLayout->addWidget(mRecipientName);
-    mRecipientName->setEnabled(false);
-    layout->addLayout(recipientNameLayout);
 
     QPushButton* btnNewRecipient = new QPushButton (this);
     btnNewRecipient->setIcon(QIcon(":/images/addRecipient.jpeg"));
@@ -113,12 +106,39 @@ bool RecipientView::setModel (QSqlRelationalTableModel* model)
     return true;
 }
 
+bool RecipientView::getRecipientData (RecipientData &data)
+{
+    if (!mRowSelected)
+        return false;
+
+    int row = mRecipients->selectionModel()->currentIndex().row();
+    data.name = mRecipients->model()->index(row, 1).data().toString ();
+
+    if ("Firma" == mRecipients->model()->index(row, 2).data().toString ())
+        data.type = RecipientType::Company;
+    else if ("Privatperson" == mRecipients->model()->index(row, 2).data().toString ())
+        data.type = RecipientType::PrivatePerson;
+    else if ("Mitarbeiter" == mRecipients->model()->index(row, 2).data().toString ())
+        data.type = RecipientType::Employee;
+    else
+    {
+        qDebug () << "RecipientView::getRecipientData (RecipientData &data): " << "RecipientType not recognized, check string comparison";
+        return false;
+    }
+
+    data.street = mRecipients->model()->index(row, 3).data().toString ();
+    data.number = mRecipients->model()->index(row, 4).data().toString ();
+    data.areaCode = mRecipients->model()->index(row, 5).data().toString ();
+    data.city = mRecipients->model()->index(row, 6).data().toString ();
+
+    return true;
+}
+
 void RecipientView::reset()
 {
     mBtnNext->setDisabled(true);
     mRecipients->clearSelection();
-    mRecipientName->setDisabled(true);
-    mRecipientName->setText("");
+    mRowSelected = false;
 }
 
 void RecipientView::setTableFilter(const QString &text)
@@ -134,37 +154,37 @@ void RecipientView::setTableFilter(const QString &text)
 
 void RecipientView::onNextBtnClicked ()
 {
-    if (mRecipientName->isEnabled() && "" == mRecipientName->text())
-    {
-        mRecipientName->setStyleSheet("border-style: solid;border-width: 1px;border-color: red");
+    // if (mRecipientName->isEnabled() && "" == mRecipientName->text())
+    // {
+    //     mRecipientName->setStyleSheet("border-style: solid;border-width: 1px;border-color: red");
 
-        QMessageBox msgBox;
-        msgBox.setText("Unvollständige Eingaben");
-        msgBox.setInformativeText("Es wurde ein Unternehmen als Empfänger \n"
-                                 "ausgewählt. Der Name der Person, die den \n"
-                                  "Schlüssel entgegennimmt, wurde nicht angegeben.");
+    //     QMessageBox msgBox;
+    //     msgBox.setText("Unvollständige Eingaben");
+    //     msgBox.setInformativeText("Es wurde ein Unternehmen als Empfänger \n"
+    //                              "ausgewählt. Der Name der Person, die den \n"
+    //                               "Schlüssel entgegennimmt, wurde nicht angegeben.");
 
-        msgBox.setStandardButtons(QMessageBox::Ignore | QMessageBox::Ok);
-        msgBox.setDefaultButton(QMessageBox::Ok);
+    //     msgBox.setStandardButtons(QMessageBox::Ignore | QMessageBox::Ok);
+    //     msgBox.setDefaultButton(QMessageBox::Ok);
 
-        int selection = msgBox.exec();
+    //     int selection = msgBox.exec();
 
-        bool ignore = false;
+    //     bool ignore = false;
 
-        switch (selection)
-        {
-            case QMessageBox::Ignore:
-                ignore = true;
-                break;
-            case QMessageBox::Ok:
-                break;
-            default:
-                break;
-        }
+    //     switch (selection)
+    //     {
+    //         case QMessageBox::Ignore:
+    //             ignore = true;
+    //             break;
+    //         case QMessageBox::Ok:
+    //             break;
+    //         default:
+    //             break;
+    //     }
 
-        if (!ignore)
-            return;
-    }
+    //     if (!ignore)
+    //         return;
+    // }
     emit nextButtonClicked ();
 }
 
@@ -186,24 +206,14 @@ void RecipientView::onTableSelectionChanged (const QItemSelection &itemNew, cons
     int row = mRecipients->selectionModel()->currentIndex().row();
     QString recipientType = mRecipients->model()->index(row, 2).data().toString ();
 
-    qDebug () << "onTableSelectionChanged, type: " << recipientType;
-
-    if ("Firma" == recipientType)
-    {
-        mRecipientName->setEnabled(true);
-    }
-    else
-    {
-        mRecipientName->setEnabled(false);
-        mRecipientName->setText("");
-    }
-
     if (!itemNew.isEmpty())
+    {
         mBtnNext->setEnabled(true);
+        mRowSelected = true;
+    }
     else
     {
         mBtnNext->setEnabled(false);
-        mRecipientName->setEnabled(false);
-        mRecipientName->setText("");
+        mRowSelected = false;
     }
 }

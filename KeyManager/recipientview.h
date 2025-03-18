@@ -4,6 +4,7 @@
 #include <QObject>
 #include <QWidget>
 #include <QString>
+#include "globals.h"
 
 class QTableView;
 class QSqlRelationalTableModel;
@@ -18,6 +19,7 @@ class RecipientView : public QWidget
 public:
     explicit RecipientView(QWidget *parent = nullptr);
     bool setModel (QSqlRelationalTableModel* model);
+    bool getRecipientData (RecipientData &data);
     void reset();
 
 public slots:
@@ -39,7 +41,7 @@ private:
     QTableView *mRecipients;
     QSortFilterProxyModel *mFilteredModel;
     QPushButton *mBtnNext;
-    QLineEdit *mRecipientName;
+    bool mRowSelected;
 };
 
 #endif // RECIPIENTVIEW_H

@@ -3,7 +3,9 @@
 
 #include <QWidget>
 #include "winsubmenu.h"
-#include "signaturepad.h"
+
+class SignaturePad;
+class QLineEdit;
 
 class HandoverView : public WinSubmenu
 {
@@ -11,11 +13,15 @@ class HandoverView : public WinSubmenu
 public:
     explicit HandoverView (QWidget *parent = nullptr);
     void clear ();
-private:
-    SignaturePad *mSigPad;
+
 private slots:
     void onSignaturePaint ();
     void onSignatureClear ();
+
+private:
+    SignaturePad *mSigPad;
+    QLineEdit *mRecipientName;
+
 };
 
 #endif // HANDOVERVIEW_H
