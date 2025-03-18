@@ -13,10 +13,15 @@ WinSubmenu::WinSubmenu(QWidget *parent)
 
     mHeaderLabel = new QLabel (this);
     mLayout->addWidget(mHeaderLabel,0,Qt::AlignCenter);
+
+    mHeaderLabel->setSizePolicy(QSizePolicy::Expanding, QSizePolicy::MinimumExpanding);
+    mHeaderLabel->setStyleSheet("QLabel {background-color: #C0C0C0; color: black; font: 20pt; font-color: #696969; border-style: outset; border-width: 3px; border-radius: 10px; border-color: #A9A9A9; }");
+
+    this->setStyleSheet("QPushButton {background-color: #C0C0C0; border-style: outset; border-width: 3px; border-radius: 10px; border-color: #A9A9A9; font: bold 14px; padding: 6px;}");
 }
 
 void WinSubmenu::setHeader (const QString& label)
-{
+{    
     mHeaderLabel->setText(label);
 }
 
@@ -129,5 +134,10 @@ void WinSubmenu::setMenuButtons (const UiSpecs::eMenuButton& column1, const UiSp
     }
 
     if (btnLayout)
+    {
+        QSpacerItem *spacer = new QSpacerItem (0, 0, QSizePolicy::Expanding,QSizePolicy::Expanding);
+        mLayout->addSpacerItem(spacer);
+
         mLayout->addLayout(btnLayout);
+    }
 }
