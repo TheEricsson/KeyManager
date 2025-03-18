@@ -102,6 +102,10 @@ MainWindow::MainWindow(QWidget *parent)
     // handle signals by AddRecipientView
     connect (mAddRecipientView, SIGNAL(previousButtonClicked()), this, SLOT (closeAddRecipientView()));
     connect (mAddRecipientView, SIGNAL(okButtonClicked()), this, SLOT (addRecipientViewSubmitted()));
+
+    // handle signals by handoverview
+    connect (mHandoverView, SIGNAL(firstButtonClicked()), this, SLOT (closeHandoverView()));
+    //todo://connect (mHandoverView, SIGNAL(secondButtonClicked()), this, SLOT (handoutTransaction ()));
 }
 
 void MainWindow::initDatabase ()
@@ -263,7 +267,15 @@ void MainWindow::showHandoverView ()
     if (!mHandoverView)
         return;
     else
+    {
+        mHandoverView->clear();
         setView (mHandoverView);
+    }
+}
+
+void MainWindow::closeHandoverView ()
+{
+    setView (mRecipientView);
 }
 
 void MainWindow::onSearchButtonReleased ()

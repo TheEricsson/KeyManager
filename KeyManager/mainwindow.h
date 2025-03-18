@@ -55,6 +55,7 @@ private slots:
     bool showKeychainStatusView (int aBarcode);
     void closeKeychainStatusView ();
     void showHandoverView ();
+    void closeHandoverView ();
     void closeScannerView ();
     void closeTableView ();
     void onSearchButtonReleased ();

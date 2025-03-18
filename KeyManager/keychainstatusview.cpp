@@ -36,17 +36,19 @@ KeychainStatusView::KeychainStatusView(QWidget *parent)
     mKeychain = new QTableView;
     mainLayout->addWidget(mKeychain);
 
+    mKeysImgPreview = new QPushButton ("Kein Bild vorhanden.");
+    mKeysImgPreview->setMinimumHeight(100);
+    mKeysImgPreview->setMinimumWidth(100);
+    mainLayout->addWidget(mKeysImgPreview);
+
     QLabel *keysHeader = new QLabel ("Enthaltene Schlüssel");
     mainLayout->addWidget(keysHeader);
 
-    mKeysImgPreview = new QPushButton ("Kein Bild vorhanden.");
-    mainLayout->addWidget(mKeysImgPreview);
+    mKeys = new QTableView;
+    mainLayout->addWidget(mKeys);
 
     QSpacerItem *spacer = new QSpacerItem (0, 0, QSizePolicy::Expanding,QSizePolicy::Expanding);
     mainLayout->addSpacerItem(spacer);
-
-    mKeys = new QTableView;
-    mainLayout->addWidget(mKeys);
 
     QHBoxLayout *btnLayout = new QHBoxLayout ();
     btnLayout->addWidget(btnPrevious);

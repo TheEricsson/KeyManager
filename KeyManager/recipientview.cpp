@@ -9,6 +9,9 @@
 #include <QSortFilterProxyModel>
 #include <QSqlRelationalTableModel>
 #include <QItemSelection>
+#include <QLineEdit>
+#include <QMessageBox>
+
 #include "globals.h"
 
 RecipientView::RecipientView(QWidget *parent)
@@ -32,10 +35,17 @@ RecipientView::RecipientView(QWidget *parent)
     mRecipients->setModel(mFilteredModel);
     layout->addWidget(mRecipients);
 
+    QHBoxLayout *recipientNameLayout = new QHBoxLayout (this);
+    QLabel* recipientNameLabel = new QLabel ("Empfängername", this);
+    mRecipientName = new QLineEdit (this);
+    recipientNameLayout->addWidget(recipientNameLabel);
+    recipientNameLayout->addWidget(mRecipientName);
+    mRecipientName->setEnabled(false);
+    layout->addLayout(recipientNameLayout);
+
     QPushButton* btnNewRecipient = new QPushButton (this);
     btnNewRecipient->setIcon(QIcon(":/images/addRecipient.jpeg"));
     btnNewRecipient->setIconSize(QSize(UiSpecs::buttonWidth,UiSpecs::buttonHeight));
-    layout->addWidget(btnNewRecipient);
 
     QPushButton* btnPrevious = new QPushButton (this);
     btnPrevious->setIcon(QIcon(":/images/menu_back.png"));
@@ -48,6 +58,7 @@ RecipientView::RecipientView(QWidget *parent)
 
     QHBoxLayout* hLayout = new QHBoxLayout (this);
     hLayout->addWidget(btnPrevious);
+    hLayout->addWidget(btnNewRecipient);
     hLayout->addWidget(mBtnNext);
 
     layout->addLayout(hLayout);
@@ -106,6 +117,8 @@ void RecipientView::reset()
 {
     mBtnNext->setDisabled(true);
     mRecipients->clearSelection();
+    mRecipientName->setDisabled(true);
+    mRecipientName->setText("");
 }
 
 void RecipientView::setTableFilter(const QString &text)
@@ -121,6 +134,37 @@ void RecipientView::setTableFilter(const QString &text)
 
 void RecipientView::onNextBtnClicked ()
 {
+    if (mRecipientName->isEnabled() && "" == mRecipientName->text())
+    {
+        mRecipientName->setStyleSheet("border-style: solid;border-width: 1px;border-color: red");
+
+        QMessageBox msgBox;
+        msgBox.setText("Unvollständige Eingaben");
+        msgBox.setInformativeText("Es wurde ein Unternehmen als Empfänger \n"
+                                 "ausgewählt. Der Name der Person, die den \n"
+                                  "Schlüssel entgegennimmt, wurde nicht angegeben.");
+
+        msgBox.setStandardButtons(QMessageBox::Ignore | QMessageBox::Ok);
+        msgBox.setDefaultButton(QMessageBox::Ok);
+
+        int selection = msgBox.exec();
+
+        bool ignore = false;
+
+        switch (selection)
+        {
+            case QMessageBox::Ignore:
+                ignore = true;
+                break;
+            case QMessageBox::Ok:
+                break;
+            default:
+                break;
+        }
+
+        if (!ignore)
+            return;
+    }
     emit nextButtonClicked ();
 }
 
@@ -139,8 +183,27 @@ void RecipientView::onTableSelectionChanged (const QItemSelection &itemNew, cons
     Q_UNUSED(itemOld);
     Q_UNUSED(itemNew);
 
+    int row = mRecipients->selectionModel()->currentIndex().row();
+    QString recipientType = mRecipients->model()->index(row, 2).data().toString ();
+
+    qDebug () << "onTableSelectionChanged, type: " << recipientType;
+
+    if ("Firma" == recipientType)
+    {
+        mRecipientName->setEnabled(true);
+    }
+    else
+    {
+        mRecipientName->setEnabled(false);
+        mRecipientName->setText("");
+    }
+
     if (!itemNew.isEmpty())
         mBtnNext->setEnabled(true);
     else
+    {
         mBtnNext->setEnabled(false);
+        mRecipientName->setEnabled(false);
+        mRecipientName->setText("");
+    }
 }

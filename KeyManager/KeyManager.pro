@@ -21,6 +21,7 @@ SOURCES += \
     mainwindow.cpp \
     recipientview.cpp \
     scannerview.cpp \
+    signaturepad.cpp \
     tableview.cpp \
     tests/qrencodertest.cpp \
     winsubmenu.cpp
@@ -37,6 +38,7 @@ HEADERS += \
     mainwindow.h \
     recipientview.h \
     scannerview.h \
+    signaturepad.h \
     tableview.h \
     tests/qrencodertest.h \
     winsubmenu.h

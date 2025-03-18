@@ -10,6 +10,7 @@ class QSqlRelationalTableModel;
 class QSortFilterProxyModel;
 class QItemSelection;
 class QPushButton;
+class QLineEdit;
 
 class RecipientView : public QWidget
 {
@@ -38,6 +39,7 @@ private:
     QTableView *mRecipients;
     QSortFilterProxyModel *mFilteredModel;
     QPushButton *mBtnNext;
+    QLineEdit *mRecipientName;
 };
 
 #endif // RECIPIENTVIEW_H

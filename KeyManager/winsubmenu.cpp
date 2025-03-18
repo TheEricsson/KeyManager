@@ -8,6 +8,10 @@
 WinSubmenu::WinSubmenu(QWidget *parent)
     : QWidget{parent}
 {
+    mBtnColumn0 = 0;
+    mBtnColumn1 = 0;
+    mBtnColumn2 = 0;
+
     mLayout = new QVBoxLayout (this);
     setLayout(mLayout);
 
@@ -40,97 +44,94 @@ void WinSubmenu::onThirdBtnClicked ()
     emit thirdButtonClicked();
 }
 
-void WinSubmenu::setMenuButtons (const UiSpecs::eMenuButton& column1, const UiSpecs::eMenuButton& column2, const UiSpecs::eMenuButton& column3)
+void WinSubmenu::setMenuButtons (const UiSpecs::eMenuButton& column0, const UiSpecs::eMenuButton& column1, const UiSpecs::eMenuButton& column2)
 {
-    QPushButton *btnColumn1 = 0;
-    QPushButton *btnColumn2 = 0;
-    QPushButton *btnColumn3 = 0;
     QHBoxLayout *btnLayout = 0;
 
     // set first button
-    switch (column1)
+    switch (column0)
     {
         case (UiSpecs::eMenuButton::BackButton):
-            btnColumn1 = new QPushButton (this);
-            btnColumn1->setIcon(QIcon(":/images/menu_back.png"));
+            mBtnColumn0 = new QPushButton (this);
+            mBtnColumn0->setIcon(QIcon(":/images/menu_back.png"));
             break;
         default:
             break;
             //right now we don't need any other case for column1
     }
 
-    if (0 != btnColumn1)
+    if (0 != mBtnColumn0)
     {
-        connect (btnColumn1, SIGNAL (clicked()), this, SLOT (onFirstBtnClicked()));
-        btnColumn1->setIconSize(QSize(UiSpecs::buttonWidth,UiSpecs::buttonHeight));
+        connect (mBtnColumn0, SIGNAL (clicked()), this, SLOT (onFirstBtnClicked()));
+        mBtnColumn0->setIconSize(QSize(UiSpecs::buttonWidth,UiSpecs::buttonHeight));
 
         if (!btnLayout)
         {
             btnLayout = new QHBoxLayout (this);
         }
-        btnLayout->addWidget(btnColumn1);
+        btnLayout->addWidget(mBtnColumn0);
     }
 
     // set second button
-    switch (column2)
+    switch (column1)
     {
         case (UiSpecs::eMenuButton::RepeatButton):
-            btnColumn2 = new QPushButton (this);
-            btnColumn2->setIcon(QIcon(":/images/menu_retry.png"));
+            mBtnColumn1 = new QPushButton (this);
+            mBtnColumn1->setIcon(QIcon(":/images/menu_retry.png"));
             break;
         case (UiSpecs::eMenuButton::ForwardButton):
-            btnColumn2 = new QPushButton (this);
-            btnColumn2->setIcon(QIcon(":/images/menu_next.png"));
+            mBtnColumn1 = new QPushButton (this);
+            mBtnColumn1->setIcon(QIcon(":/images/menu_next.png"));
             break;
         case (UiSpecs::eMenuButton::OkButton):
-            btnColumn2 = new QPushButton (this);
-            btnColumn2->setIcon(QIcon(":/images/btn_Ok.png"));
+            mBtnColumn1 = new QPushButton (this);
+            mBtnColumn1->setIcon(QIcon(":/images/btn_Ok.png"));
             break;
         default:
             break;
     }
 
-    if (0 != btnColumn2)
+    if (0 != mBtnColumn1)
     {
-        connect (btnColumn2, SIGNAL (clicked()), this, SLOT (onSecondBtnClicked()));
-        btnColumn2->setIconSize(QSize(UiSpecs::buttonWidth,UiSpecs::buttonHeight));
+        connect (mBtnColumn1, SIGNAL (clicked()), this, SLOT (onSecondBtnClicked()));
+        mBtnColumn1->setIconSize(QSize(UiSpecs::buttonWidth,UiSpecs::buttonHeight));
 
         if (!btnLayout)
         {
             btnLayout = new QHBoxLayout (this);
         }
-        btnLayout->addWidget(btnColumn2);
+        btnLayout->addWidget(mBtnColumn1);
     }
 
     // set third button
-    switch (column3)
+    switch (column2)
     {
     case (UiSpecs::eMenuButton::RepeatButton):
-        btnColumn3 = new QPushButton (this);
-        btnColumn3->setIcon(QIcon(":/images/menu_retry.png"));
+        mBtnColumn2 = new QPushButton (this);
+        mBtnColumn2->setIcon(QIcon(":/images/menu_retry.png"));
         break;
     case (UiSpecs::eMenuButton::ForwardButton):
-        btnColumn3 = new QPushButton (this);
-        btnColumn3->setIcon(QIcon(":/images/menu_next.png"));
+        mBtnColumn2 = new QPushButton (this);
+        mBtnColumn2->setIcon(QIcon(":/images/menu_next.png"));
         break;
     case (UiSpecs::eMenuButton::OkButton):
-        btnColumn3 = new QPushButton (this);
-        btnColumn3->setIcon(QIcon(":/images/btn_Ok.png"));
+        mBtnColumn2 = new QPushButton (this);
+        mBtnColumn2->setIcon(QIcon(":/images/btn_Ok.png"));
         break;
     default:
         break;
     }
 
-    if (0 != btnColumn3)
+    if (0 != mBtnColumn2)
     {
-        connect (btnColumn3, SIGNAL (clicked()), this, SLOT (onThirdBtnClicked()));
-        btnColumn3->setIconSize(QSize(UiSpecs::buttonWidth,UiSpecs::buttonHeight));
+        connect (mBtnColumn2, SIGNAL (clicked()), this, SLOT (onThirdBtnClicked()));
+        mBtnColumn2->setIconSize(QSize(UiSpecs::buttonWidth,UiSpecs::buttonHeight));
 
         if (!btnLayout)
         {
             btnLayout = new QHBoxLayout (this);
         }
-        btnLayout->addWidget(btnColumn3);
+        btnLayout->addWidget(mBtnColumn2);
     }
 
     if (btnLayout)
@@ -140,4 +141,28 @@ void WinSubmenu::setMenuButtons (const UiSpecs::eMenuButton& column1, const UiSp
 
         mLayout->addLayout(btnLayout);
     }
+}
+
+void WinSubmenu::disableButton (int column, bool disable)
+{
+    switch (column)
+    {
+        case 0:
+            if (mBtnColumn0)
+                mBtnColumn0->setDisabled(disable);
+            break;
+        case 1:
+            if (mBtnColumn1)
+                mBtnColumn1->setDisabled(disable);
+            break;
+        case 2:
+            if (mBtnColumn2)
+                mBtnColumn2->setDisabled(disable);
+            break;
+    }
+}
+
+void WinSubmenu::enableButton (int column, bool enable)
+{
+    disableButton(column, !enable);
 }

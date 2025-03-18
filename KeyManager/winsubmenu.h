@@ -6,16 +6,21 @@
 
 class QVBoxLayout;
 class QLabel;
+class QPushButton;
 
 class WinSubmenu : public QWidget
 {
     Q_OBJECT
 public:
     explicit WinSubmenu (QWidget *parent = nullptr);
+
+protected:
     void setHeader (const QString& label);
-    void setMenuButtons (const UiSpecs::eMenuButton& column1 = UiSpecs::eMenuButton::None,
-                        const UiSpecs::eMenuButton& column2 = UiSpecs::eMenuButton::None,
-                        const UiSpecs::eMenuButton& column3 = UiSpecs::eMenuButton::None);
+    void setMenuButtons (const UiSpecs::eMenuButton& column0 = UiSpecs::eMenuButton::None,
+                        const UiSpecs::eMenuButton& column1 = UiSpecs::eMenuButton::None,
+                        const UiSpecs::eMenuButton& column2 = UiSpecs::eMenuButton::None);
+    void disableButton (int column, bool disable);
+    void enableButton (int column, bool enable);
 
 signals:
     void firstButtonClicked ();
@@ -28,6 +33,11 @@ private slots:
     void onThirdBtnClicked ();
 
 private:
+
+    QPushButton *mBtnColumn0;
+    QPushButton *mBtnColumn1;
+    QPushButton *mBtnColumn2;
+
     QVBoxLayout *mLayout;
     QLabel *mHeaderLabel;
 };
