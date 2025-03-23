@@ -12,10 +12,10 @@
 #include <QLineEdit>
 #include <QMessageBox>
 
+#include "winsubmenu.h"
 #include "globals.h"
 
-RecipientView::RecipientView(QWidget *parent)
-    : QWidget{parent}
+RecipientView::RecipientView(QWidget *parent) : WinSubmenu {parent}
 {
     mRecipients = 0;
     mFilteredModel = 0;
@@ -23,44 +23,24 @@ RecipientView::RecipientView(QWidget *parent)
 
     mFilteredModel = new QSortFilterProxyModel (this);
 
-    QVBoxLayout* layout = new QVBoxLayout (this);
+    setHeader("Empfänger auswählen");
 
-    QHBoxLayout* searchLayout = new QHBoxLayout (this);
+    //QVBoxLayout* layout = new QVBoxLayout (this);
+
+    QHBoxLayout* searchLayout = new QHBoxLayout ();
     QLabel *searchLabel = new QLabel ("Suche", this);
     QLineEdit *searchField = new QLineEdit (this);
     searchLayout->addWidget(searchLabel);
     searchLayout->addWidget(searchField);
-    layout->addLayout(searchLayout);
+    layout()->addItem(searchLayout);
 
     mRecipients = new QTableView (this);
     mRecipients->setModel(mFilteredModel);
-    layout->addWidget(mRecipients);
+    layout()->addWidget(mRecipients);
 
-    QPushButton* btnNewRecipient = new QPushButton (this);
-    btnNewRecipient->setIcon(QIcon(":/images/addRecipient.jpeg"));
-    btnNewRecipient->setIconSize(QSize(UiSpecs::buttonWidth,UiSpecs::buttonHeight));
+    setMenuButtons(UiSpecs::BackButton, UiSpecs::AddRecipientButton, UiSpecs::NextButton);
+    disableButton(2, true);
 
-    QPushButton* btnPrevious = new QPushButton (this);
-    btnPrevious->setIcon(QIcon(":/images/menu_back.png"));
-    btnPrevious->setIconSize(QSize(UiSpecs::buttonWidth,UiSpecs::buttonHeight));
-
-    mBtnNext = new QPushButton (this);
-    mBtnNext->setIcon(QIcon(":/images/menu_next.png"));
-    mBtnNext->setIconSize(QSize(UiSpecs::buttonWidth,UiSpecs::buttonHeight));
-    mBtnNext->setDisabled(true);
-
-    QHBoxLayout* hLayout = new QHBoxLayout (this);
-    hLayout->addWidget(btnPrevious);
-    hLayout->addWidget(btnNewRecipient);
-    hLayout->addWidget(mBtnNext);
-
-    layout->addLayout(hLayout);
-
-    setLayout(layout);
-
-    connect (btnPrevious, SIGNAL (clicked()), this, SLOT (onPreviousBtnClicked()));
-    connect (mBtnNext, SIGNAL (clicked()), this, SLOT (onNextBtnClicked()));
-    connect (btnNewRecipient, SIGNAL (clicked()), this, SLOT (onNewRecipientBtnClicked()));
     connect (mRecipients->selectionModel(), SIGNAL(selectionChanged(const QItemSelection &, const QItemSelection &)), this, SLOT(onTableSelectionChanged(const QItemSelection &, const QItemSelection &)));
     connect (searchField, SIGNAL (textChanged(const QString &)), this, SLOT (setTableFilter(const QString &)));
 }
@@ -103,6 +83,8 @@ bool RecipientView::setModel (QSqlRelationalTableModel* model)
 
     mRecipients->resizeColumnsToContents();
 
+    update ();
+
     return true;
 }
 
@@ -136,7 +118,7 @@ bool RecipientView::getRecipientData (RecipientData &data)
 
 void RecipientView::reset()
 {
-    mBtnNext->setDisabled(true);
+    disableButton(2, true);
     mRecipients->clearSelection();
     mRowSelected = false;
 }
@@ -150,6 +132,7 @@ void RecipientView::setTableFilter(const QString &text)
 
     mFilteredModel->setFilterWildcard(text);
     mRecipients->update();
+    update ();
 }
 
 void RecipientView::onNextBtnClicked ()
@@ -208,12 +191,14 @@ void RecipientView::onTableSelectionChanged (const QItemSelection &itemNew, cons
 
     if (!itemNew.isEmpty())
     {
-        mBtnNext->setEnabled(true);
+        enableButton(2, true);
         mRowSelected = true;
     }
     else
     {
-        mBtnNext->setEnabled(false);
+        disableButton(2, true);
         mRowSelected = false;
     }
+
+    update();
 }

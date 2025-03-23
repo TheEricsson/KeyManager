@@ -5,6 +5,7 @@
 #include <QWidget>
 #include <QString>
 #include "globals.h"
+#include "winsubmenu.h"
 
 class QTableView;
 class QSqlRelationalTableModel;
@@ -13,7 +14,7 @@ class QItemSelection;
 class QPushButton;
 class QLineEdit;
 
-class RecipientView : public QWidget
+class RecipientView : public WinSubmenu
 {
     Q_OBJECT
 public:
@@ -40,7 +41,6 @@ private slots:
 private:
     QTableView *mRecipients;
     QSortFilterProxyModel *mFilteredModel;
-    QPushButton *mBtnNext;
     bool mRowSelected;
 };
 
