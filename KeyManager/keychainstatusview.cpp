@@ -11,81 +11,63 @@
 #include <QSizePolicy>
 #include <QLabel>
 #include <QSpacerItem>
+#include "winsubmenu.h"
 
 KeychainStatusView::KeychainStatusView(QWidget *parent)
-    : QWidget{parent}
+    : WinSubmenu {parent}
 {
     mKeys = 0;
     mKeychain = 0;
-    mButtonNext = 0;
     mKeysImgPreview = 0;
+
+    setHeader("Informationen zum Schlüsselbund");
 
     QPushButton* btnPrevious = new QPushButton ();
     btnPrevious->setIcon(QIcon(":/images/menu_back.png"));
     btnPrevious->setIconSize (QSize(UiSpecs::buttonWidth, UiSpecs::buttonHeight));
 
-    mButtonNext = new QPushButton ();
-    mButtonNext->setIcon(QIcon(":/images/menu_keyOut.png"));
-    mButtonNext->setIconSize (QSize(UiSpecs::buttonWidth, UiSpecs::buttonHeight));
-
-    QVBoxLayout *mainLayout = new QVBoxLayout (this);
-
     QLabel *keyChainHeader = new QLabel ("Schlüsselbund");
-    mainLayout->addWidget(keyChainHeader);
+    layout()->addWidget(keyChainHeader);
 
-    mKeychain = new QTableView;
-    mainLayout->addWidget(mKeychain);
+    mKeychain = new QTableView ();
+    layout()->addWidget(mKeychain);
 
     mKeysImgPreview = new QPushButton ("Kein Bild vorhanden.");
     mKeysImgPreview->setMinimumHeight(100);
     mKeysImgPreview->setMinimumWidth(100);
-    mainLayout->addWidget(mKeysImgPreview);
+    layout()->addWidget(mKeysImgPreview);
 
     QLabel *keysHeader = new QLabel ("Enthaltene Schlüssel");
-    mainLayout->addWidget(keysHeader);
+    layout()->addWidget(keysHeader);
 
     mKeys = new QTableView;
-    mainLayout->addWidget(mKeys);
+    layout()->addWidget(mKeys);
 
-    QSpacerItem *spacer = new QSpacerItem (0, 0, QSizePolicy::Expanding,QSizePolicy::Expanding);
-    mainLayout->addSpacerItem(spacer);
-
-    QHBoxLayout *btnLayout = new QHBoxLayout ();
-    btnLayout->addWidget(btnPrevious);
-    btnLayout->addWidget(mButtonNext);
-
-    mainLayout->addLayout(btnLayout);
-
-    setLayout(mainLayout);
-    setWindowTitle(tr("Übersicht"));
-    show();
-
-    connect (btnPrevious, SIGNAL (clicked()), this, SLOT (onPreviousBtnClicked()));
-    connect (mButtonNext, SIGNAL (clicked()), this, SLOT (onNextBtnClicked()));
+    setMenuButtons(UiSpecs::BackButton, UiSpecs::NextButton);
 }
 
 void KeychainStatusView::setKeychainStatus (const int &statusId)
 {
-    if (0 != mButtonNext)
-    {
-        switch (statusId)
-        {
-        case Database::Available:
-            mButtonNext->setIcon(QIcon(":/images/menu_keyOut.png"));
-            break;
-        case Database::TemporaryOut:
-        case Database::PermanentOut:
-        case Database::Lost:
-        case Database::AdministrationEnded:
-            mButtonNext->setIcon(QIcon(":/images/menu_keyBack.png"));
-            break;
-        default:
-            break;
-        }
-    }
-    else
-        qDebug () << "KeychainStatusView::setKeychainStatus: mButtonNext is NULL";
-    return;
+    // if (0 != mButtonNext)
+    // {
+    //     switch (statusId)
+    //     {
+    //     case Database::Available:
+    //         //mButtonNext->setIcon(QIcon(":/images/menu_keyOut.png"));
+    //         break;
+    //     case Database::TemporaryOut:
+    //     case Database::PermanentOut:
+    //     case Database::Lost:
+    //     case Database::AdministrationEnded:
+    //         //mButtonNext->setIcon(QIcon(":/images/menu_keyBack.png"));
+    //         break;
+    //     default:
+    //         break;
+    //     }
+    // }
+    // else
+    //     qDebug () << "KeychainStatusView::setKeychainStatus: mButtonNext is NULL";
+    // return;
 }
 
 bool KeychainStatusView::setKeychainModel (QSqlRelationalTableModel* model)

@@ -3,6 +3,7 @@
 
 #include <QObject>
 #include <QWidget>
+#include "winsubmenu.h"
 
 class QLabel;
 class QSqlQueryModel;
@@ -10,7 +11,7 @@ class QTableView;
 class QSqlRelationalTableModel;
 class QPushButton;
 
-class KeychainStatusView : public QWidget
+class KeychainStatusView : public WinSubmenu
 {
     Q_OBJECT
 public:
@@ -39,7 +40,7 @@ private:
     QLabel *mCity;
     QLabel *mQuantityKeys;
     QImage *mKeychainImage;
-    QPushButton *mButtonNext;
+    //QPushButton *mButtonNext;
     QPushButton *mKeysImgPreview;
 };
 

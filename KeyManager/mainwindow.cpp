@@ -56,7 +56,7 @@ MainWindow::MainWindow(QWidget *parent)
 
     initDatabase ();
 
-    mLayout = new QStackedLayout();
+    mLayout = new QStackedLayout(this);
     setLayout(mLayout);
 
     mHomeView = new HomeView (this);
@@ -78,9 +78,8 @@ MainWindow::MainWindow(QWidget *parent)
     setView(mHomeView);
 
     // handle signals by ScanView
-    connect (mScanView, SIGNAL (scanButtonClicked()), this, SLOT (showScannerView()));
-    connect (mScanView, SIGNAL(previousButtonClicked()), this, SLOT (closeScannerView()));
-    connect (mScanView, SIGNAL(nextButtonClicked()), this, SLOT (handleScannedKey()));
+    connect (mScanView, SIGNAL(firstButtonClicked()), this, SLOT (closeScannerView()));
+    connect (mScanView, SIGNAL(secondButtonClicked()), this, SLOT (showScannerView()));
 
     // handle signals by HomeView
     connect (mHomeView,SIGNAL(showScannerView()), this, SLOT(showScannerView()));
@@ -90,9 +89,8 @@ MainWindow::MainWindow(QWidget *parent)
     connect (mTableView, SIGNAL(previousButtonClicked()), this, SLOT (closeTableView()));
 
     // handle signals by KeychainStatusView
-    connect (mKeychainStatusView, SIGNAL(previousButtonClicked()), this, SLOT (closeKeychainStatusView()));
-    //connect (mKeychainStatusView, SIGNAL(nextButtonClicked()), this, SLOT (closeKeychainStatusView()));
-    connect (mKeychainStatusView, SIGNAL(nextButtonClicked()), this, SLOT (showRecipientView()));
+    connect (mKeychainStatusView, SIGNAL(firstButtonClicked()), this, SLOT (closeKeychainStatusView()));
+    connect (mKeychainStatusView, SIGNAL(secondButtonClicked()), this, SLOT (showRecipientView()));
 
     // handle signals by RecipientView
     connect (mRecipientView, SIGNAL(previousButtonClicked()), this, SLOT (closeRecipientView()));
