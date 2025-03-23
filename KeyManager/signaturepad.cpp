@@ -10,7 +10,8 @@ SignaturePad::SignaturePad(QWidget *parent)
     : QWidget{parent}
 {
     setAttribute(Qt::WA_StaticContents);
-    setFixedSize (300, 150);
+    setSizePolicy(QSizePolicy::Expanding, QSizePolicy::MinimumExpanding);
+    setMinimumSize(300, 150);
 }
 
 void SignaturePad::setPenColor(const QColor &newColor)
@@ -40,8 +41,6 @@ void SignaturePad::mousePressEvent(QMouseEvent *event)
 
 void SignaturePad::mouseMoveEvent(QMouseEvent *event)
 {
-    qDebug () << "SignaturePad::mouseMoveEvent(QMouseEvent *event)";
-
     if ((event->buttons() & Qt::LeftButton) && scribbling)
         drawLineTo(event->position().toPoint());
 }
@@ -56,8 +55,6 @@ void SignaturePad::mouseReleaseEvent(QMouseEvent *event)
 
 void SignaturePad::paintEvent(QPaintEvent *event)
 {
-    qDebug () << "SignaturePad::paintEvent(QPaintEvent *event)";
-
     QPainter painter(this);
     painter.setRenderHint(QPainter::Antialiasing, true);
     QRect dirtyRect = event->rect();
