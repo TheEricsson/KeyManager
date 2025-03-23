@@ -3,6 +3,7 @@
 
 #include <QWidget>
 #include <QSize>
+#include "winsubmenu.h"
 
 class QVideoWidget;
 class QLabel;
@@ -14,7 +15,7 @@ enum ScannerState {
     SCANSUCCEEDED,
 };
 
-class ScannerView : public QWidget
+class ScannerView : public WinSubmenu
 {
     Q_OBJECT
 public:
@@ -34,8 +35,8 @@ private:
     QVideoWidget *m_viewfinder;
     QLabel *mCustomerLabel;
     QLabel *mKeyLabel;
-    QPushButton *mBtnNext;
-    QPushButton *mBtnScan;
+    //QPushButton *mBtnNext;
+    //QPushButton *mBtnScan;
 
 signals:
     void previousButtonClicked ();

@@ -14,28 +14,26 @@
 #include <QAudioOutput>
 #include <QScreenCapture>
 #include <QLineEdit>
+#include "winsubmenu.h"
 
 #if QT_CONFIG(permissions)
 #include <QPermission>
 #endif
 
 ScannerView::ScannerView(QWidget *parent)
-    : QWidget{parent}
+    : WinSubmenu {parent}
 {
+    setHeader("Scannen Sie einen Barcode");
+
     m_viewfinder = 0;
-
-    // main Layout
-    QVBoxLayout *layout = new QVBoxLayout;
-    setLayout(layout);
-
-    QLabel* header = new QLabel("Scannen Sie einen Barcode");
-    layout->addWidget(header);
 
     // layout for the cam video/ pic screen
     m_viewfinder = new QVideoWidget ();
+    m_viewfinder->setMinimumSize(300, 150);
+    m_viewfinder->setSizePolicy(QSizePolicy::Policy::MinimumExpanding, QSizePolicy::Policy::MinimumExpanding);
 
-    layout->addWidget(m_viewfinder);
-    layout->setStretch(1,2);
+    layout()->addWidget(m_viewfinder);
+    //layout()->setStretch(1,2);
 
     // mandant text field
     QHBoxLayout *mandantIdLayout = new QHBoxLayout;
@@ -44,7 +42,7 @@ ScannerView::ScannerView(QWidget *parent)
     mandantIdLayout->addWidget (mandantDescr);
     mandantIdLayout->addWidget(mCustomerLabel);
 
-    layout->addLayout(mandantIdLayout);
+    layout()->addItem(mandantIdLayout);
 
     // key text field
     QHBoxLayout *keyIdLayout = new QHBoxLayout;
@@ -53,34 +51,9 @@ ScannerView::ScannerView(QWidget *parent)
     keyIdLayout->addWidget (keyDescr);
     keyIdLayout->addWidget(mKeyLabel);
 
-    layout->addLayout(keyIdLayout);
+    layout()->addItem(keyIdLayout);
 
-    //prev+retry+next button
-    QHBoxLayout *menuLayout = new QHBoxLayout;
-
-    QPushButton* btnPrevious = new QPushButton ();
-    btnPrevious->setIcon(QIcon(":/images/menu_back.png"));
-    btnPrevious->setIconSize(QSize(75,75));
-
-    mBtnNext = new QPushButton ();
-    mBtnNext->setIcon(QIcon(":/images/menu_next.png"));
-    mBtnNext->setIconSize(QSize(75,75));
-    mBtnNext->setDisabled(true);
-
-    mBtnScan = new QPushButton ();
-    mBtnScan->setIcon(QIcon(":/images/menu_retry.png"));
-    mBtnScan->setIconSize(QSize(75,75));
-    mBtnScan->setDisabled(true);
-
-    menuLayout->addWidget(btnPrevious);
-    menuLayout->addWidget(mBtnScan);
-    menuLayout->addWidget(mBtnNext);
-
-    layout->addLayout(menuLayout);
-
-    connect (btnPrevious, SIGNAL (clicked()), this, SLOT (onPreviousBtnClicked()));
-    connect (mBtnScan, SIGNAL (clicked()), this, SLOT (onScanBtnClicked()));
-    connect (mBtnNext, SIGNAL (clicked()), this, SLOT (onNextBtnClicked()));
+    setMenuButtons(UiSpecs::BackButton, UiSpecs::RepeatButton);
 
     setScannerState (ScannerState::READY);
 }
@@ -95,20 +68,14 @@ void ScannerView::setScannerState (ScannerState aStatus)
             qDebug () << "ScannerState is READY";
             mCustomerLabel->setText("---");
             mKeyLabel->setText("---");
-            mBtnNext->setDisabled(true);
-            mBtnScan->setDisabled(false);
             break;
         case SCANNING:
             mCustomerLabel->setText("---");
             mKeyLabel->setText("---");
             qDebug() <<  "ScannerState is SCANNING";
-            mBtnNext->setDisabled(true);
-            mBtnScan->setDisabled(true);
             break;
         case SCANSUCCEEDED:
             qDebug() <<  "ScannerState is SCANSUCCEEDED";
-            mBtnNext->setDisabled(false);
-            mBtnScan->setDisabled(false);
             break;
     }
 }

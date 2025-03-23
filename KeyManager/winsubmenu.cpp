@@ -13,7 +13,6 @@ WinSubmenu::WinSubmenu(QWidget *parent)
     mBtnColumn2 = 0;
 
     mLayout = new QVBoxLayout (this);
-    setLayout(mLayout);
 
     mHeaderLabel = new QLabel (this);
     mLayout->addWidget(mHeaderLabel,0,Qt::AlignCenter);
@@ -79,7 +78,7 @@ void WinSubmenu::setMenuButtons (const UiSpecs::eMenuButton& column0, const UiSp
             mBtnColumn1 = new QPushButton (this);
             mBtnColumn1->setIcon(QIcon(":/images/menu_retry.png"));
             break;
-        case (UiSpecs::eMenuButton::ForwardButton):
+        case (UiSpecs::eMenuButton::NextButton):
             mBtnColumn1 = new QPushButton (this);
             mBtnColumn1->setIcon(QIcon(":/images/menu_next.png"));
             break;
@@ -110,7 +109,7 @@ void WinSubmenu::setMenuButtons (const UiSpecs::eMenuButton& column0, const UiSp
         mBtnColumn2 = new QPushButton (this);
         mBtnColumn2->setIcon(QIcon(":/images/menu_retry.png"));
         break;
-    case (UiSpecs::eMenuButton::ForwardButton):
+    case (UiSpecs::eMenuButton::NextButton):
         mBtnColumn2 = new QPushButton (this);
         mBtnColumn2->setIcon(QIcon(":/images/menu_next.png"));
         break;
@@ -138,7 +137,6 @@ void WinSubmenu::setMenuButtons (const UiSpecs::eMenuButton& column0, const UiSp
     {
         QSpacerItem *spacer = new QSpacerItem (0, 0, QSizePolicy::Expanding,QSizePolicy::Expanding);
         mLayout->addSpacerItem(spacer);
-
         mLayout->addLayout(btnLayout);
     }
 }
