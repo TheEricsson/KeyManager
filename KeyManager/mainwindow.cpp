@@ -155,11 +155,11 @@ void MainWindow::showScannerView ()
         connect (mGrabTimer, SIGNAL(timeout()), this, SLOT(decodeFromVideoFrame()));
     }
 
-    setView(mScanView);
-
     mCameraInstance->startCamera();
     mGrabTimer->start();
     mScanView->setScannerState(ScannerState::SCANNING);
+
+    setView(mScanView);
 }
 
 void MainWindow::showTableView ()
@@ -333,6 +333,7 @@ void MainWindow::decodeImage (int requestId, const QImage &img)
     if (customerId == "00001" && 5 == keyId.length())
     {
         mGrabTimer->stop ();
+        mCameraInstance->stopCamera();
 
         // code recognized: play a supermarket beep sound :)
         playSound ();
