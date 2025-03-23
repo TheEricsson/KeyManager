@@ -22,8 +22,5 @@ int main(int argc, char *argv[])
     MainWindow w;
     w.show();
 
-    QStyle * android=QStyleFactory::create("Android");
-    w.setStyle(android);
-
     return a.exec();
 }
