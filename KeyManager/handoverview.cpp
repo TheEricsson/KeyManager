@@ -4,6 +4,7 @@
 #include <QPushButton>
 #include <QLabel>
 #include <QLineEdit>
+#include <QVBoxLayout>
 
 HandoverView::HandoverView (QWidget *parent)
     : WinSubmenu {parent}
@@ -20,7 +21,7 @@ HandoverView::HandoverView (QWidget *parent)
 
     layout()->addItem(recipientNameLayout);
 
-    mSigPad = new SignaturePad ();
+    mSigPad = new SignaturePad (this);
     layout()->addWidget(mSigPad);
 
     QPushButton *btnClear = new QPushButton ("Reset");
@@ -29,30 +30,31 @@ HandoverView::HandoverView (QWidget *parent)
     setMenuButtons(UiSpecs::BackButton, UiSpecs::OkButton);
     disableButton(1, true);
 
-    connect (btnClear, SIGNAL (clicked()), mSigPad, SLOT (clearImage ()));
+    //connect (btnClear, SIGNAL (clicked()), mSigPad, SLOT (clearImage ()));
     connect (btnClear, SIGNAL (clicked()), this, SLOT (onSignatureClear ()));
     connect (mSigPad, SIGNAL (signaturePaint ()), this, SLOT(onSignaturePaint ()));
 }
 
 void HandoverView::clear ()
 {
-    mSigPad->clearImage();
     onSignatureClear();
 }
 
 void HandoverView::onSignaturePaint ()
 {
     if (mSigPad->isModified())
+    {
         enableButton(1, true);
+        update ();
+    }
 }
 
 void HandoverView::onSignatureClear ()
 {
+    mSigPad->clearImage();
+
     if (!mSigPad->isModified())
         disableButton(1, true);
-}
 
-// HandoverView::onClearBtnClicked ()
-// {
-//     mSigPad->cle
-// }
+    update ();
+}
