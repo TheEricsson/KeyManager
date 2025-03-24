@@ -28,6 +28,7 @@ public slots:
 
 private slots:
     void onTableSelectionChanged (const QItemSelection &itemNew, const QItemSelection &itemOld);
+    void onThirdBtnClicked ();
 
 private:
     QTableView *mRecipients;
