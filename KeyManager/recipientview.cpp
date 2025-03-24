@@ -38,6 +38,14 @@ RecipientView::RecipientView(QWidget *parent) : WinSubmenu {parent}
     mRecipients->setModel(mFilteredModel);
     layout()->addWidget(mRecipients);
 
+    QLabel *recipientNameLabel = new QLabel ("Empfängername:", this);
+    mRecipientNameEdit = new QLineEdit ("", this);
+    QVBoxLayout *recipientNameLayout = new QVBoxLayout ();
+    recipientNameLayout->addWidget(recipientNameLabel);
+    recipientNameLayout->addWidget(mRecipientNameEdit);
+
+    layout()->addItem(recipientNameLayout);
+
     setMenuButtons(UiSpecs::BackButton, UiSpecs::AddRecipientButton, UiSpecs::NextButton);
     disableButton(2, true);
 
@@ -188,6 +196,17 @@ void RecipientView::onTableSelectionChanged (const QItemSelection &itemNew, cons
     {
         disableButton(2, true);
         mRowSelected = false;
+    }
+
+    mRecipientNameEdit->setText("");
+
+    if ("Firma" == recipientType)
+    {
+        mRecipientNameEdit->setEnabled(true);
+    }
+    else
+    {
+        mRecipientNameEdit->setEnabled(false);
     }
 
     update();

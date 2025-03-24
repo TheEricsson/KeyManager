@@ -32,6 +32,7 @@ private slots:
 private:
     QTableView *mRecipients;
     QSortFilterProxyModel *mFilteredModel;
+    QLineEdit *mRecipientNameEdit;
     bool mRowSelected;
 };
 
