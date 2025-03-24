@@ -4,6 +4,7 @@
 #include <QWidget>
 #include <QSqlQueryModel>
 #include <QSqlRelationalTableModel>
+#include "QZXing.h"
 
 class QPushButton;
 class QGridLayout;
@@ -93,6 +94,7 @@ private:
     QSqlRelationalTableModel *mRecipientsModel;
 
     eViewState mViewState;
+    QZXing decoder;
 
 #ifdef ENCODERTEST
     QREncoderTest* qrencoderTest;

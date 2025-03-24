@@ -40,6 +40,7 @@ void WinSubmenu::onSecondBtnClicked ()
 
 void WinSubmenu::onThirdBtnClicked ()
 {
+    qDebug () << "WinSubmenu::onThirdBtnClicked ()";
     emit thirdButtonClicked();
 }
 
@@ -66,7 +67,7 @@ void WinSubmenu::setMenuButtons (const UiSpecs::eMenuButton& column0, const UiSp
 
         if (!btnLayout)
         {
-            btnLayout = new QHBoxLayout (this);
+            btnLayout = new QHBoxLayout ();
         }
         btnLayout->addWidget(mBtnColumn0);
     }
@@ -86,6 +87,10 @@ void WinSubmenu::setMenuButtons (const UiSpecs::eMenuButton& column0, const UiSp
             mBtnColumn1 = new QPushButton (this);
             mBtnColumn1->setIcon(QIcon(":/images/btn_Ok.png"));
             break;
+        case (UiSpecs::eMenuButton::AddRecipientButton):
+            mBtnColumn1 = new QPushButton (this);
+            mBtnColumn1->setIcon(QIcon(":/images/addRecipient.jpeg"));
+            break;
         default:
             break;
     }
@@ -97,7 +102,7 @@ void WinSubmenu::setMenuButtons (const UiSpecs::eMenuButton& column0, const UiSp
 
         if (!btnLayout)
         {
-            btnLayout = new QHBoxLayout (this);
+            btnLayout = new QHBoxLayout ();
         }
         btnLayout->addWidget(mBtnColumn1);
     }
@@ -128,7 +133,7 @@ void WinSubmenu::setMenuButtons (const UiSpecs::eMenuButton& column0, const UiSp
 
         if (!btnLayout)
         {
-            btnLayout = new QHBoxLayout (this);
+            btnLayout = new QHBoxLayout ();
         }
         btnLayout->addWidget(mBtnColumn2);
     }

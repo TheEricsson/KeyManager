@@ -17,6 +17,7 @@ public:
 private slots:
     void onSignaturePaint ();
     void onSignatureClear ();
+    void onSetReturnDate ();
 
 private:
     SignaturePad *mSigPad;

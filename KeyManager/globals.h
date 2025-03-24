@@ -8,7 +8,7 @@ namespace UiSpecs
     //button dimensions
     const int buttonHeight = 90;
     const int buttonWidth = 90;
-    const int buttonBorder = 5;
+    const int buttonBorder = 3;
 
     const int buttonImgHeight = buttonHeight - buttonBorder;
     const int buttonImgWidth = buttonWidth - buttonBorder;
@@ -22,8 +22,9 @@ namespace UiSpecs
     {
         BackButton,
         RepeatButton,
-        ForwardButton,
+        NextButton,
         OkButton,
+        AddRecipientButton,
         None,
     };
 }

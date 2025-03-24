@@ -35,18 +35,6 @@ private:
     QVideoWidget *m_viewfinder;
     QLabel *mCustomerLabel;
     QLabel *mKeyLabel;
-    //QPushButton *mBtnNext;
-    //QPushButton *mBtnScan;
-
-signals:
-    void previousButtonClicked ();
-    void scanButtonClicked ();
-    void nextButtonClicked ();
-
-private slots:
-    void onPreviousBtnClicked();
-    void onScanBtnClicked();
-    void onNextBtnClicked();
 };
 
 #endif // SCANNERVIEW_H

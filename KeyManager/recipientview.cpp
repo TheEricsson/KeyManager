@@ -135,51 +135,41 @@ void RecipientView::setTableFilter(const QString &text)
     update ();
 }
 
-void RecipientView::onNextBtnClicked ()
-{
-    // if (mRecipientName->isEnabled() && "" == mRecipientName->text())
-    // {
-    //     mRecipientName->setStyleSheet("border-style: solid;border-width: 1px;border-color: red");
+// void RecipientView::onNextBtnClicked ()
+// {
+//     if (mRecipientName->isEnabled() && "" == mRecipientName->text())
+//     {
+//         mRecipientName->setStyleSheet("border-style: solid;border-width: 1px;border-color: red");
 
-    //     QMessageBox msgBox;
-    //     msgBox.setText("Unvollständige Eingaben");
-    //     msgBox.setInformativeText("Es wurde ein Unternehmen als Empfänger \n"
-    //                              "ausgewählt. Der Name der Person, die den \n"
-    //                               "Schlüssel entgegennimmt, wurde nicht angegeben.");
+//         QMessageBox msgBox;
+//         msgBox.setText("Unvollständige Eingaben");
+//         msgBox.setInformativeText("Es wurde ein Unternehmen als Empfänger \n"
+//                                  "ausgewählt. Der Name der Person, die den \n"
+//                                   "Schlüssel entgegennimmt, wurde nicht angegeben.");
 
-    //     msgBox.setStandardButtons(QMessageBox::Ignore | QMessageBox::Ok);
-    //     msgBox.setDefaultButton(QMessageBox::Ok);
+//         msgBox.setStandardButtons(QMessageBox::Ignore | QMessageBox::Ok);
+//         msgBox.setDefaultButton(QMessageBox::Ok);
 
-    //     int selection = msgBox.exec();
+//         int selection = msgBox.exec();
 
-    //     bool ignore = false;
+//         bool ignore = false;
 
-    //     switch (selection)
-    //     {
-    //         case QMessageBox::Ignore:
-    //             ignore = true;
-    //             break;
-    //         case QMessageBox::Ok:
-    //             break;
-    //         default:
-    //             break;
-    //     }
+//         switch (selection)
+//         {
+//             case QMessageBox::Ignore:
+//                 ignore = true;
+//                 break;
+//             case QMessageBox::Ok:
+//                 break;
+//             default:
+//                 break;
+//         }
 
-    //     if (!ignore)
-    //         return;
-    // }
-    emit nextButtonClicked ();
-}
-
-void RecipientView::onPreviousBtnClicked ()
-{
-    emit previousButtonClicked ();
-}
-
-void RecipientView::onNewRecipientBtnClicked ()
-{
-    emit newRecipientButtonClicked();
-}
+//         if (!ignore)
+//             return;
+//     }
+//     emit nextButtonClicked ();
+// }
 
 void RecipientView::onTableSelectionChanged (const QItemSelection &itemNew, const QItemSelection &itemOld)
 {

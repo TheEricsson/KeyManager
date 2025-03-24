@@ -26,16 +26,7 @@ public:
 public slots:
     void setTableFilter(const QString &);
 
-signals:
-    void nextButtonClicked();
-    void previousButtonClicked();
-    void newRecipientButtonClicked();
-
 private slots:
-
-    void onNextBtnClicked ();
-    void onPreviousBtnClicked ();
-    void onNewRecipientBtnClicked ();
     void onTableSelectionChanged (const QItemSelection &itemNew, const QItemSelection &itemOld);
 
 private:

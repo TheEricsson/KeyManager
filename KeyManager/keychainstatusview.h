@@ -21,13 +21,6 @@ public:
     bool setKeysModel (QSqlRelationalTableModel* model);
     void setKeychainImagePath (const QString& imgPath);
 
-signals:
-    void previousButtonClicked ();
-    void nextButtonClicked ();
-
-private slots:
-    void onPreviousBtnClicked();
-    void onNextBtnClicked();
 private:
 
     QSqlQueryModel *mKeyOverview;
@@ -40,7 +33,6 @@ private:
     QLabel *mCity;
     QLabel *mQuantityKeys;
     QImage *mKeychainImage;
-    //QPushButton *mButtonNext;
     QPushButton *mKeysImgPreview;
 };
 

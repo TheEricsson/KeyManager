@@ -30,10 +30,11 @@ ScannerView::ScannerView(QWidget *parent)
     // layout for the cam video/ pic screen
     m_viewfinder = new QVideoWidget ();
     m_viewfinder->setMinimumSize(300, 150);
-    m_viewfinder->setSizePolicy(QSizePolicy::Policy::MinimumExpanding, QSizePolicy::Policy::MinimumExpanding);
+    m_viewfinder->setAspectRatioMode(Qt::AspectRatioMode::KeepAspectRatioByExpanding);
+    m_viewfinder->setSizePolicy(QSizePolicy::Policy::Expanding, QSizePolicy::Policy::Expanding);
+    m_viewfinder->setContentsMargins(0, 0, 0, 0);
 
     layout()->addWidget(m_viewfinder);
-    //layout()->setStretch(1,2);
 
     // mandant text field
     QHBoxLayout *mandantIdLayout = new QHBoxLayout;
@@ -78,21 +79,6 @@ void ScannerView::setScannerState (ScannerState aStatus)
             qDebug() <<  "ScannerState is SCANSUCCEEDED";
             break;
     }
-}
-
-void ScannerView::onPreviousBtnClicked ()
-{
-    emit previousButtonClicked ();
-}
-
-void ScannerView::onScanBtnClicked ()
-{
-    emit scanButtonClicked ();
-}
-
-void ScannerView::onNextBtnClicked()
-{
-    emit nextButtonClicked ();
 }
 
 QSize ScannerView::getViewfinderSize ()

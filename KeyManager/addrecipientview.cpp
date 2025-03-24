@@ -34,7 +34,7 @@ AddRecipientView::AddRecipientView(QWidget *parent)
     btnGroup->addButton(isPrivatePerson, 1);
     btnGroup->addButton(isEmployee, 2);
 
-    QHBoxLayout *recipientTypeBtnBox = new QHBoxLayout (this);
+    QHBoxLayout *recipientTypeBtnBox = new QHBoxLayout ();
     recipientTypeBtnBox->addWidget(mIsCompany);
     recipientTypeBtnBox->addWidget(isPrivatePerson);
     recipientTypeBtnBox->addWidget(isEmployee);
@@ -74,7 +74,7 @@ AddRecipientView::AddRecipientView(QWidget *parent)
     //btnOk->setDisabled(true);
 
     //prev+next button layout
-    QHBoxLayout *buttonLayout = new QHBoxLayout (this);
+    QHBoxLayout *buttonLayout = new QHBoxLayout ();
     buttonLayout->addWidget(btnPrevious);
     buttonLayout->addWidget(btnOk);
 
@@ -212,16 +212,19 @@ void AddRecipientView::onIsCompanyBtnClicked ()
 {
     mLabelRecipientName->setText("Firmenbezeichnung");
     mRecipientType = RecipientType::Company;
+    update (); // do a screen update, since behaviour with android is like there is no auto screen refresh after clicking a radio button.
 }
 
 void AddRecipientView::onIsPrivatePersonBtnClicked ()
 {
     mLabelRecipientName->setText("Empfängername");
     mRecipientType = RecipientType::PrivatePerson;
+    update (); // do a screen update, since behaviour with android is like there is no auto screen refresh after clicking a radio button.
 }
 
 void AddRecipientView::onIsEmployeeBtnClicked ()
 {
     mLabelRecipientName->setText("Mitarbeitername");
     mRecipientType = RecipientType::Employee;
+    update (); // do a screen update, since behaviour with android is like there is no auto screen refresh after clicking a radio button.
 }

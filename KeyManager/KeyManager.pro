@@ -12,6 +12,7 @@ include(../QZXing/QZXing.pri)
 
 SOURCES += \
     addrecipientview.cpp \
+    calendarview.cpp \
     camera.cpp \
     databaseimpl.cpp \
     handoverview.cpp \
@@ -28,6 +29,7 @@ SOURCES += \
 
 HEADERS += \
     addrecipientview.h \
+    calendarview.h \
     camera.h \
     databaseimpl.h \
     globals.h \

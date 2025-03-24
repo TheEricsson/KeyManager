@@ -24,8 +24,6 @@
 #include "addrecipientview.h"
 #include "handoverview.h"
 
-#include "QZXing.h"
-
 #ifndef GMANDANTID
     #define GMANDANTID 1
 #endif
@@ -37,6 +35,11 @@
 MainWindow::MainWindow(QWidget *parent)
     : QWidget(parent)
 {
+    decoder.setDecoder(QZXing::DecoderFormat_CODE_128);
+    //optional settings
+    decoder.setSourceFilterType(QZXing::SourceFilter_ImageNormal);
+    decoder.setTryHarderBehaviour(QZXing::TryHarderBehaviour_ThoroughScanning | QZXing::TryHarderBehaviour_Rotate);
+
     mLastView = 0;
     mViewState = eViewState::None;
     mCameraInstance = 0;
@@ -93,9 +96,9 @@ MainWindow::MainWindow(QWidget *parent)
     connect (mKeychainStatusView, SIGNAL(secondButtonClicked()), this, SLOT (showRecipientView()));
 
     // handle signals by RecipientView
-    connect (mRecipientView, SIGNAL(previousButtonClicked()), this, SLOT (closeRecipientView()));
-    connect (mRecipientView, SIGNAL(newRecipientButtonClicked()), this, SLOT (showAddRecipientView()));
-    connect (mRecipientView, SIGNAL(nextButtonClicked()), this, SLOT (showHandoverView()));
+    connect (mRecipientView, SIGNAL(firstButtonClicked()), this, SLOT (closeRecipientView()));
+    connect (mRecipientView, SIGNAL(secondButtonClicked()), this, SLOT (showAddRecipientView()));
+    connect (mRecipientView, SIGNAL(thirdButtonClicked()), this, SLOT (showHandoverView()));
 
     // handle signals by AddRecipientView
     connect (mAddRecipientView, SIGNAL(previousButtonClicked()), this, SLOT (closeAddRecipientView()));
@@ -262,6 +265,7 @@ void MainWindow::closeKeychainStatusView ()
 
 void MainWindow::showHandoverView ()
 {
+    qDebug () << "MainWindow::showHandoverView ()";
     if (!mHandoverView)
         return;
     else
@@ -293,27 +297,20 @@ void MainWindow::decodeFromVideoFrame ()
 
 void MainWindow::decodeImage (int requestId, const QImage &img)
 {
-    //qDebug () << "MainWindow::decodeImage called";
+    qDebug () << "MainWindow::decodeImage called";
 
     Q_UNUSED(requestId);
 
-// no cam on windows pc -> use image for debugging
+// trigger decode
+
 #ifdef Q_OS_WIN64
-    QImage scaledImg (":/images/barcode.png");
+    // no cam on windows pc -> use test image with barcode
+    QImage testCode (":/images/barcode.png");
+    QString barcode = decoder.decodeImage(testCode);
 #else
-    QImage scaledImg = img.scaled(mScanView->getViewfinderSize(), Qt::KeepAspectRatio, Qt::FastTransformation);
+    QString barcode = decoder.decodeImage(img);
 #endif
 
-    QZXing decoder;
-
-    decoder.setDecoder(QZXing::DecoderFormat_CODE_128);
-
-    // //optional settings
-    decoder.setSourceFilterType(QZXing::SourceFilter_ImageNormal);
-    decoder.setTryHarderBehaviour(QZXing::TryHarderBehaviour_ThoroughScanning | QZXing::TryHarderBehaviour_Rotate);
-
-    //trigger decode
-    QString barcode = decoder.decodeImage(scaledImg);
     QString barcodeAsNumber = barcode.mid (0, 5);
     barcodeAsNumber.append(barcode.mid(6, 5));
     int barcodeAsInt = barcodeAsNumber.toInt();

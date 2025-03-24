@@ -35,6 +35,7 @@ KeychainStatusView::KeychainStatusView(QWidget *parent)
     mKeysImgPreview = new QPushButton ("Kein Bild vorhanden.");
     mKeysImgPreview->setMinimumHeight(100);
     mKeysImgPreview->setMinimumWidth(100);
+    mKeysImgPreview->setSizePolicy(QSizePolicy::Policy::MinimumExpanding, QSizePolicy::Policy::MinimumExpanding);
     layout()->addWidget(mKeysImgPreview);
 
     QLabel *keysHeader = new QLabel ("Enthaltene Schlüssel");
@@ -149,14 +150,4 @@ void KeychainStatusView::setKeychainImagePath (const QString& imgPath)
         mKeysImgPreview->setIcon(icon);
         mKeysImgPreview->resize(100,100);
     }
-}
-
-void KeychainStatusView::onPreviousBtnClicked ()
-{
-    emit previousButtonClicked ();
-}
-
-void KeychainStatusView::onNextBtnClicked ()
-{
-    emit nextButtonClicked ();
 }
