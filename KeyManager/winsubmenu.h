@@ -7,12 +7,14 @@
 class QVBoxLayout;
 class QLabel;
 class QPushButton;
+class DataObject;
 
 class WinSubmenu : public QWidget
 {
     Q_OBJECT
 public:
     explicit WinSubmenu (QWidget *parent = nullptr);
+    void setDataObject (DataObject *data);
 
 protected:
     void setHeader (const QString& label);
@@ -21,6 +23,8 @@ protected:
                         const UiSpecs::eMenuButton& column2 = UiSpecs::eMenuButton::None);
     void disableButton (int column, bool disable);
     void enableButton (int column, bool enable);
+
+    DataObject *mDataObject;
 
 signals:
     void firstButtonClicked ();

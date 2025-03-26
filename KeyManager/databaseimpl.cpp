@@ -9,6 +9,7 @@
 #include <QSqlRelationalTableModel>
 #include <QSqlError>
 #include <QMessageBox>
+#include "dataobjecthandover.h"
 
 #ifdef Q_OS_ANDROID
     #include <QCoreApplication>
@@ -413,6 +414,21 @@ bool DatabaseImpl::addNewRecipient (const RecipientData& data)
     return query.exec();
 }
 
+bool DatabaseImpl::dataUpdate (DataObject *data)
+{
+    // check NULL pointer
+    if (!data)
+        return false;
+
+    DataObjectHandover *dataObj = (DataObjectHandover*)data;
+
+    if (dataObj)
+    {
+        return dataUpdate (dataObj);
+    }
+    return false;
+}
+
 const QString DatabaseImpl::getKeychainImagePath (int aId)
 {
     mDb.transaction();
@@ -432,6 +448,68 @@ const QString DatabaseImpl::getKeychainImagePath (int aId)
     }
     qDebug () << "getKeychainImagePath: " << result;
     return result;
+}
+
+bool DatabaseImpl::dataUpdate (DataObjectHandover *data)
+{
+    if (!data)
+        return false;
+
+    qDebug () << "DatabaseImpl::dataUpdate:";
+
+    qDebug () << data->getKeychainId();
+    qDebug () << data->getKeychainStatus();
+    qDebug () << data->getInternalLocation();
+    qDebug () << data->getRecipient();
+    qDebug () << data->getRecipientStreet();
+    qDebug () << data->getRecipientStreetNumber();
+    qDebug () << data->getRecipientAreaCode();
+    qDebug () << data->getRecipientCity();
+    qDebug () << data->getDateHandover();
+    qDebug () << data->getDateDeadline();
+    qDebug () << data->getAnnotation();
+    qDebug () << data->getSignatureName();
+
+    mDb.transaction();
+    QSqlQuery query;
+
+    // get all keys of the keychain
+    query.prepare("SELECT status FROM keychainStates WHERE id = ?");
+    query.bindValue(0, data->getKeychainStatus());
+    bool queryOk = query.exec();
+
+    // get keychain status text
+    QString keychainStatusText;
+
+    if (query.next())
+    {
+        keychainStatusText = query.value(0).toString();
+    }
+    else
+        queryOk = false;
+
+    if (queryOk)
+    {
+        // insert new handout entry
+        query.prepare("INSERT INTO handovers (keychainId, dateHandover, dateDeadline, duration, recipient, recipientStreet, recipientStreetNumber, recipientAreaCode, recipientCity, signatureName, signature, annotation) \
+                        VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)");
+        query.bindValue(0, data->getKeychainId());
+        query.bindValue(1, data->getDateHandover());
+        query.bindValue(2, data->getDateDeadline());
+        query.bindValue(3, keychainStatusText);
+        query.bindValue(4, data->getRecipient());
+        query.bindValue(5, data->getRecipientStreet());
+        query.bindValue(6, data->getRecipientStreetNumber());
+        query.bindValue(7, data->getRecipientAreaCode());
+        query.bindValue(8, data->getRecipientCity());
+        query.bindValue(9, data->getSignatureName());
+        query.bindValue(10, data->getSignature());
+        query.bindValue(11, data->getAnnotation());
+
+        queryOk = query.exec();
+    }
+
+    return queryOk;
 }
 
 // bool DatabaseImpl::initializeKeyOverviewModel (QSqlQueryModel *model, int aCode)

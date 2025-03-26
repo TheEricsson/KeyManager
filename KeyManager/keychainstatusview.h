@@ -10,6 +10,7 @@ class QSqlQueryModel;
 class QTableView;
 class QSqlRelationalTableModel;
 class QPushButton;
+class KeychainDataHandover;
 
 class KeychainStatusView : public WinSubmenu
 {
@@ -22,7 +23,7 @@ public:
     void setKeychainImagePath (const QString& imgPath);
 
 private:
-
+    int mKeychainStatusId;
     QSqlQueryModel *mKeyOverview;
     QTableView *mKeys;
     QTableView *mKeychain;

@@ -23,6 +23,10 @@
 #include "recipientview.h"
 #include "addrecipientview.h"
 #include "handoverview.h"
+#include "returndateview.h"
+#include "handoutsummaryview.h"
+#include "dataobjecthandover.h"
+#include "annotationview.h"
 
 #ifndef GMANDANTID
     #define GMANDANTID 1
@@ -53,9 +57,12 @@ MainWindow::MainWindow(QWidget *parent)
     mKeychainModel = 0;
     mRecipientView = 0;
     mAddRecipientView = 0;
+    mReturnDateView = 0;
+    mAnnotationView = 0;
 
     mLayout = 0;
     mDatabase = 0;
+    mDataHandover = 0;
 
     initDatabase ();
 
@@ -69,6 +76,9 @@ MainWindow::MainWindow(QWidget *parent)
     mKeychainStatusView = new KeychainStatusView (this);
     mAddRecipientView = new AddRecipientView (this);
     mHandoverView = new HandoverView (this);
+    mReturnDateView = new ReturnDateView (this);
+    mHandoutSummaryView = new HandoutSummaryView (this);
+    mAnnotationView = new AnnotationView (this);
 
     mLayout->addWidget(mHomeView);
     mLayout->addWidget(mScanView);
@@ -77,8 +87,11 @@ MainWindow::MainWindow(QWidget *parent)
     mLayout->addWidget(mKeychainStatusView);
     mLayout->addWidget(mAddRecipientView);
     mLayout->addWidget(mHandoverView);
+    mLayout->addWidget(mReturnDateView);
+    mLayout->addWidget(mHandoutSummaryView);
+    mLayout->addWidget(mAnnotationView);
 
-    setView(mHomeView);
+    showHomeView();
 
     // handle signals by ScanView
     connect (mScanView, SIGNAL(firstButtonClicked()), this, SLOT (closeScannerView()));
@@ -98,15 +111,27 @@ MainWindow::MainWindow(QWidget *parent)
     // handle signals by RecipientView
     connect (mRecipientView, SIGNAL(firstButtonClicked()), this, SLOT (closeRecipientView()));
     connect (mRecipientView, SIGNAL(secondButtonClicked()), this, SLOT (showAddRecipientView()));
-    connect (mRecipientView, SIGNAL(thirdButtonClicked()), this, SLOT (showHandoverView()));
+    connect (mRecipientView, SIGNAL(thirdButtonClicked()), this, SLOT (showReturnDateView()));
 
     // handle signals by AddRecipientView
     connect (mAddRecipientView, SIGNAL(previousButtonClicked()), this, SLOT (closeAddRecipientView()));
     connect (mAddRecipientView, SIGNAL(okButtonClicked()), this, SLOT (addRecipientViewSubmitted()));
 
+    // handle signals by returndateview
+    connect (mReturnDateView, SIGNAL(firstButtonClicked()), this, SLOT (closeReturnDateView()));
+    connect (mReturnDateView, SIGNAL(secondButtonClicked()), this, SLOT (showAnnotationView()));
+
+    //handle signals by AnnotationView
+    connect (mAnnotationView, SIGNAL(secondButtonClicked()), this, SLOT (showHandoverView()));
+    connect (mAnnotationView, SIGNAL(firstButtonClicked()), this, SLOT (closeAnnotationView()));
+
     // handle signals by handoverview
     connect (mHandoverView, SIGNAL(firstButtonClicked()), this, SLOT (closeHandoverView()));
-    //todo://connect (mHandoverView, SIGNAL(secondButtonClicked()), this, SLOT (handoutTransaction ()));
+    connect (mHandoverView, SIGNAL(thirdButtonClicked()), this, SLOT (showHandoutSummaryView()));
+
+    // handle signals by handoutSummaryView
+    //connect (mHandoutSummaryView, SIGNAL(firstButtonClicked()), this, SLOT (generatePdfSummary()));
+    connect (mHandoutSummaryView, SIGNAL(secondButtonClicked()), this, SLOT (closeHandoutSummaryView()));
 }
 
 void MainWindow::initDatabase ()
@@ -130,11 +155,18 @@ void MainWindow::closeScannerView ()
         mCameraInstance->stopCamera();
     }
 
-    setView(mHomeView);
+    showHomeView();
 }
 
 void MainWindow::closeTableView ()
 {
+    showHomeView();
+}
+
+void MainWindow::showHomeView ()
+{
+    if (mDataHandover)
+        delete mDataHandover;
     setView(mHomeView);
 }
 
@@ -183,6 +215,7 @@ void MainWindow::showRecipientView ()
         return;
 
     mRecipientView->reset();
+    mRecipientView->setDataObject(mDataHandover);
     setView(mRecipientView);
 }
 
@@ -206,7 +239,33 @@ void MainWindow::closeAddRecipientView ()
         showRecipientView();
     }
     else
-        setView(mHomeView);
+        showHomeView();
+}
+
+void MainWindow::showReturnDateView()
+{
+    if (!mReturnDateView)
+        return;
+
+    mReturnDateView->setDataObject(mDataHandover);
+
+    setView(mReturnDateView);
+}
+
+void MainWindow::closeReturnDateView()
+{
+    showRecipientView ();
+}
+
+void MainWindow::showAnnotationView ()
+{
+    mAnnotationView->setDataObject(mDataHandover);
+    setView (mAnnotationView);
+}
+
+void MainWindow::closeAnnotationView ()
+{
+    showReturnDateView();
 }
 
 void MainWindow::addRecipientViewSubmitted ()
@@ -234,25 +293,27 @@ bool MainWindow::showKeychainStatusView (int aBarcode)
 
     if (mDatabase->initKeyOverviewModel(mKeysOverviewModel, aBarcode))
     {
-        bool retVal = mKeychainStatusView->setKeysModel(mKeysOverviewModel);
-        if (false == retVal)
+        if (!mDataHandover)
+            mDataHandover = new DataObjectHandover ();
+
+        mKeychainStatusView->setDataObject (mDataHandover);
+
+        if (!mKeychainStatusView->setKeysModel(mKeysOverviewModel))
             return false;
 
-        if (mDatabase->initKeychainModel(mKeychainModel, aBarcode))
-        {
-            retVal = mKeychainStatusView->setKeychainModel(mKeychainModel);
-
-            int keyChainStatus = mDatabase->getKeychainStatusId (aBarcode);
-            mKeychainStatusView->setKeychainStatus (keyChainStatus);
-
-            mKeychainStatusView->setKeychainImagePath (mDatabase->getKeychainImagePath(aBarcode));
-
-            setView(mKeychainStatusView);
-        }
-        else
+        if (!mDatabase->initKeychainModel(mKeychainModel, aBarcode))
             return false;
 
-        return retVal;
+        if (!mKeychainStatusView->setKeychainModel(mKeychainModel))
+            return false;
+
+        int keyChainStatus = mDatabase->getKeychainStatusId (aBarcode);
+        mKeychainStatusView->setKeychainStatus (keyChainStatus);
+        mKeychainStatusView->setKeychainImagePath (mDatabase->getKeychainImagePath(aBarcode));
+
+        setView(mKeychainStatusView);
+
+        return true;
     }
     else
         return false;
@@ -271,13 +332,33 @@ void MainWindow::showHandoverView ()
     else
     {
         mHandoverView->clear();
+        mHandoverView->setDataObject(mDataHandover);
         setView (mHandoverView);
     }
 }
 
 void MainWindow::closeHandoverView ()
 {
-    setView (mRecipientView);
+    setView (mAnnotationView);
+}
+
+void MainWindow::showHandoutSummaryView ()
+{
+    mHandoutSummaryView->setDataObject(mDataHandover);
+    setView (mHandoutSummaryView);
+}
+
+void MainWindow::closeHandoutSummaryView ()
+{
+    // todo: reset all views after completed handout
+    // do database update...
+    if (mDataHandover)
+    {
+        mDatabase->dataUpdate((DataObject*)mDataHandover);
+        delete mDataHandover;
+        mDataHandover = 0;
+    }
+    showHomeView();
 }
 
 void MainWindow::onSearchButtonReleased ()
@@ -383,6 +464,9 @@ MainWindow::~MainWindow()
 {
     if (mDatabase)
         delete mDatabase;
+
+    if (mDataHandover)
+        delete mDataHandover;
 
     // if (mKeychainStatusView)
     //     delete mKeychainStatusView;

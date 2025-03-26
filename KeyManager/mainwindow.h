@@ -20,6 +20,10 @@ class KeychainStatusView;
 class RecipientView;
 class AddRecipientView;
 class HandoverView;
+class ReturnDateView;
+class HandoutSummaryView;
+class DataObjectHandover;
+class AnnotationView;
 
 #ifdef ENCODERTEST
 class QREncoderTest;
@@ -46,12 +50,17 @@ public:
     ~MainWindow();
 
 private slots:
+    void showHomeView();
     void showScannerView ();
     void showTableView ();
     void showRecipientView ();
     void closeRecipientView ();
     void showAddRecipientView ();
     void closeAddRecipientView();
+    void showReturnDateView();
+    void closeReturnDateView ();
+    void showAnnotationView ();
+    void closeAnnotationView ();
     void addRecipientViewSubmitted ();
     bool showKeychainStatusView (int aBarcode);
     void closeKeychainStatusView ();
@@ -59,6 +68,8 @@ private slots:
     void closeHandoverView ();
     void closeScannerView ();
     void closeTableView ();
+    void showHandoutSummaryView ();
+    void closeHandoutSummaryView ();
     void onSearchButtonReleased ();
     void onManageButtonReleased ();
     void decodeImage (int requestId, const QImage &img);
@@ -84,6 +95,9 @@ private:
     RecipientView *mRecipientView;
     AddRecipientView *mAddRecipientView;
     HandoverView *mHandoverView;
+    ReturnDateView *mReturnDateView;
+    HandoutSummaryView *mHandoutSummaryView;
+    AnnotationView *mAnnotationView;
 
     Camera *mCameraInstance;
     QTimer *mGrabTimer;
@@ -95,6 +109,8 @@ private:
 
     eViewState mViewState;
     QZXing decoder;
+
+    DataObjectHandover *mDataHandover;
 
 #ifdef ENCODERTEST
     QREncoderTest* qrencoderTest;

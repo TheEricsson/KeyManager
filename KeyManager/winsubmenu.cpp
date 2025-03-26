@@ -3,11 +3,15 @@
 #include <QPushButton>
 #include <QGridLayout>
 #include <QLabel>
+#include <QLayout>
 #include "globals.h"
+#include "dataobject.h"
 
 WinSubmenu::WinSubmenu(QWidget *parent)
     : QWidget{parent}
 {
+    mDataObject = 0;
+
     mBtnColumn0 = 0;
     mBtnColumn1 = 0;
     mBtnColumn2 = 0;
@@ -21,6 +25,12 @@ WinSubmenu::WinSubmenu(QWidget *parent)
     mHeaderLabel->setStyleSheet("QLabel {background-color: #C0C0C0; color: black; font: 20pt; font-color: #696969; border-style: outset; border-width: 3px; border-radius: 10px; border-color: #A9A9A9; }");
 
     this->setStyleSheet("QPushButton {background-color: #C0C0C0; border-style: outset; border-width: 3px; border-radius: 10px; border-color: #A9A9A9; font: bold 14px; padding: 6px;}");
+}
+
+void WinSubmenu::setDataObject (DataObject *data)
+{
+    if (data)
+        mDataObject = data;
 }
 
 void WinSubmenu::setHeader (const QString& label)
@@ -40,7 +50,6 @@ void WinSubmenu::onSecondBtnClicked ()
 
 void WinSubmenu::onThirdBtnClicked ()
 {
-    qDebug () << "WinSubmenu::onThirdBtnClicked ()";
     emit thirdButtonClicked();
 }
 
@@ -54,6 +63,10 @@ void WinSubmenu::setMenuButtons (const UiSpecs::eMenuButton& column0, const UiSp
         case (UiSpecs::eMenuButton::BackButton):
             mBtnColumn0 = new QPushButton (this);
             mBtnColumn0->setIcon(QIcon(":/images/menu_back.png"));
+            break;
+        case (UiSpecs::eMenuButton::PdfButton):
+            mBtnColumn0 = new QPushButton (this);
+            mBtnColumn0->setIcon(QIcon(":/images/menu_pdf.png"));
             break;
         default:
             break;

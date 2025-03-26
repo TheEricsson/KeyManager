@@ -14,6 +14,8 @@
 
 #include "winsubmenu.h"
 #include "globals.h"
+#include "dataobject.h"
+#include "dataobjecthandover.h"
 
 RecipientView::RecipientView(QWidget *parent) : WinSubmenu {parent}
 {
@@ -145,6 +147,9 @@ void RecipientView::setTableFilter(const QString &text)
 
 void RecipientView::onThirdBtnClicked ()
 {
+    if (!mRowSelected)
+        return;
+
     if (mRecipientNameEdit->isEnabled() && "" == mRecipientNameEdit->text())
     {
         mRecipientNameEdit->setStyleSheet("border-style: solid;border-width: 1px;border-color: red");
@@ -175,6 +180,22 @@ void RecipientView::onThirdBtnClicked ()
 
         if (!ignore)
             return;
+    }
+
+    //set current data
+    if (mDataObject)
+    {
+        DataObjectHandover *dataObj = (DataObjectHandover*)mDataObject;
+        if (dataObj)
+        {
+            int row = mRecipients->selectionModel()->currentIndex().row();
+            dataObj->setRecipient(mRecipients->model()->index(row, 1).data().toString ());
+            dataObj->setSignatureName(mRecipientNameEdit->text());
+            dataObj->setRecipientStreet(mRecipients->model()->index(row, 3).data().toString ());
+            dataObj->setRecipientStreetNumber(mRecipients->model()->index(row, 4).data().toInt());
+            dataObj->setRecipientAreaCode(mRecipients->model()->index(row, 5).data().toInt ());
+            dataObj->setRecipientCity(mRecipients->model()->index(row, 6).data().toString ());
+        }
     }
     emit thirdButtonClicked();
 }

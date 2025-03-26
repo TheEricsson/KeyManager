@@ -15,6 +15,8 @@
         <file>scan_barcode.png</file>
         <file>addRecipient.jpeg</file>
         <file>btn_Ok.png</file>
+        <file>icon_check.png</file>
+        <file>menu_pdf.png</file>
     </qresource>
     <qresource prefix="/sounds">
         <file>scanner_beep.mp3</file>

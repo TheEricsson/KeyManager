@@ -7,6 +7,8 @@
 
 class QSqlQueryModel;
 class QSqlRelationalTableModel;
+class DataObject;
+class DataObjectHandover;
 
 class DatabaseImpl
 {
@@ -33,11 +35,14 @@ public:
     bool initRecipientModel (QSqlRelationalTableModel *model);
     bool addNewRecipient(const RecipientType& type, const QString& name, const QString& street, const QString& number, const QString& areaCode, const QString& city);
     bool addNewRecipient (const RecipientData& data);
+    bool dataUpdate (DataObject *data);
     const QString getKeychainImagePath (int aId);
     //bool initializeKeyOverviewModel (QSqlQueryModel *model, int aCode);
     //const QSqlQueryModel& getKeysModel (int aId);
 
 private:
+    bool dataUpdate (DataObjectHandover *data);
+
 #ifdef Q_OS_ANDROID
     bool checkPermission();
 #endif

@@ -25,12 +25,16 @@ namespace UiSpecs
         NextButton,
         OkButton,
         AddRecipientButton,
+        PdfButton,
+        MainMenuButton,
         None,
     };
 }
 
 namespace Database
 {
+    const int UNDEFINED = -999;
+
     enum eKeychainStatusId
     {
         Available = 1,

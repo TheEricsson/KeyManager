@@ -16,13 +16,11 @@ public:
 
 private slots:
     void onSignaturePaint ();
-    void onSignatureClear ();
-    void onSetReturnDate ();
+    void onSecondBtnClicked ();
+    void onThirdBtnClicked ();
 
 private:
     SignaturePad *mSigPad;
-    QLineEdit *mRecipientName;
-
 };
 
 #endif // HANDOVERVIEW_H

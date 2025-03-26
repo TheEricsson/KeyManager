@@ -12,15 +12,20 @@ include(../QZXing/QZXing.pri)
 
 SOURCES += \
     addrecipientview.cpp \
+    annotationview.cpp \
     calendarview.cpp \
     camera.cpp \
     databaseimpl.cpp \
+    dataobject.cpp \
+    dataobjecthandover.cpp \
+    handoutsummaryview.cpp \
     handoverview.cpp \
     homeview.cpp \
     keychainstatusview.cpp \
     main.cpp \
     mainwindow.cpp \
     recipientview.cpp \
+    returndateview.cpp \
     scannerview.cpp \
     signaturepad.cpp \
     tableview.cpp \
@@ -29,16 +34,21 @@ SOURCES += \
 
 HEADERS += \
     addrecipientview.h \
+    annotationview.h \
     calendarview.h \
     camera.h \
     databaseimpl.h \
+    dataobject.h \
+    dataobjecthandover.h \
     globals.h \
+    handoutsummaryview.h \
     handoverview.h \
     homeview.h \
     initdb.h \
     keychainstatusview.h \
     mainwindow.h \
     recipientview.h \
+    returndateview.h \
     scannerview.h \
     signaturepad.h \
     tableview.h \

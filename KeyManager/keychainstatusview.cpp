@@ -11,7 +11,10 @@
 #include <QSizePolicy>
 #include <QLabel>
 #include <QSpacerItem>
+#include <QMessageBox>
 #include "winsubmenu.h"
+#include "dataobjecthandover.h"
+#include <QWidget>
 
 KeychainStatusView::KeychainStatusView(QWidget *parent)
     : WinSubmenu {parent}
@@ -32,7 +35,7 @@ KeychainStatusView::KeychainStatusView(QWidget *parent)
     mKeychain = new QTableView ();
     layout()->addWidget(mKeychain);
 
-    mKeysImgPreview = new QPushButton ("Kein Bild vorhanden.");
+    mKeysImgPreview = new QPushButton ("Bild hinzufügen...");
     mKeysImgPreview->setMinimumHeight(100);
     mKeysImgPreview->setMinimumWidth(100);
     mKeysImgPreview->setSizePolicy(QSizePolicy::Policy::MinimumExpanding, QSizePolicy::Policy::MinimumExpanding);
@@ -49,26 +52,7 @@ KeychainStatusView::KeychainStatusView(QWidget *parent)
 
 void KeychainStatusView::setKeychainStatus (const int &statusId)
 {
-    // if (0 != mButtonNext)
-    // {
-    //     switch (statusId)
-    //     {
-    //     case Database::Available:
-    //         //mButtonNext->setIcon(QIcon(":/images/menu_keyOut.png"));
-    //         break;
-    //     case Database::TemporaryOut:
-    //     case Database::PermanentOut:
-    //     case Database::Lost:
-    //     case Database::AdministrationEnded:
-    //         //mButtonNext->setIcon(QIcon(":/images/menu_keyBack.png"));
-    //         break;
-    //     default:
-    //         break;
-    //     }
-    // }
-    // else
-    //     qDebug () << "KeychainStatusView::setKeychainStatus: mButtonNext is NULL";
-    // return;
+    mKeychainStatusId = statusId;
 }
 
 bool KeychainStatusView::setKeychainModel (QSqlRelationalTableModel* model)
@@ -85,7 +69,6 @@ bool KeychainStatusView::setKeychainModel (QSqlRelationalTableModel* model)
 
         if (mKeychain)
         {
-            qDebug () << "KeychainStatusView::setModel QSqlRelationalTableModel";
             mKeychain->setModel(model);
             mKeychain->hideColumn(7); // hide image column
             mKeychain->setEditTriggers(QTableView::NoEditTriggers);
@@ -99,6 +82,27 @@ bool KeychainStatusView::setKeychainModel (QSqlRelationalTableModel* model)
 
             mKeychain->resizeColumnsToContents();
 
+            //barcode must be unique
+            if (1 != mKeychain->model()->rowCount())
+            {
+                QMessageBox::critical(0, "Datenbankfehler",
+                                      "Barcode nicht eindeutig, Tabelle enthält Duplikate. \n"
+                                      "Überprüfung der Datenbank notwendig. Fortfahren nicht möglich.", QMessageBox::Ok);
+                //prevent user to proceed to next step
+                return false;
+            }
+
+            //set relevant data for a handover
+            if (mDataObject)
+            {
+                int barcode = mKeychain->model()->index(0, 0).data().toInt();
+                //int keychainStatus = mKeychain->model()->index(0, 1).data().toInt();
+                int keychainStatus = -1;
+                int internalLoc = mKeychain->model()->index(0, 2).data().toInt();
+
+                mDataObject->setKeychainId(barcode);
+                mDataObject->setInternalLocation(internalLoc);
+            }
             return true;
         }
         return false;
