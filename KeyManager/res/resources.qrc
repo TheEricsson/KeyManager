@@ -1,9 +1,9 @@
 <RCC>
     <qresource prefix="/images">
         <file>shutter.svg</file>
-        <file>search.svg</file>
-        <file>settings.svg</file>
-        <file>exit.svg</file>
+        <file>menu_search.svg</file>
+        <file>menu_settings.svg</file>
+        <file>menu_exit.svg</file>
         <file>logo.png</file>
         <file>barcode.png</file>
         <file>menu_back.png</file>
@@ -12,9 +12,9 @@
         <file>menu_keyBack.png</file>
         <file>menu_keyOut.png</file>
         <file>icon.png</file>
-        <file>scan_barcode.png</file>
-        <file>addRecipient.jpeg</file>
-        <file>btn_Ok.png</file>
+        <file>menu_scan.png</file>
+        <file>menu_add_recipient.jpeg</file>
+        <file>menu_ok.png</file>
         <file>icon_check.png</file>
         <file>menu_pdf.png</file>
     </qresource>

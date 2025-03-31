@@ -2,11 +2,12 @@
 #define HOMEVIEW_H
 
 #include <QWidget>
+#include "winsubmenu.h"
 
 class QPushButton;
 class QGridLayout;
 
-class HomeView : public QWidget
+class HomeView : public WinSubmenu
 {
     Q_OBJECT
 public:

@@ -2,6 +2,8 @@
 #include <QTextEdit>
 #include <QLayout>
 #include "dataobjecthandover.h"
+#include "viewdata.h"
+#include "viewdatahandover.h"
 
 AnnotationView::AnnotationView (QWidget *parent)
     : WinSubmenu {parent}
@@ -10,19 +12,18 @@ AnnotationView::AnnotationView (QWidget *parent)
     mTextEditor = new QTextEdit (this);
     mTextEditor->setSizePolicy(QSizePolicy::Policy::Expanding, QSizePolicy::Policy::Expanding);
     layout()->addWidget(mTextEditor);
-    setMenuButtons(UiSpecs::eMenuButton::BackButton, UiSpecs::eMenuButton::NextButton);
+
+    QList<Gui::MenuButton> menuButtons;
+    menuButtons.append(Gui::Back);
+    menuButtons.append(Gui::Next);
+    setMenuButtons(menuButtons);
 
     connect (mTextEditor, SIGNAL (textChanged()), this, SLOT(onTextChanged()));
 }
 
 void AnnotationView::onTextChanged ()
 {
-    if (!mDataObject)
-        return;
-
-    DataObjectHandover *dataObj = (DataObjectHandover*)mDataObject;
-    if (dataObj)
-    {
-        dataObj->setAnnotation(mTextEditor->toPlainText());
-    }
+    ViewDataHandover *dataHandover = new ViewDataHandover ();
+    dataHandover->setAnnotation(mTextEditor->toPlainText());
+    getViewData()->setData (dataHandover);
 }

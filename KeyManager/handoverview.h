@@ -3,6 +3,7 @@
 
 #include <QWidget>
 #include "winsubmenu.h"
+#include "globals.h"
 
 class SignaturePad;
 class QLineEdit;
@@ -10,17 +11,20 @@ class QLineEdit;
 class HandoverView : public WinSubmenu
 {
     Q_OBJECT
-public:
-    explicit HandoverView (QWidget *parent = nullptr);
-    void clear ();
+    public:
+        explicit HandoverView (QWidget *parent = nullptr);
+        void clear ();
 
-private slots:
-    void onSignaturePaint ();
-    void onSecondBtnClicked ();
-    void onThirdBtnClicked ();
+    private slots:
+        virtual void onMenuBtnClicked (Gui::MenuButton btnType);
 
-private:
-    SignaturePad *mSigPad;
+    private slots:
+        void onSignaturePaint ();
+        void onSecondBtnClicked ();
+        void onThirdBtnClicked ();
+
+    private:
+        SignaturePad *mSigPad;
 };
 
 #endif // HANDOVERVIEW_H

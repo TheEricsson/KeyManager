@@ -3,10 +3,11 @@
 
 #include <QObject>
 #include <QWidget>
+#include "winsubmenu.h"
 
 class QSqlTableModel;
 
-class TableView : public QWidget
+class TableView : public WinSubmenu
 {
     Q_OBJECT
 public:

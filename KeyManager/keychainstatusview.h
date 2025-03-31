@@ -17,13 +17,18 @@ class KeychainStatusView : public WinSubmenu
     Q_OBJECT
 public:
     explicit KeychainStatusView(QWidget *parent = nullptr);
+    ~KeychainStatusView ();
     void setKeychainStatus (const int &statusId);
     bool setKeychainModel (QSqlRelationalTableModel* model);
     bool setKeysModel (QSqlRelationalTableModel* model);
     void setKeychainImagePath (const QString& imgPath);
 
 private:
+    virtual void showEvent(QShowEvent *);
     int mKeychainStatusId;
+    QSqlRelationalTableModel *mKeysOverviewModel;
+    QSqlRelationalTableModel *mKeychainModel;
+
     QSqlQueryModel *mKeyOverview;
     QTableView *mKeys;
     QTableView *mKeychain;

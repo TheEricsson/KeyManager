@@ -7,6 +7,10 @@ CalendarView::CalendarView (QWidget *parent) : WinSubmenu {parent}
     QCalendarWidget* calender = new QCalendarWidget (this);
     this->layout()->addWidget(calender);
 
-    setMenuButtons(UiSpecs::BackButton, UiSpecs::OkButton);
+    QList<Gui::MenuButton> menuButtons;
+    menuButtons.append(Gui::Back);
+    menuButtons.append(Gui::Next);
+    setMenuButtons(menuButtons);
+
     setHeader("Rückgabedatum wählen");
 }

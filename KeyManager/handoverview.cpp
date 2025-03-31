@@ -19,7 +19,12 @@ HandoverView::HandoverView (QWidget *parent)
 
     layout()->addWidget(mSigPad);
 
-    setMenuButtons(UiSpecs::BackButton, UiSpecs::RepeatButton, UiSpecs::OkButton);
+    QList<Gui::MenuButton> menuButtons;
+    menuButtons.append(Gui::Back);
+    menuButtons.append(Gui::Repeat);
+    menuButtons.append(Gui::Next);
+    setMenuButtons(menuButtons);
+
     clear ();
 
     connect (mSigPad, SIGNAL (signaturePaint ()), this, SLOT(onSignaturePaint ()));
@@ -47,6 +52,21 @@ void HandoverView::onSignaturePaint ()
     }
 }
 
+void  HandoverView::onMenuBtnClicked (Gui::MenuButton btnType)
+{
+    switch (btnType)
+    {
+        //reset signature pad
+        case (Gui::Repeat):
+            clear ();
+            break;
+        //no catch in this class, emit signal
+        default:
+            emit menuButtonClicked(btnType);
+            break;
+    }
+}
+
 void HandoverView::onSecondBtnClicked ()
 {
     clear ();
@@ -54,15 +74,15 @@ void HandoverView::onSecondBtnClicked ()
 
 void HandoverView::onThirdBtnClicked ()
 {
-    //set current data
-    if (mDataObject)
-    {
-        DataObjectHandover *dataObj = (DataObjectHandover*)mDataObject;
-        if (dataObj)
-        {
-            QImage sigImg = mSigPad->getSignature();
-            dataObj->setSignature(sigImg);
-        }
-    }
-    emit thirdButtonClicked ();
+    // //set current data
+    // if (mDataObject)
+    // {
+    //     DataObjectHandover *dataObj = (DataObjectHandover*)mDataObject;
+    //     if (dataObj)
+    //     {
+    //         QImage sigImg = mSigPad->getSignature();
+    //         dataObj->setSignature(sigImg);
+    //     }
+    // }
+    // emit thirdButtonClicked ();
 }

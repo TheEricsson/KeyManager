@@ -6,15 +6,17 @@
 #include <QLayout>
 #include "globals.h"
 #include "dataobject.h"
+#include "menubutton.h"
+#include "viewdata.h"
 
 WinSubmenu::WinSubmenu(QWidget *parent)
     : QWidget{parent}
 {
+    mButtonsSet = false;
     mDataObject = 0;
-
-    mBtnColumn0 = 0;
-    mBtnColumn1 = 0;
-    mBtnColumn2 = 0;
+    mViewData = 0;
+    mDatabase = 0;
+    mButtonLayout = 0;
 
     mLayout = new QVBoxLayout (this);
 
@@ -24,13 +26,27 @@ WinSubmenu::WinSubmenu(QWidget *parent)
     mHeaderLabel->setSizePolicy(QSizePolicy::Expanding, QSizePolicy::MinimumExpanding);
     mHeaderLabel->setStyleSheet("QLabel {background-color: #C0C0C0; color: black; font: 20pt; font-color: #696969; border-style: outset; border-width: 3px; border-radius: 10px; border-color: #A9A9A9; }");
 
-    this->setStyleSheet("QPushButton {background-color: #C0C0C0; border-style: outset; border-width: 3px; border-radius: 10px; border-color: #A9A9A9; font: bold 14px; padding: 6px;}");
+    setStyleSheet("QToolButton {background-color: #C0C0C0; border-style: outset; border-width: 3px; border-radius: 10px; border-color: #A9A9A9; font: bold 14px; padding: 6px;}");
+
+    mViewData = new ViewData ();
 }
 
-void WinSubmenu::setDataObject (DataObject *data)
+// void WinSubmenu::setDataObject (DataObject *data)
+// {
+//     if (data)
+//         mDataObject = data;
+// }
+
+void WinSubmenu::setDataObject (ViewData *data)
 {
     if (data)
-        mDataObject = data;
+        mViewData = data;
+}
+
+void WinSubmenu::setDatabaseHandle (DatabaseImpl *db)
+{
+    if (db)
+        mDatabase = db;
 }
 
 void WinSubmenu::setHeader (const QString& label)
@@ -38,147 +54,116 @@ void WinSubmenu::setHeader (const QString& label)
     mHeaderLabel->setText(label);
 }
 
-void WinSubmenu::onFirstBtnClicked ()
+void  WinSubmenu::onMenuBtnClicked (Gui::MenuButton btnType)
 {
-    emit firstButtonClicked();
+    qDebug () << "WinSubmenu::onMenuBtnClicked (Gui::MenuButton btnType): " << btnType;
+    emit menuButtonClicked(btnType);
 }
 
-void WinSubmenu::onSecondBtnClicked ()
+void WinSubmenu::setMenuButtons (const QList<Gui::MenuButton> &buttons)
 {
-    emit secondButtonClicked();
-}
+    // this method shall only be called once by now
+    if (mButtonsSet)
+        return;
 
-void WinSubmenu::onThirdBtnClicked ()
-{
-    emit thirdButtonClicked();
-}
+    // // delete menu buttons, if already set before
+    // for (int i = 0; i < mLayout->count(); i++)
+    // {
+    //     MenuButton *menuBtn = dynamic_cast<MenuButton*>(mLayout->itemAt(i));
+    //     if (menuBtn != nullptr)
+    //     {
+    //         mLayout->removeWidget(menuBtn);
+    //     }
+    // }
 
-void WinSubmenu::setMenuButtons (const UiSpecs::eMenuButton& column0, const UiSpecs::eMenuButton& column1, const UiSpecs::eMenuButton& column2)
-{
-    QHBoxLayout *btnLayout = 0;
+    int itemCnt = buttons.size();
 
-    // set first button
-    switch (column0)
+    if (0 == itemCnt)
+        return;
+
+    mButtonLayout = new QHBoxLayout ();
+
+    for (int i = 0; i<buttons.count();i++)
     {
-        case (UiSpecs::eMenuButton::BackButton):
-            mBtnColumn0 = new QPushButton (this);
-            mBtnColumn0->setIcon(QIcon(":/images/menu_back.png"));
-            break;
-        case (UiSpecs::eMenuButton::PdfButton):
-            mBtnColumn0 = new QPushButton (this);
-            mBtnColumn0->setIcon(QIcon(":/images/menu_pdf.png"));
-            break;
-        default:
-            break;
-            //right now we don't need any other case for column1
-    }
+        MenuButton *menuBtn = new MenuButton (this);
+        menuBtn->setButtonType(buttons[i]);
+        menuBtn->setIconSize(QSize(Gui::buttonWidth,Gui::buttonHeight));
 
-    if (0 != mBtnColumn0)
-    {
-        connect (mBtnColumn0, SIGNAL (clicked()), this, SLOT (onFirstBtnClicked()));
-        mBtnColumn0->setIconSize(QSize(UiSpecs::buttonWidth,UiSpecs::buttonHeight));
-
-        if (!btnLayout)
+        switch (buttons[i])
         {
-            btnLayout = new QHBoxLayout ();
+            case (Gui::Back):
+                menuBtn->setIcon(QIcon(":/images/menu_back.png"));
+                break;
+            case (Gui::Pdf):
+                menuBtn->setIcon(QIcon(":/images/menu_pdf.png"));
+                break;
+            case (Gui::Repeat):
+                menuBtn->setIcon(QIcon(":/images/menu_retry.png"));
+                break;
+            case (Gui::Next):
+                menuBtn->setIcon(QIcon(":/images/menu_next.png"));
+                break;
+            case (Gui::Ok):
+                menuBtn->setIcon(QIcon(":/images/menu_ok.png"));
+                break;
+            case (Gui::AddRecipient):
+                menuBtn->setIcon(QIcon(":/images/menu_add_recipient.jpeg"));
+                break;
+            case (Gui::Handout):
+                menuBtn->setIcon(QIcon(":/images/menu_keyOut.png"));
+                break;
+            case (Gui::TakeBack):
+                menuBtn->setIcon(QIcon(":/images/menu_keyBack.png"));
+                break;
+            case (Gui::Scanner):
+                menuBtn->setIcon(QIcon(":/images/menu_scan.png"));
+                break;
+            case (Gui::Search):
+                menuBtn->setIcon(QIcon(":/images/menu_search.svg"));
+                break;
+            case (Gui::Settings):
+                menuBtn->setIcon(QIcon(":/images/menu_settings.svg"));
+                break;
+            case (Gui::Exit):
+                menuBtn->setIcon(QIcon(":/images/menu_exit.svg"));
+                break;
+            default:
+                break;
         }
-        btnLayout->addWidget(mBtnColumn0);
+        mButtonLayout->addWidget(menuBtn);
+        connect (menuBtn, SIGNAL (clicked(Gui::MenuButton)), this, SLOT (onMenuBtnClicked(Gui::MenuButton)));
     }
 
-    // set second button
-    switch (column1)
-    {
-        case (UiSpecs::eMenuButton::RepeatButton):
-            mBtnColumn1 = new QPushButton (this);
-            mBtnColumn1->setIcon(QIcon(":/images/menu_retry.png"));
-            break;
-        case (UiSpecs::eMenuButton::NextButton):
-            mBtnColumn1 = new QPushButton (this);
-            mBtnColumn1->setIcon(QIcon(":/images/menu_next.png"));
-            break;
-        case (UiSpecs::eMenuButton::OkButton):
-            mBtnColumn1 = new QPushButton (this);
-            mBtnColumn1->setIcon(QIcon(":/images/btn_Ok.png"));
-            break;
-        case (UiSpecs::eMenuButton::AddRecipientButton):
-            mBtnColumn1 = new QPushButton (this);
-            mBtnColumn1->setIcon(QIcon(":/images/addRecipient.jpeg"));
-            break;
-        default:
-            break;
-    }
-
-    if (0 != mBtnColumn1)
-    {
-        connect (mBtnColumn1, SIGNAL (clicked()), this, SLOT (onSecondBtnClicked()));
-        mBtnColumn1->setIconSize(QSize(UiSpecs::buttonWidth,UiSpecs::buttonHeight));
-
-        if (!btnLayout)
-        {
-            btnLayout = new QHBoxLayout ();
-        }
-        btnLayout->addWidget(mBtnColumn1);
-    }
-
-    // set third button
-    switch (column2)
-    {
-    case (UiSpecs::eMenuButton::RepeatButton):
-        mBtnColumn2 = new QPushButton (this);
-        mBtnColumn2->setIcon(QIcon(":/images/menu_retry.png"));
-        break;
-    case (UiSpecs::eMenuButton::NextButton):
-        mBtnColumn2 = new QPushButton (this);
-        mBtnColumn2->setIcon(QIcon(":/images/menu_next.png"));
-        break;
-    case (UiSpecs::eMenuButton::OkButton):
-        mBtnColumn2 = new QPushButton (this);
-        mBtnColumn2->setIcon(QIcon(":/images/btn_Ok.png"));
-        break;
-    default:
-        break;
-    }
-
-    if (0 != mBtnColumn2)
-    {
-        connect (mBtnColumn2, SIGNAL (clicked()), this, SLOT (onThirdBtnClicked()));
-        mBtnColumn2->setIconSize(QSize(UiSpecs::buttonWidth,UiSpecs::buttonHeight));
-
-        if (!btnLayout)
-        {
-            btnLayout = new QHBoxLayout ();
-        }
-        btnLayout->addWidget(mBtnColumn2);
-    }
-
-    if (btnLayout)
+    if (mButtonLayout)
     {
         QSpacerItem *spacer = new QSpacerItem (0, 0, QSizePolicy::Expanding,QSizePolicy::Expanding);
         mLayout->addSpacerItem(spacer);
-        mLayout->addLayout(btnLayout);
+        mLayout->addLayout(mButtonLayout);
     }
+
+    mButtonsSet = true;
 }
 
 void WinSubmenu::disableButton (int column, bool disable)
 {
-    switch (column)
+    if (mButtonLayout)
     {
-        case 0:
-            if (mBtnColumn0)
-                mBtnColumn0->setDisabled(disable);
-            break;
-        case 1:
-            if (mBtnColumn1)
-                mBtnColumn1->setDisabled(disable);
-            break;
-        case 2:
-            if (mBtnColumn2)
-                mBtnColumn2->setDisabled(disable);
-            break;
+        QToolButton *btn = (QToolButton*)mButtonLayout->itemAt(column)->widget();
+        if (btn)
+        {
+            btn->setDisabled(disable);
+        }
     }
 }
 
 void WinSubmenu::enableButton (int column, bool enable)
 {
     disableButton(column, !enable);
+}
+
+WinSubmenu::~WinSubmenu ()
+{
+    // todo! segfault
+    // if (0 != mViewData)
+    //     delete mViewData;
 }

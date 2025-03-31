@@ -15,6 +15,11 @@
 #include "winsubmenu.h"
 #include "dataobjecthandover.h"
 #include <QWidget>
+#include "viewdata.h"
+#include "viewdatascanner.h"
+#include <QSqlRelationalTableModel>
+#include "databaseimpl.h"
+#include "viewdatakeychainstatus.h"
 
 KeychainStatusView::KeychainStatusView(QWidget *parent)
     : WinSubmenu {parent}
@@ -24,10 +29,6 @@ KeychainStatusView::KeychainStatusView(QWidget *parent)
     mKeysImgPreview = 0;
 
     setHeader("Informationen zum Schlüsselbund");
-
-    QPushButton* btnPrevious = new QPushButton ();
-    btnPrevious->setIcon(QIcon(":/images/menu_back.png"));
-    btnPrevious->setIconSize (QSize(UiSpecs::buttonWidth, UiSpecs::buttonHeight));
 
     QLabel *keyChainHeader = new QLabel ("Schlüsselbund");
     layout()->addWidget(keyChainHeader);
@@ -47,12 +48,44 @@ KeychainStatusView::KeychainStatusView(QWidget *parent)
     mKeys = new QTableView;
     layout()->addWidget(mKeys);
 
-    setMenuButtons(UiSpecs::BackButton, UiSpecs::NextButton);
+    QList<Gui::MenuButton> menuButtons;
+    menuButtons.append(Gui::Back);
+    menuButtons.append(Gui::Next);
+    setMenuButtons(menuButtons);
+
+    mKeysOverviewModel = new QSqlRelationalTableModel ();
+    mKeychainModel = new QSqlRelationalTableModel ();
+}
+
+void KeychainStatusView::showEvent(QShowEvent *)
+{
+    int barcode = getViewData()->getDataScanner()->getBarcode();
+
+    getDatabaseHandle()->initKeyOverviewModel(mKeysOverviewModel, barcode);
+    setKeysModel(mKeysOverviewModel);
+
+    getDatabaseHandle()->initKeychainModel(mKeychainModel, barcode);
+    setKeychainModel(mKeychainModel);
+
+    Database::eKeychainStatusId keyChainStatus = getDatabaseHandle()->getKeychainStatusId (barcode);
+    setKeychainStatus(keyChainStatus);
 }
 
 void KeychainStatusView::setKeychainStatus (const int &statusId)
 {
     mKeychainStatusId = statusId;
+
+    // switch (mKeychainStatusId)
+    // {
+    //     case Database::AdministrationEnded:
+    //     case Database::TemporaryOut:
+    //     case Database::PermanentOut:
+    //     case Database::Lost:
+    //         setMenuButtons(Gui::Back, Gui::TakeBack);
+    //         break;
+    //     default:
+    //         setMenuButtons(Gui::Back, Gui::Handout);
+    // }
 }
 
 bool KeychainStatusView::setKeychainModel (QSqlRelationalTableModel* model)
@@ -92,17 +125,12 @@ bool KeychainStatusView::setKeychainModel (QSqlRelationalTableModel* model)
                 return false;
             }
 
-            //set relevant data for a handover
-            if (mDataObject)
-            {
-                int barcode = mKeychain->model()->index(0, 0).data().toInt();
-                //int keychainStatus = mKeychain->model()->index(0, 1).data().toInt();
-                int keychainStatus = -1;
-                int internalLoc = mKeychain->model()->index(0, 2).data().toInt();
+            ViewDataKeychainStatus *keychainData = new ViewDataKeychainStatus ();
+            int internalLoc = mKeychain->model()->index(0, 2).data().toInt();
+            keychainData->setInternalLocation(internalLoc);
+            keychainData->setStatus(mKeychain->model()->index(0, 1).data().toInt());
+            getViewData()->setData (keychainData);
 
-                mDataObject->setKeychainId(barcode);
-                mDataObject->setInternalLocation(internalLoc);
-            }
             return true;
         }
         return false;
@@ -154,4 +182,13 @@ void KeychainStatusView::setKeychainImagePath (const QString& imgPath)
         mKeysImgPreview->setIcon(icon);
         mKeysImgPreview->resize(100,100);
     }
+}
+
+KeychainStatusView::~KeychainStatusView ()
+{
+    if (mKeysOverviewModel)
+        delete mKeysOverviewModel;
+
+    if (mKeychainModel)
+        delete mKeychainModel;
 }

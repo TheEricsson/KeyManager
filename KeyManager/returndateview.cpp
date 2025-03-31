@@ -43,7 +43,10 @@ ReturnDateView::ReturnDateView (QWidget *parent)
     onDateClicked(mCalendar->selectedDate());
     mDurationHandout = Database::eKeychainStatusId::TemporaryOut;
 
-    setMenuButtons(UiSpecs::BackButton, UiSpecs::NextButton);
+    QList<Gui::MenuButton> menuButtons;
+    menuButtons.append(Gui::Back);
+    menuButtons.append(Gui::Next);
+    setMenuButtons(menuButtons);
 
     connect (handoverTemporary, SIGNAL (clicked (bool)), this, SLOT(onHandoverTemporaryClicked (bool)));
     connect (handoverPermanent, SIGNAL (clicked (bool)), this, SLOT(onHandoverPermanentClicked (bool)));
@@ -110,47 +113,47 @@ void ReturnDateView::onDateClicked (QDate date)
 
 void ReturnDateView::onSecondBtnClicked ()
 {
-    //set current data in data object
-    if (mDataObject)
-    {
-        DataObjectHandover *dataObj = (DataObjectHandover*)mDataObject;
+    // //set current data in data object
+    // if (mDataObject)
+    // {
+    //     DataObjectHandover *dataObj = (DataObjectHandover*)mDataObject;
 
-        dataObj->setKeychainStatus(mDurationHandout);
+    //     dataObj->setKeychainStatus(mDurationHandout);
 
-        QDate date = QDate::currentDate();
-        QString currentDate = QString::number(date.day());
-        currentDate.append(".");
-        currentDate.append(QString::number(date.month()));
-        currentDate.append(".");
-        currentDate.append(QString::number(date.year()));
+    //     QDate date = QDate::currentDate();
+    //     QString currentDate = QString::number(date.day());
+    //     currentDate.append(".");
+    //     currentDate.append(QString::number(date.month()));
+    //     currentDate.append(".");
+    //     currentDate.append(QString::number(date.year()));
 
-        dataObj->setDateHandover(currentDate);
+    //     dataObj->setDateHandover(currentDate);
 
-        if (mDurationHandout == Database::eKeychainStatusId::TemporaryOut)
-        {
-            int day = 0;
-            int month = 0;
-            int year = 0;
-            QString dateDeadline;
+    //     if (mDurationHandout == Database::eKeychainStatusId::TemporaryOut)
+    //     {
+    //         int day = 0;
+    //         int month = 0;
+    //         int year = 0;
+    //         QString dateDeadline;
 
-            date = mCalendar->selectedDate();
-            date.getDate (&year, &month, &day);
+    //         date = mCalendar->selectedDate();
+    //         date.getDate (&year, &month, &day);
 
-            dateDeadline.append(QString::number(day));
-            dateDeadline.append(".");
-            dateDeadline.append(QString::number(month));
-            dateDeadline.append(".");
-            dateDeadline.append(QString::number(year));
+    //         dateDeadline.append(QString::number(day));
+    //         dateDeadline.append(".");
+    //         dateDeadline.append(QString::number(month));
+    //         dateDeadline.append(".");
+    //         dateDeadline.append(QString::number(year));
 
-            dataObj->setDateDeadline(dateDeadline);
-        }
+    //         dataObj->setDateDeadline(dateDeadline);
+    //     }
 
-        if (mDurationHandout == Database::eKeychainStatusId::AdministrationEnded ||
-            mDurationHandout == Database::eKeychainStatusId::PermanentOut)
-        {
-            dataObj->setDateDeadline("31.12.9999");
-        }
-    }
+    //     if (mDurationHandout == Database::eKeychainStatusId::AdministrationEnded ||
+    //         mDurationHandout == Database::eKeychainStatusId::PermanentOut)
+    //     {
+    //         dataObj->setDateDeadline("31.12.9999");
+    //     }
+    // }
 
-    emit secondButtonClicked ();
+    // emit secondButtonClicked ();
 }

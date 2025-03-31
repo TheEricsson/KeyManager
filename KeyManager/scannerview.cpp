@@ -15,6 +15,10 @@
 #include <QScreenCapture>
 #include <QLineEdit>
 #include "winsubmenu.h"
+#include "camera.h"
+#include "dataobject.h"
+#include "viewdatascanner.h"
+#include "viewdata.h"
 
 #if QT_CONFIG(permissions)
 #include <QPermission>
@@ -23,6 +27,14 @@
 ScannerView::ScannerView(QWidget *parent)
     : WinSubmenu {parent}
 {
+    mCameraInstance = 0;
+    mGrabTimer = 0;
+
+    decoder.setDecoder(QZXing::DecoderFormat_CODE_128);
+    //optional settings
+    decoder.setSourceFilterType(QZXing::SourceFilter_ImageNormal);
+    decoder.setTryHarderBehaviour(QZXing::TryHarderBehaviour_ThoroughScanning | QZXing::TryHarderBehaviour_Rotate);
+
     setHeader("Scannen Sie einen Barcode");
 
     m_viewfinder = 0;
@@ -54,9 +66,101 @@ ScannerView::ScannerView(QWidget *parent)
 
     layout()->addItem(keyIdLayout);
 
-    setMenuButtons(UiSpecs::BackButton, UiSpecs::RepeatButton);
+    //setMenuButtons(Gui::Back, Gui::Repeat);
+    QList<Gui::MenuButton> menuButtons;
+    menuButtons.append(Gui::Back);
+    menuButtons.append(Gui::Next);
+    setMenuButtons(menuButtons);
 
     setScannerState (ScannerState::READY);
+}
+
+void ScannerView::showEvent(QShowEvent *)
+{
+    startScanner ();
+}
+
+void ScannerView::hideEvent(QHideEvent *)
+{
+    stopScanner();
+}
+
+void ScannerView::startScanner ()
+{
+    if (!mCameraInstance)
+    {
+        mCameraInstance = new Camera ();
+        mCameraInstance->setVideoOutput(getViewfinder());
+    }
+
+    if (!mGrabTimer)
+    {
+        mGrabTimer = new QTimer (this);
+        mGrabTimer->setInterval(500);
+        connect (mGrabTimer, SIGNAL(timeout()), this, SLOT(decodeFromVideoFrame()));
+    }
+
+    mCameraInstance->startCamera();
+    mGrabTimer->start();
+
+    setScannerState (ScannerState::SCANNING);
+}
+
+void ScannerView::stopScanner ()
+{
+    if (mGrabTimer)
+        mGrabTimer->stop();
+
+    if (mCameraInstance)
+        mCameraInstance->stopCamera();
+
+    setScannerState (ScannerState::READY);
+}
+
+void ScannerView::decodeFromVideoFrame ()
+{
+    QImage capture = mCameraInstance->getImageFromVideoframe ();
+#ifdef Q_OS_WIN64
+    // no cam on windows pc -> use test image with barcode
+    QImage testCode (":/images/barcode.png");
+    QString barcode = decoder.decodeImage(testCode);
+#else
+    QString barcode = decoder.decodeImage(capture);
+#endif
+
+    QString barcodeAsNumber = barcode.mid (0, 5);
+    barcodeAsNumber.append(barcode.mid(6, 5));
+    int barcodeAsInt = barcodeAsNumber.toInt();
+
+    if ("" != barcode.toStdString())
+    {
+        qDebug () << "barcode:" << barcode;
+        qDebug () << "barcodeAsNumber:" << barcodeAsNumber;
+        qDebug () << "barcodeAsId: = " << barcodeAsInt;
+    }
+
+    QString customerId = barcode.mid (0, 5);
+    QString keyId = barcode.mid (6, 5);
+
+    if (customerId == "00001" && 5 == keyId.length())
+    {
+        mGrabTimer->stop ();
+        mCameraInstance->stopCamera();
+
+        // code recognized: play a supermarket beep sound :)
+        //playSound ();
+
+        setKeyLabel(barcodeAsNumber);
+
+        // set scanview ui state
+        setScannerState(ScannerState::SCANSUCCEEDED);
+
+        //emit keycodeRecognised (barcodeAsInt);
+        ViewDataScanner *scannerData = new ViewDataScanner ();
+        scannerData->setBarcode(barcodeAsInt);
+        getViewData()->setData (scannerData);
+        //emit viewDataChanged (scannerData);
+    }
 }
 
 void ScannerView::setScannerState (ScannerState aStatus)

@@ -4,12 +4,13 @@
 #include <QWidget>
 #include <QLineEdit>
 
+#include "winsubmenu.h"
 #include "globals.h"
 
 class QLabel;
 class QRadioButton;
 
-class AddRecipientView : public QWidget
+class AddRecipientView : public WinSubmenu
 {
     Q_OBJECT
 public:
@@ -24,7 +25,7 @@ public:
 
 signals:
     void previousButtonClicked ();
-    void okButtonClicked ();
+    void OkClicked ();
 
 private slots:
     void toUpper(QString text);

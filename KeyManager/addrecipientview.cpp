@@ -8,8 +8,8 @@
 #include <QRegularExpressionValidator>
 #include <QMessageBox>
 
-AddRecipientView::AddRecipientView(QWidget *parent)
-    : QWidget{parent}
+AddRecipientView::AddRecipientView (QWidget *parent)
+    : WinSubmenu {parent}
 {
     mIsCompany = 0;
     mLabelRecipientName = 0;
@@ -66,11 +66,11 @@ AddRecipientView::AddRecipientView(QWidget *parent)
 
     QPushButton* btnPrevious = new QPushButton (this);
     btnPrevious->setIcon(QIcon(":/images/menu_back.png"));
-    btnPrevious->setIconSize(QSize(UiSpecs::buttonWidth,UiSpecs::buttonHeight));
+    btnPrevious->setIconSize(QSize(Gui::buttonWidth,Gui::buttonHeight));
 
     QPushButton* btnOk = new QPushButton (this);
     btnOk->setIcon(QIcon(":/images/btn_Ok.png"));
-    btnOk->setIconSize(QSize(UiSpecs::buttonWidth,UiSpecs::buttonHeight));
+    btnOk->setIconSize(QSize(Gui::buttonWidth,Gui::buttonHeight));
     //btnOk->setDisabled(true);
 
     //prev+next button layout
@@ -205,7 +205,7 @@ void AddRecipientView::onOkBtnClicked ()
     }
 
     if (!fail)
-        emit okButtonClicked();
+        emit OkClicked();
 }
 
 void AddRecipientView::onIsCompanyBtnClicked ()

@@ -4,10 +4,12 @@
 #include <QWidget>
 #include <QSize>
 #include "winsubmenu.h"
+#include "QZXing.h"
 
 class QVideoWidget;
 class QLabel;
 class QPushButton;
+class Camera;
 
 enum ScannerState {
     READY,
@@ -20,6 +22,8 @@ class ScannerView : public WinSubmenu
     Q_OBJECT
 public:
     explicit ScannerView(QWidget *parent = nullptr);
+    virtual void showEvent(QShowEvent *);
+    virtual void hideEvent(QHideEvent *);
     void setScannerState (ScannerState aStatus);
     QVideoWidget* getViewfinder ();
     QSize getViewfinderSize ();
@@ -29,12 +33,22 @@ public:
     const QString getKeyLabel();
     ~ScannerView();
 
-private:
+signals:
+    void keycodeRecognised (int keycode);
 
+private slots:
+    void decodeFromVideoFrame ();
+private:
+    void startScanner ();
+    void stopScanner ();
+    Camera *mCameraInstance;
+    QTimer *mGrabTimer;
     ScannerState mScannerState;
     QVideoWidget *m_viewfinder;
     QLabel *mCustomerLabel;
     QLabel *mKeyLabel;
+
+    QZXing decoder;
 };
 
 #endif // SCANNERVIEW_H

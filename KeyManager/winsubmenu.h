@@ -8,42 +8,62 @@ class QVBoxLayout;
 class QLabel;
 class QPushButton;
 class DataObject;
+class ViewDataInterface;
+class ViewDataScanner;
+class ViewDataKeychainStatus;
+class ViewDataRecipient;
+class ViewDataReturnDate;
+class ViewDataHandover;
+class ViewData;
+class DatabaseImpl;
+class QHBoxLayout;
 
 class WinSubmenu : public QWidget
 {
     Q_OBJECT
 public:
     explicit WinSubmenu (QWidget *parent = nullptr);
+    ~WinSubmenu ();
+    void activate ();
     void setDataObject (DataObject *data);
+    void setDataObject (ViewData *data);
+    void setDatabaseHandle (DatabaseImpl *db);
+    void setData (ViewDataScanner *data);
+    DatabaseImpl* getDatabaseHandle (){return mDatabase;};
 
 protected:
+    /*void setData (ViewDataScanner *scanData);
+    void setData (ViewDataKeychainStatus *scanData);
+    void setData (ViewDataRecipient *scanData);
+    void setData (ViewDataReturnDate *scanData);
+    void setData (ViewDataHandover *scanData);*/
+
+    ViewData* getViewData (){return mViewData;};
     void setHeader (const QString& label);
-    void setMenuButtons (const UiSpecs::eMenuButton& column0 = UiSpecs::eMenuButton::None,
-                        const UiSpecs::eMenuButton& column1 = UiSpecs::eMenuButton::None,
-                        const UiSpecs::eMenuButton& column2 = UiSpecs::eMenuButton::None);
+    void setMenuButtons (const QList<Gui::MenuButton> &buttons);
     void disableButton (int column, bool disable);
     void enableButton (int column, bool enable);
 
-    DataObject *mDataObject;
-
 signals:
-    void firstButtonClicked ();
-    void secondButtonClicked ();
-    void thirdButtonClicked ();
+    void menuButtonClicked (Gui::MenuButton btnType);
+    //void viewDataChanged (ViewDataInterface *data);
 
 private slots:
-    void onFirstBtnClicked ();
-    void onSecondBtnClicked ();
-    void onThirdBtnClicked ();
+    void onMenuBtnClicked(Gui::MenuButton btnType);
 
 private:
 
-    QPushButton *mBtnColumn0;
-    QPushButton *mBtnColumn1;
-    QPushButton *mBtnColumn2;
+    QList <QPushButton*> mMenuButtons;
+
+    DatabaseImpl *mDatabase;
+    DataObject *mDataObject;
+    ViewData *mViewData;
 
     QVBoxLayout *mLayout;
     QLabel *mHeaderLabel;
+    bool mButtonsSet;
+
+    QHBoxLayout *mButtonLayout;
 };
 
 #endif // WINSUBMENU_H

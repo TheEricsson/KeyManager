@@ -27,7 +27,7 @@ class DatabaseImpl
 public:
 
     DatabaseImpl();
-    int getKeychainStatusId (int aId);
+    Database::eKeychainStatusId getKeychainStatusId (int aId);
     bool findKeyCode(int aCode);
     bool setKeyCode(int aCode);
     bool initKeyOverviewModel (QSqlRelationalTableModel *model, int aCode);
@@ -53,7 +53,7 @@ private:
     QImage mKeychainImg;
     QString mKeychainStatus;
     QList <mKey> mKeychainItems;
-    int mKeychainStatusId;
+    Database::eKeychainStatusId mKeychainStatusId;
 };
 
 #endif // DATABASEIMPL_H

@@ -24,12 +24,21 @@ SOURCES += \
     keychainstatusview.cpp \
     main.cpp \
     mainwindow.cpp \
+    menubutton.cpp \
     recipientview.cpp \
     returndateview.cpp \
     scannerview.cpp \
     signaturepad.cpp \
     tableview.cpp \
     tests/qrencodertest.cpp \
+    viewdata.cpp \
+    viewdatahandover.cpp \
+    viewdatakeychainstatus.cpp \
+    viewdatarecipient.cpp \
+    viewdatareturndate.cpp \
+    viewdatascanner.cpp \
+    viewstack.cpp \
+    viewstackmanager.cpp \
     winsubmenu.cpp
 
 HEADERS += \
@@ -47,12 +56,21 @@ HEADERS += \
     initdb.h \
     keychainstatusview.h \
     mainwindow.h \
+    menubutton.h \
     recipientview.h \
     returndateview.h \
     scannerview.h \
     signaturepad.h \
     tableview.h \
     tests/qrencodertest.h \
+    viewdata.h \
+    viewdatahandover.h \
+    viewdatakeychainstatus.h \
+    viewdatarecipient.h \
+    viewdatareturndate.h \
+    viewdatascanner.h \
+    viewstack.h \
+    viewstackmanager.h \
     winsubmenu.h
 
 TRANSLATIONS += \

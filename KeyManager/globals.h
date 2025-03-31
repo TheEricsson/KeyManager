@@ -3,7 +3,9 @@
 
 #include <QString>
 
-namespace UiSpecs
+const int _UNDEFINED = -999;
+
+namespace Gui
 {
     //button dimensions
     const int buttonHeight = 90;
@@ -17,31 +19,36 @@ namespace UiSpecs
     const int logoWidth = 300;
     const int logoHeight = 100;
 
-    //subwindow button layouts
-    enum eMenuButton
+    //menu button types
+    enum MenuButton
     {
-        BackButton,
-        RepeatButton,
-        NextButton,
-        OkButton,
-        AddRecipientButton,
-        PdfButton,
-        MainMenuButton,
+        Back,
+        Repeat,
+        Next,
+        Ok,
+        AddRecipient,
+        Pdf,
+        MainMenu,
+        TakeBack,
+        Handout,
         None,
+        Scanner,
+        Search,
+        Settings,
+        Exit
     };
 }
 
 namespace Database
 {
-    const int UNDEFINED = -999;
-
     enum eKeychainStatusId
     {
         Available = 1,
         TemporaryOut = 2,
         PermanentOut = 3,
         AdministrationEnded = 4,
-        Lost = 5
+        Lost = 5,
+        Undefined = 999
     };
 }
 

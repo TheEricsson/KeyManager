@@ -5,6 +5,7 @@
 #include <QSqlQueryModel>
 #include <QSqlRelationalTableModel>
 #include "QZXing.h"
+#include "globals.h"
 
 class QPushButton;
 class QGridLayout;
@@ -24,10 +25,17 @@ class ReturnDateView;
 class HandoutSummaryView;
 class DataObjectHandover;
 class AnnotationView;
+class WinSubmenu;
+class ViewStackManager;
+class ViewData;
+
+#include "viewdata.h"
 
 #ifdef ENCODERTEST
 class QREncoderTest;
 #endif
+
+class ViewStack;
 
 class MainWindow : public QWidget
 {
@@ -50,32 +58,32 @@ public:
     ~MainWindow();
 
 private slots:
-    void showHomeView();
-    void showScannerView ();
-    void showTableView ();
-    void showRecipientView ();
-    void closeRecipientView ();
-    void showAddRecipientView ();
-    void closeAddRecipientView();
-    void showReturnDateView();
-    void closeReturnDateView ();
-    void showAnnotationView ();
-    void closeAnnotationView ();
-    void addRecipientViewSubmitted ();
-    bool showKeychainStatusView (int aBarcode);
-    void closeKeychainStatusView ();
-    void showHandoverView ();
-    void closeHandoverView ();
-    void closeScannerView ();
-    void closeTableView ();
-    void showHandoutSummaryView ();
-    void closeHandoutSummaryView ();
-    void onSearchButtonReleased ();
-    void onManageButtonReleased ();
-    void decodeImage (int requestId, const QImage &img);
-    void decodeFromVideoFrame ();
+    void onMenuBtnClicked (Gui::MenuButton btnType);
+    void onKeycodeRecognised (int keyCode);
+
+    // void showTableView ();
+    // void showRecipientView ();
+    // void closeRecipientView ();
+    // void showAddRecipientView ();
+    // void closeAddRecipientView();
+    // void showReturnDateView();
+    // void closeReturnDateView ();
+    // void showAnnotationView ();
+    // void closeAnnotationView ();
+    // void addRecipientViewSubmitted ();
+    // bool showKeychainStatusView (int aBarcode);
+    // void closeKeychainStatusView ();
+    // void showHandoverView ();
+    // void closeHandoverView ();
+    // void showHandoutSummaryView ();
+    // void closeHandoutSummaryView ();
+    // void onSearchButtonReleased ();
+    // void onManageButtonReleased ();
+    // void decodeImage (int requestId, const QImage &img);
+    // void decodeFromVideoFrame ();
 
 private:
+    void registerView (WinSubmenu *view);
     void setView (QWidget* view);
     void playSound ();
     void handleScannedKey();
@@ -86,7 +94,9 @@ private:
     QPushButton* btnSearch;
     QPushButton* btnManage;
     QPushButton* btnExit;
-    QStackedLayout* mLayout;
+    //QStackedLayout* mLayout;
+    QStackedLayout *mViewStack;
+    ViewStackManager *mViewStackManager;
 
     HomeView *mHomeView;
     ScannerView *mScanView;
@@ -107,10 +117,11 @@ private:
     QSqlRelationalTableModel *mKeychainModel;
     QSqlRelationalTableModel *mRecipientsModel;
 
-    eViewState mViewState;
     QZXing decoder;
 
     DataObjectHandover *mDataHandover;
+
+    ViewData *mViewData;
 
 #ifdef ENCODERTEST
     QREncoderTest* qrencoderTest;

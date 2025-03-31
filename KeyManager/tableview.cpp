@@ -6,7 +6,7 @@
 #include <QPushButton>
 
 TableView::TableView(const QString &tableName, QWidget *parent)
-    : QWidget{parent}
+    : WinSubmenu {parent}
 {
     mAdresses = new QSqlTableModel(this);
     mAdresses->setTable("keys");

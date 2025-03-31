@@ -46,7 +46,7 @@ DatabaseImpl::DatabaseImpl()
     qDebug () << "QStandardPaths::RuntimeLocation" << QStandardPaths::writableLocation(QStandardPaths::RuntimeLocation);
     qDebug () << "QStandardPaths::DocumentsLocation" << QStandardPaths::writableLocation(QStandardPaths::DocumentsLocation);
 
-    mKeychainStatusId = -1;
+    mKeychainStatusId = Database::eKeychainStatusId::Undefined;
 
     QSqlDatabase mDb = QSqlDatabase::addDatabase("QSQLITE");
 
@@ -316,10 +316,8 @@ bool DatabaseImpl::setKeyCode (int aCode)
     return true;
 }
 
-int DatabaseImpl::getKeychainStatusId (int aId)
+Database::eKeychainStatusId DatabaseImpl::getKeychainStatusId (int aId)
 {
-    qDebug () << "DatabaseImpl::getKeychainStatusId (int aId): " << aId;
-
     mDb.transaction();
 
     QSqlQuery query;
@@ -333,9 +331,9 @@ int DatabaseImpl::getKeychainStatusId (int aId)
     // set keychain status
     if (query.next())
     {
-        mKeychainStatusId = query.value(0).toInt();
+        mKeychainStatusId = (Database::eKeychainStatusId) query.value(0).toInt();
     }
-    qDebug () << "mKeychainStatusId: " << mKeychainStatusId;
+
     return mKeychainStatusId;
 }
 
@@ -505,6 +503,15 @@ bool DatabaseImpl::dataUpdate (DataObjectHandover *data)
         query.bindValue(9, data->getSignatureName());
         query.bindValue(10, data->getSignature());
         query.bindValue(11, data->getAnnotation());
+
+        queryOk = query.exec();
+    }
+
+    if (queryOk)
+    {
+        query.prepare("UPDATE keychains SET keychainStatusId = ? WHERE barcode = ?");
+        query.bindValue(0, data->getKeychainStatus());
+        query.bindValue(1, data->getKeychainId());
 
         queryOk = query.exec();
     }

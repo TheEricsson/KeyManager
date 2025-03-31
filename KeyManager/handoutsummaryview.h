@@ -11,7 +11,7 @@ class HandoutSummaryView : public WinSubmenu
     Q_OBJECT
     public:
         HandoutSummaryView (QWidget *parent = nullptr);
-        void setDataObject (DataObject *data);
+        //void setDataObject (DataObject *data);
 
     private:
         void updateForm (DataObject *data);

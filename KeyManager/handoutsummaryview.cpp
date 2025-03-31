@@ -47,7 +47,7 @@ HandoutSummaryView::HandoutSummaryView (QWidget *parent) : WinSubmenu {parent}
     mRecipientSigneeEdit = new QLineEdit (this);
     mRecipientSigneeEdit->setDisabled(true);
 
-    QLabel *notes  = new QLabel ("Zusätzliche Notizen zur Ausgabe", this);
+    QLabel *notes  = new QLabel ("Zusätzliche Notizen", this);
     mNotesEdit = new QTextEdit (this);
     mNotesEdit->setDisabled(true);
 
@@ -89,16 +89,20 @@ HandoutSummaryView::HandoutSummaryView (QWidget *parent) : WinSubmenu {parent}
     iconCheckOkLabel->setMaximumWidth(250);
 
     layout()->addWidget(iconCheckOkLabel);
-    setMenuButtons(UiSpecs::PdfButton, UiSpecs::OkButton);
+
+    QList<Gui::MenuButton> menuButtons;
+    menuButtons.append(Gui::Pdf);
+    menuButtons.append(Gui::MainMenu);
+    setMenuButtons(menuButtons);
 }
 
-void HandoutSummaryView::setDataObject (DataObject *data)
-{
-    if (data)
-        mDataObject = data;
+// void HandoutSummaryView::setDataObject (DataObject *data)
+// {
+//     if (data)
+//         mDataObject = data;
 
-    updateForm (mDataObject);
-}
+//     updateForm (mDataObject);
+// }
 
 void HandoutSummaryView::updateForm (DataObject *data)
 {

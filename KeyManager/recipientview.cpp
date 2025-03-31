@@ -30,30 +30,64 @@ RecipientView::RecipientView(QWidget *parent) : WinSubmenu {parent}
     //QVBoxLayout* layout = new QVBoxLayout (this);
 
     QHBoxLayout* searchLayout = new QHBoxLayout ();
-    QLabel *searchLabel = new QLabel ("Suche", this);
-    QLineEdit *searchField = new QLineEdit (this);
-    searchLayout->addWidget(searchLabel);
-    searchLayout->addWidget(searchField);
+    mSearchLabel = new QLabel ("Suche", this);
+    mSearchField = new QLineEdit (this);
+    searchLayout->addWidget(mSearchLabel);
+    searchLayout->addWidget(mSearchField);
     layout()->addItem(searchLayout);
 
     mRecipients = new QTableView (this);
     mRecipients->setModel(mFilteredModel);
     layout()->addWidget(mRecipients);
 
-    QLabel *recipientNameLabel = new QLabel ("Empfängername:", this);
+    mRecipientNameLabel = new QLabel ("Empfängername:", this);
     mRecipientNameEdit = new QLineEdit ("", this);
     QVBoxLayout *recipientNameLayout = new QVBoxLayout ();
-    recipientNameLayout->addWidget(recipientNameLabel);
+    recipientNameLayout->addWidget(mRecipientNameLabel);
     recipientNameLayout->addWidget(mRecipientNameEdit);
 
     layout()->addItem(recipientNameLayout);
 
-    setMenuButtons(UiSpecs::BackButton, UiSpecs::AddRecipientButton, UiSpecs::NextButton);
+    QList<Gui::MenuButton> menuButtons;
+    menuButtons.append(Gui::Back);
+    menuButtons.append(Gui::AddRecipient);
+    menuButtons.append(Gui::Next);
+    setMenuButtons(menuButtons);
+
+    //setMenuButtons(Gui::Back, Gui::AddRecipient, Gui::Next);
     disableButton(2, true);
 
     connect (mRecipients->selectionModel(), SIGNAL(selectionChanged(const QItemSelection &, const QItemSelection &)), this, SLOT(onTableSelectionChanged(const QItemSelection &, const QItemSelection &)));
-    connect (searchField, SIGNAL (textChanged(const QString &)), this, SLOT (setTableFilter(const QString &)));
+    connect (mSearchField, SIGNAL (textChanged(const QString &)), this, SLOT (setTableFilter(const QString &)));
 }
+
+// void RecipientView::setDataObject (DataObject *data) //override base class
+// {
+//     if (!data)
+//         return;
+
+//     mDataObject = data;
+
+//     DataObjectHandover *dataHandover = (DataObjectHandover*)mDataObject;
+
+//     switch (dataHandover->getKeychainStatus())
+//     {
+//         case (Database::eKeychainStatusId::AdministrationEnded):
+//         case (Database::eKeychainStatusId::Lost):
+//         case (Database::eKeychainStatusId::PermanentOut):
+//         case (Database::eKeychainStatusId::TemporaryOut):
+//         case (Database::eKeychainStatusId::Undefined):
+//             hideSearchField(true);
+//             hideNameField(true);
+//             setTableFilter(2, "Mitarbeiter");
+//             //mRecipients->update();
+//             //update ();
+//             break;
+//         case (Database::eKeychainStatusId::Available):
+//         default:
+//             break;
+//     }
+// }
 
 bool RecipientView::setModel (QSqlRelationalTableModel* model)
 {
@@ -75,7 +109,6 @@ bool RecipientView::setModel (QSqlRelationalTableModel* model)
     model->setHeaderData(6, Qt::Horizontal, tr("Stadt"), Qt::DisplayRole);
 
     mFilteredModel->setSourceModel(model);
-    mFilteredModel->setFilterKeyColumn(-1); //set filter to search in all columns
     mFilteredModel->setFilterCaseSensitivity(Qt::CaseInsensitive); // ignore capital letters
 
     mRecipients->hideColumn(0); //don't show table index
@@ -128,6 +161,8 @@ bool RecipientView::getRecipientData (RecipientData &data)
 
 void RecipientView::reset()
 {
+    hideSearchField(false);
+    hideNameField(false);
     disableButton(2, true);
     mRecipients->clearSelection();
     mRowSelected = false;
@@ -135,11 +170,10 @@ void RecipientView::reset()
 
 void RecipientView::setTableFilter(const QString &text)
 {
-    qDebug  () << "RecipientView::setTableFilter(const QString &text): " << text;
-
     if (!mRecipients)
         return;
 
+    mFilteredModel->setFilterKeyColumn(-1); //set filter to search in all columns
     mFilteredModel->setFilterWildcard(text);
     mRecipients->update();
     update ();
@@ -147,57 +181,89 @@ void RecipientView::setTableFilter(const QString &text)
 
 void RecipientView::onThirdBtnClicked ()
 {
-    if (!mRowSelected)
+    // if (!mRowSelected)
+    //     return;
+
+    // if (mRecipientNameEdit->isEnabled() && "" == mRecipientNameEdit->text())
+    // {
+    //     mRecipientNameEdit->setStyleSheet("border-style: solid;border-width: 1px;border-color: red");
+
+    //     QMessageBox msgBox;
+    //     msgBox.setText("Unvollständige Eingaben");
+    //     msgBox.setInformativeText("Es wurde ein Unternehmen als Empfänger \n"
+    //                              "ausgewählt. Der Name der Person, die den \n"
+    //                               "Schlüssel entgegennimmt, wurde nicht angegeben.");
+
+    //     msgBox.setStandardButtons(QMessageBox::Ignore | QMessageBox::Ok);
+    //     msgBox.setDefaultButton(QMessageBox::Ok);
+
+    //     int selection = msgBox.exec();
+
+    //     bool ignore = false;
+
+    //     switch (selection)
+    //     {
+    //         case QMessageBox::Ignore:
+    //             ignore = true;
+    //             break;
+    //         case QMessageBox::Ok:
+    //             break;
+    //         default:
+    //             break;
+    //     }
+
+    //     if (!ignore)
+    //         return;
+    // }
+
+    // //set current data
+    // if (mDataObject)
+    // {
+    //     DataObjectHandover *dataObj = (DataObjectHandover*)mDataObject;
+    //     if (dataObj)
+    //     {
+    //         int row = mRecipients->selectionModel()->currentIndex().row();
+    //         dataObj->setRecipient(mRecipients->model()->index(row, 1).data().toString ());
+    //         dataObj->setSignatureName(mRecipientNameEdit->text());
+    //         dataObj->setRecipientStreet(mRecipients->model()->index(row, 3).data().toString ());
+    //         dataObj->setRecipientStreetNumber(mRecipients->model()->index(row, 4).data().toInt());
+    //         dataObj->setRecipientAreaCode(mRecipients->model()->index(row, 5).data().toInt ());
+    //         dataObj->setRecipientCity(mRecipients->model()->index(row, 6).data().toString ());
+    //     }
+    // }
+    // emit thirdButtonClicked();
+}
+
+void RecipientView::setTableFilter(const int column, const QString &searchString)
+{
+    if (!mRecipients)
         return;
 
-    if (mRecipientNameEdit->isEnabled() && "" == mRecipientNameEdit->text())
-    {
-        mRecipientNameEdit->setStyleSheet("border-style: solid;border-width: 1px;border-color: red");
+    mFilteredModel->setFilterKeyColumn(column);
+    mFilteredModel->setFilterWildcard(searchString);
 
-        QMessageBox msgBox;
-        msgBox.setText("Unvollständige Eingaben");
-        msgBox.setInformativeText("Es wurde ein Unternehmen als Empfänger \n"
-                                 "ausgewählt. Der Name der Person, die den \n"
-                                  "Schlüssel entgegennimmt, wurde nicht angegeben.");
+    qDebug () << "RecipientView::setTableFilter";
+    qDebug () << "column: " << column;
+    qDebug () << "searchString: " << searchString;
 
-        msgBox.setStandardButtons(QMessageBox::Ignore | QMessageBox::Ok);
-        msgBox.setDefaultButton(QMessageBox::Ok);
+    mRecipients->update();
+    update();
+}
 
-        int selection = msgBox.exec();
+void RecipientView::hideSearchField (bool hide)
+{
+    mSearchLabel->setHidden(hide);
+    mSearchField->setHidden(hide);
 
-        bool ignore = false;
+    update ();
+}
 
-        switch (selection)
-        {
-            case QMessageBox::Ignore:
-                ignore = true;
-                break;
-            case QMessageBox::Ok:
-                break;
-            default:
-                break;
-        }
+void RecipientView::hideNameField (bool hide)
+{
+    mRecipientNameEdit->setHidden(hide);
+    mRecipientNameLabel->setHidden(hide);
 
-        if (!ignore)
-            return;
-    }
-
-    //set current data
-    if (mDataObject)
-    {
-        DataObjectHandover *dataObj = (DataObjectHandover*)mDataObject;
-        if (dataObj)
-        {
-            int row = mRecipients->selectionModel()->currentIndex().row();
-            dataObj->setRecipient(mRecipients->model()->index(row, 1).data().toString ());
-            dataObj->setSignatureName(mRecipientNameEdit->text());
-            dataObj->setRecipientStreet(mRecipients->model()->index(row, 3).data().toString ());
-            dataObj->setRecipientStreetNumber(mRecipients->model()->index(row, 4).data().toInt());
-            dataObj->setRecipientAreaCode(mRecipients->model()->index(row, 5).data().toInt ());
-            dataObj->setRecipientCity(mRecipients->model()->index(row, 6).data().toString ());
-        }
-    }
-    emit thirdButtonClicked();
+    update ();
 }
 
 void RecipientView::onTableSelectionChanged (const QItemSelection &itemNew, const QItemSelection &itemOld)
