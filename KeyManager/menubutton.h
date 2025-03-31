@@ -13,6 +13,7 @@ class MenuButton : public QToolButton
     public:
         MenuButton (QWidget *parent = nullptr);
         void setButtonType (Gui::MenuButton btnType) {mButtonType = btnType;};
+        void setButtonText (const QString &btnText);
         Gui::MenuButton getButtonType () {return mButtonType;};
     signals:
         void clicked (Gui::MenuButton btnType);

@@ -11,3 +11,8 @@ void MenuButton::menuButtonClicked()
 {
     emit clicked (mButtonType);
 }
+
+void MenuButton::setButtonText (const QString &btnText)
+{
+    setText(btnText);
+}

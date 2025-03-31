@@ -2,7 +2,7 @@
 #define VIEWDATASCANNER_H
 
 #include "globals.h"
-#include "viewdata.h"
+#include "datainterface.h"
 
 class ViewDataScanner
 {

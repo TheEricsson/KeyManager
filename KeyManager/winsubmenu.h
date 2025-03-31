@@ -14,7 +14,7 @@ class ViewDataKeychainStatus;
 class ViewDataRecipient;
 class ViewDataReturnDate;
 class ViewDataHandover;
-class ViewData;
+class DataInterface;
 class DatabaseImpl;
 class QHBoxLayout;
 
@@ -24,12 +24,12 @@ class WinSubmenu : public QWidget
 public:
     explicit WinSubmenu (QWidget *parent = nullptr);
     ~WinSubmenu ();
-    void activate ();
-    void setDataObject (DataObject *data);
-    void setDataObject (ViewData *data);
-    void setDatabaseHandle (DatabaseImpl *db);
+    //void activate ();
+    //void setDataObject (DataObject *data);
+    void setDataInterface (DataInterface *data);
+    //void setDatabaseHandle (DatabaseImpl *db);
     void setData (ViewDataScanner *data);
-    DatabaseImpl* getDatabaseHandle (){return mDatabase;};
+    //DatabaseImpl* getDatabaseHandle (){return mDatabase;};
 
 protected:
     /*void setData (ViewDataScanner *scanData);
@@ -38,8 +38,9 @@ protected:
     void setData (ViewDataReturnDate *scanData);
     void setData (ViewDataHandover *scanData);*/
 
-    ViewData* getViewData (){return mViewData;};
+    DataInterface* dataInterface (){return mDataInterface;};
     void setHeader (const QString& label);
+    void setButtonText (int column, const QString &btnText);
     void setMenuButtons (const QList<Gui::MenuButton> &buttons);
     void disableButton (int column, bool disable);
     void enableButton (int column, bool enable);
@@ -55,9 +56,9 @@ private:
 
     QList <QPushButton*> mMenuButtons;
 
-    DatabaseImpl *mDatabase;
+    //DatabaseImpl *mDatabase;
     DataObject *mDataObject;
-    ViewData *mViewData;
+    DataInterface *mDataInterface;
 
     QVBoxLayout *mLayout;
     QLabel *mHeaderLabel;

@@ -7,15 +7,15 @@
 #include "globals.h"
 #include "dataobject.h"
 #include "menubutton.h"
-#include "viewdata.h"
+#include "datainterface.h"
 
 WinSubmenu::WinSubmenu(QWidget *parent)
     : QWidget{parent}
 {
     mButtonsSet = false;
     mDataObject = 0;
-    mViewData = 0;
-    mDatabase = 0;
+    mDataInterface = 0;
+    //mDatabase = 0;
     mButtonLayout = 0;
 
     mLayout = new QVBoxLayout (this);
@@ -28,7 +28,7 @@ WinSubmenu::WinSubmenu(QWidget *parent)
 
     setStyleSheet("QToolButton {background-color: #C0C0C0; border-style: outset; border-width: 3px; border-radius: 10px; border-color: #A9A9A9; font: bold 14px; padding: 6px;}");
 
-    mViewData = new ViewData ();
+    //mViewData = new ViewData ();
 }
 
 // void WinSubmenu::setDataObject (DataObject *data)
@@ -37,17 +37,17 @@ WinSubmenu::WinSubmenu(QWidget *parent)
 //         mDataObject = data;
 // }
 
-void WinSubmenu::setDataObject (ViewData *data)
+void WinSubmenu::setDataInterface (DataInterface *data)
 {
     if (data)
-        mViewData = data;
+        mDataInterface = data;
 }
 
-void WinSubmenu::setDatabaseHandle (DatabaseImpl *db)
-{
-    if (db)
-        mDatabase = db;
-}
+// void WinSubmenu::setDatabaseHandle (DatabaseImpl *db)
+// {
+//     if (db)
+//         mDatabase = db;
+// }
 
 void WinSubmenu::setHeader (const QString& label)
 {    
@@ -88,6 +88,7 @@ void WinSubmenu::setMenuButtons (const QList<Gui::MenuButton> &buttons)
         MenuButton *menuBtn = new MenuButton (this);
         menuBtn->setButtonType(buttons[i]);
         menuBtn->setIconSize(QSize(Gui::buttonWidth,Gui::buttonHeight));
+        menuBtn->setToolButtonStyle(Qt::ToolButtonTextUnderIcon);
 
         switch (buttons[i])
         {
@@ -142,6 +143,18 @@ void WinSubmenu::setMenuButtons (const QList<Gui::MenuButton> &buttons)
     }
 
     mButtonsSet = true;
+}
+
+void WinSubmenu::setButtonText (int column, const QString &btnText)
+{
+    if (mButtonLayout)
+    {
+        QToolButton *btn = (QToolButton*)mButtonLayout->itemAt(column)->widget();
+        if (btn)
+        {
+            btn->setText(btnText);
+        }
+    }
 }
 
 void WinSubmenu::disableButton (int column, bool disable)

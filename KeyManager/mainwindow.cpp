@@ -28,7 +28,7 @@
 #include "dataobjecthandover.h"
 #include "annotationview.h"
 #include "viewstackmanager.h"
-#include "viewdata.h"
+#include "datainterface.h"
 
 #ifndef GMANDANTID
     #define GMANDANTID 1
@@ -41,29 +41,29 @@
 MainWindow::MainWindow(QWidget *parent)
     : QWidget(parent)
 {
-    mLastView = 0;
-    mCameraInstance = 0;
-    mGrabTimer = 0;
+    //mLastView = 0;
+    //mCameraInstance = 0;
+    //mGrabTimer = 0;
     mScanView = 0;
     mHomeView = 0;
     mTableView = 0;
     mKeychainStatusView = 0;
-    mKeysOverviewModel = 0;
-    mRecipientsModel = 0;
-    mKeychainModel = 0;
+    //mKeysOverviewModel = 0;
+    //mRecipientsModel = 0;
+    //mKeychainModel = 0;
     mRecipientView = 0;
     mAddRecipientView = 0;
     mReturnDateView = 0;
     mAnnotationView = 0;
-    mViewData = 0;
+    mDataInterface = 0;
 
     //mLayout = 0;
     mViewStack = 0;
-    mDatabase = 0;
+    //mDatabase = 0;
     //mDataHandover = 0;
 
-    initDatabase ();
-    mViewData = new ViewData ();
+    //initDatabase ();
+    mDataInterface = new DataInterface();
 
     mViewStack = new QStackedLayout (this);
     setLayout(mViewStack);
@@ -91,9 +91,9 @@ MainWindow::MainWindow(QWidget *parent)
     registerView (mAnnotationView);
 
     // views with a model need db access
-    mRecipientView->setDatabaseHandle (mDatabase);
-    mKeychainStatusView->setDatabaseHandle (mDatabase);
-    mAddRecipientView->setDatabaseHandle (mDatabase);
+    // mRecipientView->setDatabaseHandle (mDatabase);
+    // mKeychainStatusView->setDatabaseHandle (mDatabase);
+    // mAddRecipientView->setDatabaseHandle (mDatabase);
 
     mViewStack->setCurrentWidget(mHomeView);
 
@@ -119,13 +119,8 @@ MainWindow::MainWindow(QWidget *parent)
 void MainWindow::registerView (WinSubmenu *view)
 {
     connect (view, SIGNAL(menuButtonClicked(Gui::MenuButton)), this, SLOT (onMenuBtnClicked(Gui::MenuButton)));
-    view->setDataObject(mViewData);
+    view->setDataInterface(mDataInterface);
     mViewStack->addWidget(view);
-}
-
-void MainWindow::initDatabase ()
-{
-    mDatabase = new DatabaseImpl ();
 }
 
 void MainWindow::handleScannedKey()
@@ -442,8 +437,8 @@ void MainWindow::setView (QWidget* view)
 
 MainWindow::~MainWindow()
 {
-    if (mDatabase)
-        delete mDatabase;
+    // if (mDatabase)
+    //     delete mDatabase;
 
     // if (mDataHandover)
     //     delete mDataHandover;

@@ -1,17 +1,25 @@
-#ifndef VIEWDATA_H
-#define VIEWDATA_H
+#ifndef DATAINTERFACE_H
+#define DATAINTERFACE_H
 
 class ViewDataHandover;
 class ViewDataKeychainStatus;
 class ViewDataRecipient;
 class ViewDataReturnDate;
 class ViewDataScanner;
+class DatabaseImpl;
+class QSqlRelationalTableModel;
+#include "globals.h"
 
-class ViewData
+class DataInterface
 {  
     public:
-        ViewData();
-        ~ViewData();
+        DataInterface();
+        ~DataInterface();
+
+        bool initKeyOverviewModel (QSqlRelationalTableModel *model, int keyCode);
+        bool initKeychainModel (QSqlRelationalTableModel *model, int aId);
+        bool initRecipientModel (QSqlRelationalTableModel *model);
+        Database::eKeychainStatusId getKeychainStatusId (int aId);
 
         void setData (ViewDataHandover* data);
         void setData (ViewDataKeychainStatus* data);
@@ -27,6 +35,7 @@ class ViewData
         ViewDataScanner* getDataScanner () {return mDataScanner;};
 
     private:
+        DatabaseImpl *mDatabase;
         ViewDataHandover *mDataHandover;
         ViewDataKeychainStatus *mDataKeychainStatus;
         ViewDataRecipient *mDataRecipient;
@@ -34,4 +43,4 @@ class ViewData
         ViewDataScanner *mDataScanner;
 };
 
-#endif // VIEWDATA_H
+#endif // DATAINTERFACE_H

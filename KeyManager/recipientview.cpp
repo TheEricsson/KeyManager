@@ -16,11 +16,13 @@
 #include "globals.h"
 #include "dataobject.h"
 #include "dataobjecthandover.h"
+#include "datainterface.h"
 
 RecipientView::RecipientView(QWidget *parent) : WinSubmenu {parent}
 {
     mRecipients = 0;
     mFilteredModel = 0;
+    mRecipientsModel = 0;
     mRowSelected = false;
 
     mFilteredModel = new QSortFilterProxyModel (this);
@@ -161,11 +163,24 @@ bool RecipientView::getRecipientData (RecipientData &data)
 
 void RecipientView::reset()
 {
+    //init model/view at first show event
+    if (!mRecipientsModel)
+    {
+        mRecipientsModel = new QSqlRelationalTableModel ();
+        dataInterface()->initRecipientModel(mRecipientsModel);
+        setModel(mRecipientsModel);
+    }
+
     hideSearchField(false);
     hideNameField(false);
     disableButton(2, true);
     mRecipients->clearSelection();
     mRowSelected = false;
+}
+
+void RecipientView::showEvent(QShowEvent *)
+{
+    reset ();
 }
 
 void RecipientView::setTableFilter(const QString &text)

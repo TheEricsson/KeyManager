@@ -27,9 +27,9 @@ class DataObjectHandover;
 class AnnotationView;
 class WinSubmenu;
 class ViewStackManager;
-class ViewData;
+class mDataInterface;
 
-#include "viewdata.h"
+#include "datainterface.h"
 
 #ifdef ENCODERTEST
 class QREncoderTest;
@@ -88,7 +88,7 @@ private:
     void playSound ();
     void handleScannedKey();
 
-    int mLastView;
+    //int mLastView;
 
     QPushButton* btnScan;
     QPushButton* btnSearch;
@@ -109,19 +109,19 @@ private:
     HandoutSummaryView *mHandoutSummaryView;
     AnnotationView *mAnnotationView;
 
-    Camera *mCameraInstance;
-    QTimer *mGrabTimer;
-    DatabaseImpl *mDatabase;
+    //Camera *mCameraInstance;
+    //QTimer *mGrabTimer;
+    //DatabaseImpl *mDatabase;
 
-    QSqlRelationalTableModel *mKeysOverviewModel;
-    QSqlRelationalTableModel *mKeychainModel;
-    QSqlRelationalTableModel *mRecipientsModel;
+    // QSqlRelationalTableModel *mKeysOverviewModel;
+    // QSqlRelationalTableModel *mKeychainModel;
+    // QSqlRelationalTableModel *mRecipientsModel;
 
     QZXing decoder;
 
-    DataObjectHandover *mDataHandover;
+    //DataObjectHandover *mDataHandover;
 
-    ViewData *mViewData;
+    DataInterface *mDataInterface;
 
 #ifdef ENCODERTEST
     QREncoderTest* qrencoderTest;

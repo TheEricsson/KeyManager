@@ -2,7 +2,7 @@
 #include <QTextEdit>
 #include <QLayout>
 #include "dataobjecthandover.h"
-#include "viewdata.h"
+#include "datainterface.h"
 #include "viewdatahandover.h"
 
 AnnotationView::AnnotationView (QWidget *parent)
@@ -25,5 +25,5 @@ void AnnotationView::onTextChanged ()
 {
     ViewDataHandover *dataHandover = new ViewDataHandover ();
     dataHandover->setAnnotation(mTextEditor->toPlainText());
-    getViewData()->setData (dataHandover);
+    dataInterface()->setData (dataHandover);
 }

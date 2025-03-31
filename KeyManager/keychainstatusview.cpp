@@ -15,7 +15,7 @@
 #include "winsubmenu.h"
 #include "dataobjecthandover.h"
 #include <QWidget>
-#include "viewdata.h"
+#include "datainterface.h"
 #include "viewdatascanner.h"
 #include <QSqlRelationalTableModel>
 #include "databaseimpl.h"
@@ -50,6 +50,7 @@ KeychainStatusView::KeychainStatusView(QWidget *parent)
 
     QList<Gui::MenuButton> menuButtons;
     menuButtons.append(Gui::Back);
+    menuButtons.append(Gui::MainMenu);
     menuButtons.append(Gui::Next);
     setMenuButtons(menuButtons);
 
@@ -59,15 +60,15 @@ KeychainStatusView::KeychainStatusView(QWidget *parent)
 
 void KeychainStatusView::showEvent(QShowEvent *)
 {
-    int barcode = getViewData()->getDataScanner()->getBarcode();
+    int barcode = dataInterface()->getDataScanner()->getBarcode();
 
-    getDatabaseHandle()->initKeyOverviewModel(mKeysOverviewModel, barcode);
+    dataInterface()->initKeyOverviewModel(mKeysOverviewModel, barcode);
     setKeysModel(mKeysOverviewModel);
 
-    getDatabaseHandle()->initKeychainModel(mKeychainModel, barcode);
+    dataInterface()->initKeychainModel(mKeychainModel, barcode);
     setKeychainModel(mKeychainModel);
 
-    Database::eKeychainStatusId keyChainStatus = getDatabaseHandle()->getKeychainStatusId (barcode);
+    Database::eKeychainStatusId keyChainStatus = dataInterface()->getKeychainStatusId (barcode);
     setKeychainStatus(keyChainStatus);
 }
 
@@ -75,17 +76,17 @@ void KeychainStatusView::setKeychainStatus (const int &statusId)
 {
     mKeychainStatusId = statusId;
 
-    // switch (mKeychainStatusId)
-    // {
-    //     case Database::AdministrationEnded:
-    //     case Database::TemporaryOut:
-    //     case Database::PermanentOut:
-    //     case Database::Lost:
-    //         setMenuButtons(Gui::Back, Gui::TakeBack);
-    //         break;
-    //     default:
-    //         setMenuButtons(Gui::Back, Gui::Handout);
-    // }
+    switch (mKeychainStatusId)
+    {
+        case Database::AdministrationEnded:
+        case Database::TemporaryOut:
+        case Database::PermanentOut:
+        case Database::Lost:
+            setButtonText(2, "Rücknahme");
+            break;
+        default:
+            setButtonText(2, "Ausgabe");
+    }
 }
 
 bool KeychainStatusView::setKeychainModel (QSqlRelationalTableModel* model)
@@ -129,7 +130,7 @@ bool KeychainStatusView::setKeychainModel (QSqlRelationalTableModel* model)
             int internalLoc = mKeychain->model()->index(0, 2).data().toInt();
             keychainData->setInternalLocation(internalLoc);
             keychainData->setStatus(mKeychain->model()->index(0, 1).data().toInt());
-            getViewData()->setData (keychainData);
+            dataInterface()->setData (keychainData);
 
             return true;
         }

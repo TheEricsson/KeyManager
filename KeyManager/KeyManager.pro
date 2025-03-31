@@ -16,6 +16,7 @@ SOURCES += \
     calendarview.cpp \
     camera.cpp \
     databaseimpl.cpp \
+    datainterface.cpp \
     dataobject.cpp \
     dataobjecthandover.cpp \
     handoutsummaryview.cpp \
@@ -31,7 +32,6 @@ SOURCES += \
     signaturepad.cpp \
     tableview.cpp \
     tests/qrencodertest.cpp \
-    viewdata.cpp \
     viewdatahandover.cpp \
     viewdatakeychainstatus.cpp \
     viewdatarecipient.cpp \
@@ -47,6 +47,7 @@ HEADERS += \
     calendarview.h \
     camera.h \
     databaseimpl.h \
+    datainterface.h \
     dataobject.h \
     dataobjecthandover.h \
     globals.h \
@@ -63,7 +64,6 @@ HEADERS += \
     signaturepad.h \
     tableview.h \
     tests/qrencodertest.h \
-    viewdata.h \
     viewdatahandover.h \
     viewdatakeychainstatus.h \
     viewdatarecipient.h \

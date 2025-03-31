@@ -18,7 +18,7 @@
 #include "camera.h"
 #include "dataobject.h"
 #include "viewdatascanner.h"
-#include "viewdata.h"
+#include "datainterface.h"
 
 #if QT_CONFIG(permissions)
 #include <QPermission>
@@ -69,6 +69,7 @@ ScannerView::ScannerView(QWidget *parent)
     //setMenuButtons(Gui::Back, Gui::Repeat);
     QList<Gui::MenuButton> menuButtons;
     menuButtons.append(Gui::Back);
+    menuButtons.append(Gui::Repeat);
     menuButtons.append(Gui::Next);
     setMenuButtons(menuButtons);
 
@@ -117,6 +118,16 @@ void ScannerView::stopScanner ()
     setScannerState (ScannerState::READY);
 }
 
+void ScannerView::onMenuBtnClicked (Gui::MenuButton btnType)
+{
+    if (Gui::Repeat == btnType)
+    {
+        startScanner();
+    }
+    else
+        WinSubmenu::menuButtonClicked(btnType);
+}
+
 void ScannerView::decodeFromVideoFrame ()
 {
     QImage capture = mCameraInstance->getImageFromVideoframe ();
@@ -158,7 +169,7 @@ void ScannerView::decodeFromVideoFrame ()
         //emit keycodeRecognised (barcodeAsInt);
         ViewDataScanner *scannerData = new ViewDataScanner ();
         scannerData->setBarcode(barcodeAsInt);
-        getViewData()->setData (scannerData);
+        dataInterface()->setData (scannerData);
         //emit viewDataChanged (scannerData);
     }
 }
@@ -173,13 +184,19 @@ void ScannerView::setScannerState (ScannerState aStatus)
             qDebug () << "ScannerState is READY";
             mCustomerLabel->setText("---");
             mKeyLabel->setText("---");
+            disableButton(1, false);
+            disableButton(2, true);
             break;
         case SCANNING:
             mCustomerLabel->setText("---");
             mKeyLabel->setText("---");
             qDebug() <<  "ScannerState is SCANNING";
+            disableButton(1, true);
+            disableButton(2, true);
             break;
         case SCANSUCCEEDED:
+            enableButton(1, true);
+            enableButton(2, true);
             qDebug() <<  "ScannerState is SCANSUCCEEDED";
             break;
     }

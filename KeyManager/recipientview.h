@@ -33,9 +33,11 @@ private slots:
     void onThirdBtnClicked ();
 
 private:
+    virtual void showEvent(QShowEvent *);
     void setTableFilter(const int column, const QString &searchString);
     void hideSearchField(bool hide);
     void hideNameField(bool hide);
+    QSqlRelationalTableModel *mRecipientsModel;
     QTableView *mRecipients;
     QSortFilterProxyModel *mFilteredModel;
     QLabel *mRecipientNameLabel;

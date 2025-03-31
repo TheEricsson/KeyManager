@@ -37,6 +37,7 @@ signals:
     void keycodeRecognised (int keycode);
 
 private slots:
+    void onMenuBtnClicked (Gui::MenuButton btnType);
     void decodeFromVideoFrame ();
 private:
     void startScanner ();
