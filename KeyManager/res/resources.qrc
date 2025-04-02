@@ -5,7 +5,7 @@
         <file>menu_settings.svg</file>
         <file>menu_exit.svg</file>
         <file>logo.png</file>
-        <file>barcode.png</file>
+        <file>barcode00010150.png</file>
         <file>menu_back.png</file>
         <file>menu_next.png</file>
         <file>menu_retry.png</file>
@@ -17,6 +17,7 @@
         <file>menu_ok.png</file>
         <file>icon_check.png</file>
         <file>menu_pdf.png</file>
+        <file>barcode00010151.png</file>
     </qresource>
     <qresource prefix="/sounds">
         <file>scanner_beep.mp3</file>

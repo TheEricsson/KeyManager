@@ -13,13 +13,11 @@ include(../QZXing/QZXing.pri)
 SOURCES += \
     addrecipientview.cpp \
     annotationview.cpp \
-    calendarview.cpp \
     camera.cpp \
     databaseimpl.cpp \
     datainterface.cpp \
     dataobject.cpp \
     dataobjecthandover.cpp \
-    handoutsummaryview.cpp \
     handoverview.cpp \
     homeview.cpp \
     keychainstatusview.cpp \
@@ -32,8 +30,9 @@ SOURCES += \
     signaturepad.cpp \
     tableview.cpp \
     tests/qrencodertest.cpp \
+    viewdataannotation.cpp \
     viewdatahandover.cpp \
-    viewdatakeychainstatus.cpp \
+    viewdatakeychain.cpp \
     viewdatarecipient.cpp \
     viewdatareturndate.cpp \
     viewdatascanner.cpp \
@@ -44,14 +43,12 @@ SOURCES += \
 HEADERS += \
     addrecipientview.h \
     annotationview.h \
-    calendarview.h \
     camera.h \
     databaseimpl.h \
     datainterface.h \
     dataobject.h \
     dataobjecthandover.h \
     globals.h \
-    handoutsummaryview.h \
     handoverview.h \
     homeview.h \
     initdb.h \
@@ -64,8 +61,9 @@ HEADERS += \
     signaturepad.h \
     tableview.h \
     tests/qrencodertest.h \
+    viewdataannotation.h \
     viewdatahandover.h \
-    viewdatakeychainstatus.h \
+    viewdatakeychain.h \
     viewdatarecipient.h \
     viewdatareturndate.h \
     viewdatascanner.h \

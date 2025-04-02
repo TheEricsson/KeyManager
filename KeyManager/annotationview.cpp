@@ -3,11 +3,13 @@
 #include <QLayout>
 #include "dataobjecthandover.h"
 #include "datainterface.h"
-#include "viewdatahandover.h"
+#include "viewdataannotation.h"
 
 AnnotationView::AnnotationView (QWidget *parent)
     : WinSubmenu {parent}
 {
+    mDataAnnotation = 0;
+
     setHeader("Zuätzliche Notizen");
     mTextEditor = new QTextEdit (this);
     mTextEditor->setSizePolicy(QSizePolicy::Policy::Expanding, QSizePolicy::Policy::Expanding);
@@ -21,9 +23,37 @@ AnnotationView::AnnotationView (QWidget *parent)
     connect (mTextEditor, SIGNAL (textChanged()), this, SLOT(onTextChanged()));
 }
 
+void AnnotationView::showEvent(QShowEvent *)
+{
+    reset ();
+}
+
+void AnnotationView::reset()
+{
+    if (mDataAnnotation)
+    {
+        delete mDataAnnotation;
+        mDataAnnotation = new ViewDataAnnotation ();
+        dataInterface()->setData(mDataAnnotation);
+        mTextEditor->setText("");
+    }
+}
+
 void AnnotationView::onTextChanged ()
 {
-    ViewDataHandover *dataHandover = new ViewDataHandover ();
-    dataHandover->setAnnotation(mTextEditor->toPlainText());
-    dataInterface()->setData (dataHandover);
+    if (!mDataAnnotation)
+    {
+        mDataAnnotation = new ViewDataAnnotation ();
+        dataInterface()->setData(mDataAnnotation);
+    }
+    mDataAnnotation->setAnnotation(mTextEditor->toPlainText());
+}
+
+AnnotationView::~AnnotationView()
+{
+    // if (mDataAnnotation)
+    // {
+    //     delete mDataAnnotation;
+    //     mDataAnnotation = 0;
+    // }
 }

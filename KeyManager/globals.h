@@ -35,13 +35,14 @@ namespace Gui
         Scanner,
         Search,
         Settings,
-        Exit
+        Exit,
+        NewCode
     };
 }
 
 namespace Database
 {
-    enum eKeychainStatusId
+    enum KeychainStatus
     {
         Available = 1,
         TemporaryOut = 2,
@@ -50,18 +51,20 @@ namespace Database
         Lost = 5,
         Undefined = 999
     };
-}
 
-enum RecipientType
-{
-    Company = 0,
-    PrivatePerson = 1,
-    Employee = 2
-};
+    enum RecipientType
+    {
+        Company = 0,
+        PrivatePerson = 1,
+        Employee = 2
+    };
+
+    const int maxHandoverEntries = 10;
+}
 
 struct RecipientData
 {
-    RecipientType type;
+    Database::RecipientType type;
     QString name;
     QString street;
     QString number;

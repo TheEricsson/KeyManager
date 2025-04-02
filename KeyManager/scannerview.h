@@ -2,7 +2,6 @@
 #define SCANNERVIEW_H
 
 #include <QWidget>
-#include <QSize>
 #include "winsubmenu.h"
 #include "QZXing.h"
 
@@ -10,46 +9,52 @@ class QVideoWidget;
 class QLabel;
 class QPushButton;
 class Camera;
-
-enum ScannerState {
-    READY,
-    SCANNING,
-    SCANSUCCEEDED,
-};
+class ViewDataScanner;
 
 class ScannerView : public WinSubmenu
 {
     Q_OBJECT
-public:
-    explicit ScannerView(QWidget *parent = nullptr);
-    virtual void showEvent(QShowEvent *);
-    virtual void hideEvent(QHideEvent *);
-    void setScannerState (ScannerState aStatus);
-    QVideoWidget* getViewfinder ();
-    QSize getViewfinderSize ();
-    void setCustomerLabel (QString aCustomerId);
-    void setKeyLabel (QString aKeyId);
-    const QString getCustomerLabel ();
-    const QString getKeyLabel();
-    ~ScannerView();
+    public:
 
-signals:
-    void keycodeRecognised (int keycode);
+        enum ScannerState {
+            READY,
+            SCANNING,
+            SCANSUCCEEDED,
+        };
 
-private slots:
-    void onMenuBtnClicked (Gui::MenuButton btnType);
-    void decodeFromVideoFrame ();
-private:
-    void startScanner ();
-    void stopScanner ();
-    Camera *mCameraInstance;
-    QTimer *mGrabTimer;
-    ScannerState mScannerState;
-    QVideoWidget *m_viewfinder;
-    QLabel *mCustomerLabel;
-    QLabel *mKeyLabel;
+        explicit ScannerView(QWidget *parent = nullptr);
+        virtual void showEvent(QShowEvent *);
+        virtual void hideEvent(QHideEvent *);
+        void setScannerState (ScannerState aStatus);
+        QVideoWidget* getViewfinder ();
+        QSize getViewfinderSize ();
+        void setCustomerLabel (QString aCustomerId);
+        void setKeyLabel (QString aKeyId);
+        const QString getCustomerLabel ();
+        const QString getKeyLabel();
+        ~ScannerView();
 
-    QZXing decoder;
+    signals:
+        void keycodeRecognised (int keycode);
+
+    private slots:
+        virtual void onMenuBtnClicked (Gui::MenuButton btnType);
+        void decodeFromVideoFrame ();
+
+    private:
+        void startScanner ();
+        void stopScanner ();
+
+        Camera *mCameraInstance;
+        QTimer *mGrabTimer;
+        ScannerState mScannerState;
+        QVideoWidget *m_viewfinder;
+        QLabel *mCustomerLabel;
+        QLabel *mKeyLabel;
+
+        ViewDataScanner *mScannerData;
+
+        QZXing decoder;
 };
 
 #endif // SCANNERVIEW_H

@@ -167,3 +167,12 @@ QCamera* Camera::getCamera ()
         qFatal () << "Camera::getCamera ():" << "mCamera is Null";
     return 0;
 }
+
+Camera::~Camera()
+{
+    if (mCamera)
+    {
+        delete mCamera;
+        mCamera = 0;
+    }
+}

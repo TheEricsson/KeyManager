@@ -7,16 +7,86 @@
 #include <QButtonGroup>
 #include <QRadioButton>
 #include <QCalendarWidget>
-#include "calendarview.h"
 #include "dataobjecthandover.h"
+#include "datainterface.h"
+#include <QTextEdit>
 
 HandoverView::HandoverView (QWidget *parent)
     : WinSubmenu {parent}
 {
+    mSigPad = 0;
+
     setHeader("Ausgabe abschließen");
 
-    mSigPad = new SignaturePad ();
+    //clear ();
 
+    QGridLayout *gridLayout = new QGridLayout ();
+
+    QLabel *barcodeLabel = new QLabel ("Barcode", this);
+    mBarcodeLineEdit = new QLineEdit (this);
+    mBarcodeLineEdit->setDisabled(true);
+
+    QLabel *keychainStatus = new QLabel ("Neuer Status", this);
+    mNewStatusEdit = new QLineEdit (this);
+    mNewStatusEdit->setDisabled(true);
+
+    QLabel *handoverDate = new QLabel ("Ausgabedatum", this);
+    mHandoverDateEdit = new QLineEdit (this);
+    mHandoverDateEdit->setDisabled(true);
+
+    QLabel *deadlineDate = new QLabel ("Rückgabedatum", this);
+    mDeadlineDateEdit = new QLineEdit (this);
+    mDeadlineDateEdit->setDisabled(true);
+
+    QLabel *recipient = new QLabel ("Empfänger", this);
+    mRecipientEdit = new QLineEdit (this);
+    mRecipientEdit->setDisabled(true);
+
+    QLabel *recipientStreetAndNumber  = new QLabel ("Straße, Hausnummer", this);
+    mRecipientStreetEdit = new QLineEdit (this);
+    mRecipientStreetEdit->setDisabled(true);
+
+    QLabel *recipientAreaCodeAndCity  = new QLabel ("PLZ, Ort", this);
+    mRecipientAreaCodeAndCityEdit = new QLineEdit (this);
+    mRecipientAreaCodeAndCityEdit->setDisabled(true);
+
+    QLabel *signee  = new QLabel ("Unterzeichner", this);
+    mRecipientSigneeEdit = new QLineEdit (this);
+    mRecipientSigneeEdit->setDisabled(true);
+
+    QLabel *notes  = new QLabel ("Zusätzliche Notizen", this);
+    mNotesEdit = new QTextEdit (this);
+    mNotesEdit->setDisabled(true);
+
+    gridLayout->addWidget(barcodeLabel, 0, 0);
+    gridLayout->addWidget(mBarcodeLineEdit, 0, 1);
+
+    gridLayout->addWidget(keychainStatus, 1, 0);
+    gridLayout->addWidget(mNewStatusEdit, 1, 1);
+
+    gridLayout->addWidget(handoverDate, 2, 0);
+    gridLayout->addWidget(mHandoverDateEdit, 2, 1);
+
+    gridLayout->addWidget(deadlineDate, 3, 0);
+    gridLayout->addWidget(mDeadlineDateEdit, 3, 1);
+
+    gridLayout->addWidget(recipient, 4, 0);
+    gridLayout->addWidget(mRecipientEdit, 4, 1);
+
+    gridLayout->addWidget(recipientStreetAndNumber, 5, 0);
+    gridLayout->addWidget(mRecipientStreetEdit, 5, 1);
+
+    gridLayout->addWidget(recipientAreaCodeAndCity, 6, 0);
+    gridLayout->addWidget(mRecipientAreaCodeAndCityEdit, 6, 1);
+
+    gridLayout->addWidget(signee, 7, 0);
+    gridLayout->addWidget(mRecipientSigneeEdit, 7, 1);
+
+    gridLayout->addWidget(notes, 8, 0);
+    gridLayout->addWidget(mNotesEdit, 8, 1);
+
+    layout()->addItem(gridLayout);
+    mSigPad = new SignaturePad ();
     layout()->addWidget(mSigPad);
 
     QList<Gui::MenuButton> menuButtons;
@@ -25,21 +95,7 @@ HandoverView::HandoverView (QWidget *parent)
     menuButtons.append(Gui::Next);
     setMenuButtons(menuButtons);
 
-    clear ();
-
     connect (mSigPad, SIGNAL (signaturePaint ()), this, SLOT(onSignaturePaint ()));
-}
-
-void HandoverView::clear ()
-{
-    mSigPad->clearImage();
-
-    if (!mSigPad->isModified())
-    {
-        disableButton(1, true);
-        disableButton(2, true);
-        update ();
-    }
 }
 
 void HandoverView::onSignaturePaint ()
@@ -58,8 +114,11 @@ void  HandoverView::onMenuBtnClicked (Gui::MenuButton btnType)
     {
         //reset signature pad
         case (Gui::Repeat):
-            clear ();
+            resetSignature ();
             break;
+        case (Gui::Next):
+            dataInterface()->setRecipientSigImg(mSigPad->getSignature());
+            dataInterface()->submitHandover();
         //no catch in this class, emit signal
         default:
             emit menuButtonClicked(btnType);
@@ -67,22 +126,54 @@ void  HandoverView::onMenuBtnClicked (Gui::MenuButton btnType)
     }
 }
 
-void HandoverView::onSecondBtnClicked ()
+void HandoverView::showEvent(QShowEvent *)
 {
-    clear ();
+    reset ();
 }
 
-void HandoverView::onThirdBtnClicked ()
+void HandoverView::reset ()
 {
-    // //set current data
-    // if (mDataObject)
-    // {
-    //     DataObjectHandover *dataObj = (DataObjectHandover*)mDataObject;
-    //     if (dataObj)
-    //     {
-    //         QImage sigImg = mSigPad->getSignature();
-    //         dataObj->setSignature(sigImg);
-    //     }
-    // }
-    // emit thirdButtonClicked ();
+    mBarcodeLineEdit->setText(QString::number(dataInterface()->getScannedCode()));
+    Database::KeychainStatus status = dataInterface()->getNewKeychainStatusId();
+    QString statusById = dataInterface()->getKeychainStatusText(status);
+    mNewStatusEdit->setText(statusById);
+    mHandoverDateEdit->setText(dataInterface()->getHandoverDate());
+    mDeadlineDateEdit->setText(dataInterface()->getDeadlineDate());
+    mRecipientEdit->setText(dataInterface()->getRecipientName());
+
+    QString streetAndNumber = dataInterface ()->getRecipientStreet();
+    streetAndNumber.append(" ");
+    streetAndNumber.append(QString::number(dataInterface()->getRecipientStreetNumber()));
+    mRecipientStreetEdit->setText(streetAndNumber);
+
+    QString areaCodeAndCity = QString::number(dataInterface()->getRecipientAreaCode());
+    areaCodeAndCity.append(" ");
+    areaCodeAndCity.append(dataInterface()->getRecipientCity());
+    mRecipientAreaCodeAndCityEdit->setText(areaCodeAndCity);
+
+    mRecipientSigneeEdit->setText(dataInterface()->getRecipientSigName());
+    mNotesEdit->setText(dataInterface()->getRecipientAnnotation());
+
+    resetSignature ();
+}
+
+void HandoverView::resetSignature ()
+{
+    mSigPad->clearImage();
+
+    if (!mSigPad->isModified())
+    {
+        disableButton(1, true);
+        disableButton(2, true);
+        mSigPad->update ();
+    }
+}
+
+HandoverView::~HandoverView()
+{
+    if (mSigPad)
+    {
+        delete mSigPad;
+        mSigPad = 0;
+    }
 }

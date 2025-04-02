@@ -9,16 +9,16 @@ class DataObject
         DataObject();
         void setKeychainId (const int id) {mKeychainId = id;};
         void setInternalLocation (const int id) {mInternalLocation = id;};
-        void setKeychainStatus (const Database::eKeychainStatusId id) {mKeychainStatus = id;};
+        void setKeychainStatus (const Database::KeychainStatus id) {mKeychainStatus = id;};
 
         int getKeychainId () {return mKeychainId;};
         int getInternalLocation () {return mInternalLocation;};
-        Database::eKeychainStatusId getKeychainStatus () {return mKeychainStatus;};
+        Database::KeychainStatus getKeychainStatus () {return mKeychainStatus;};
 
     private:
         int mKeychainId;
         int mInternalLocation;
-        Database::eKeychainStatusId mKeychainStatus;
+        Database::KeychainStatus mKeychainStatus;
 };
 
 #endif // DATAOBJECT_H

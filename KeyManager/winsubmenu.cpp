@@ -13,9 +13,7 @@ WinSubmenu::WinSubmenu(QWidget *parent)
     : QWidget{parent}
 {
     mButtonsSet = false;
-    mDataObject = 0;
     mDataInterface = 0;
-    //mDatabase = 0;
     mButtonLayout = 0;
 
     mLayout = new QVBoxLayout (this);
@@ -27,27 +25,13 @@ WinSubmenu::WinSubmenu(QWidget *parent)
     mHeaderLabel->setStyleSheet("QLabel {background-color: #C0C0C0; color: black; font: 20pt; font-color: #696969; border-style: outset; border-width: 3px; border-radius: 10px; border-color: #A9A9A9; }");
 
     setStyleSheet("QToolButton {background-color: #C0C0C0; border-style: outset; border-width: 3px; border-radius: 10px; border-color: #A9A9A9; font: bold 14px; padding: 6px;}");
-
-    //mViewData = new ViewData ();
 }
-
-// void WinSubmenu::setDataObject (DataObject *data)
-// {
-//     if (data)
-//         mDataObject = data;
-// }
 
 void WinSubmenu::setDataInterface (DataInterface *data)
 {
     if (data)
         mDataInterface = data;
 }
-
-// void WinSubmenu::setDatabaseHandle (DatabaseImpl *db)
-// {
-//     if (db)
-//         mDatabase = db;
-// }
 
 void WinSubmenu::setHeader (const QString& label)
 {    
@@ -174,9 +158,23 @@ void WinSubmenu::enableButton (int column, bool enable)
     disableButton(column, !enable);
 }
 
+void WinSubmenu::hideButton (int column, bool disable)
+{
+    if (mButtonLayout)
+    {
+        QToolButton *btn = (QToolButton*)mButtonLayout->itemAt(column)->widget();
+        if (btn)
+        {
+            btn->setHidden(disable);
+        }
+    }
+}
+
+void WinSubmenu::showButton (int column, bool enable)
+{
+    hideButton(column, !enable);
+}
+
 WinSubmenu::~WinSubmenu ()
 {
-    // todo! segfault
-    // if (0 != mViewData)
-    //     delete mViewData;
 }

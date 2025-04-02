@@ -29,6 +29,7 @@ ScannerView::ScannerView(QWidget *parent)
 {
     mCameraInstance = 0;
     mGrabTimer = 0;
+    mScannerData = 0;
 
     decoder.setDecoder(QZXing::DecoderFormat_CODE_128);
     //optional settings
@@ -70,9 +71,10 @@ ScannerView::ScannerView(QWidget *parent)
     QList<Gui::MenuButton> menuButtons;
     menuButtons.append(Gui::Back);
     menuButtons.append(Gui::Repeat);
+    menuButtons.append(Gui::NewCode);
     menuButtons.append(Gui::Next);
     setMenuButtons(menuButtons);
-
+    hideButton(2, true);
     setScannerState (ScannerState::READY);
 }
 
@@ -133,7 +135,8 @@ void ScannerView::decodeFromVideoFrame ()
     QImage capture = mCameraInstance->getImageFromVideoframe ();
 #ifdef Q_OS_WIN64
     // no cam on windows pc -> use test image with barcode
-    QImage testCode (":/images/barcode.png");
+    //QImage testCode (":/images/barcode00010150.png");
+    QImage testCode (":/images/barcode00010151.png");
     QString barcode = decoder.decodeImage(testCode);
 #else
     QString barcode = decoder.decodeImage(capture);
@@ -163,14 +166,18 @@ void ScannerView::decodeFromVideoFrame ()
 
         setKeyLabel(barcodeAsNumber);
 
+        //emit keycodeRecognised (barcodeAsInt);
+        if (mScannerData)
+        {
+            delete mScannerData;
+            mScannerData = 0;
+        }
+        mScannerData = new ViewDataScanner ();
+        mScannerData->setBarcode(barcodeAsInt);
+        dataInterface()->setData (mScannerData);
+
         // set scanview ui state
         setScannerState(ScannerState::SCANSUCCEEDED);
-
-        //emit keycodeRecognised (barcodeAsInt);
-        ViewDataScanner *scannerData = new ViewDataScanner ();
-        scannerData->setBarcode(barcodeAsInt);
-        dataInterface()->setData (scannerData);
-        //emit viewDataChanged (scannerData);
     }
 }
 
@@ -186,6 +193,7 @@ void ScannerView::setScannerState (ScannerState aStatus)
             mKeyLabel->setText("---");
             disableButton(1, false);
             disableButton(2, true);
+            disableButton(3, true);
             break;
         case SCANNING:
             mCustomerLabel->setText("---");
@@ -193,11 +201,29 @@ void ScannerView::setScannerState (ScannerState aStatus)
             qDebug() <<  "ScannerState is SCANNING";
             disableButton(1, true);
             disableButton(2, true);
+            disableButton(3, true);
             break;
         case SCANSUCCEEDED:
-            enableButton(1, true);
-            enableButton(2, true);
             qDebug() <<  "ScannerState is SCANSUCCEEDED";
+            int code = dataInterface()->getScannedCode();
+            bool foundCode = dataInterface()->findKeycode(code);
+
+            if (foundCode)
+            {
+                hideButton(2, true);
+                //hideButton(3, false);
+                enableButton(1, true);
+                enableButton(3, true);
+            }
+            else
+            {
+                showButton(2, true);
+                //hideButton(3, true);
+                enableButton(1, true);
+                enableButton(2, true);
+                enableButton(3, false);
+            }
+
             break;
     }
 }
@@ -239,5 +265,12 @@ ScannerView::~ScannerView()
     if (m_viewfinder != 0)
     {
         delete m_viewfinder;
+        m_viewfinder = 0;
     }
+
+    // if (mScannerData != 0)
+    // {
+    //     delete mScannerData;
+    //     mScannerData = 0;
+    // }
 }

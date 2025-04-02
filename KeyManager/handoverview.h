@@ -7,24 +7,35 @@
 
 class SignaturePad;
 class QLineEdit;
+class QTextEdit;
 
 class HandoverView : public WinSubmenu
 {
     Q_OBJECT
     public:
         explicit HandoverView (QWidget *parent = nullptr);
-        void clear ();
+        ~HandoverView();
 
     private slots:
         virtual void onMenuBtnClicked (Gui::MenuButton btnType);
 
     private slots:
         void onSignaturePaint ();
-        void onSecondBtnClicked ();
-        void onThirdBtnClicked ();
 
     private:
+        void showEvent(QShowEvent *);
+        void reset ();
+        void resetSignature ();
         SignaturePad *mSigPad;
+        QLineEdit *mBarcodeLineEdit;
+        QLineEdit *mNewStatusEdit;
+        QLineEdit *mHandoverDateEdit;
+        QLineEdit *mDeadlineDateEdit;
+        QLineEdit *mRecipientEdit;
+        QLineEdit *mRecipientStreetEdit;
+        QLineEdit *mRecipientAreaCodeAndCityEdit;
+        QLineEdit *mRecipientSigneeEdit;
+        QTextEdit *mNotesEdit;
 };
 
 #endif // HANDOVERVIEW_H

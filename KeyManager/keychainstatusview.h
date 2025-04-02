@@ -11,6 +11,7 @@ class QTableView;
 class QSqlRelationalTableModel;
 class QPushButton;
 class KeychainDataHandover;
+class QSortFilterProxyModel;
 
 class KeychainStatusView : public WinSubmenu
 {
@@ -18,16 +19,17 @@ class KeychainStatusView : public WinSubmenu
 public:
     explicit KeychainStatusView(QWidget *parent = nullptr);
     ~KeychainStatusView ();
-    void setKeychainStatus (const int &statusId);
+    void setNextBtnText ();
     bool setKeychainModel (QSqlRelationalTableModel* model);
     bool setKeysModel (QSqlRelationalTableModel* model);
     void setKeychainImagePath (const QString& imgPath);
 
 private:
     virtual void showEvent(QShowEvent *);
-    int mKeychainStatusId;
-    QSqlRelationalTableModel *mKeysOverviewModel;
+    QSqlRelationalTableModel *mKeyModel;
     QSqlRelationalTableModel *mKeychainModel;
+    QSortFilterProxyModel *mFilteredKeychainModel;
+    QSortFilterProxyModel *mFilteredKeyModel;
 
     QSqlQueryModel *mKeyOverview;
     QTableView *mKeys;

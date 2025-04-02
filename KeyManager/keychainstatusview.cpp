@@ -12,14 +12,14 @@
 #include <QLabel>
 #include <QSpacerItem>
 #include <QMessageBox>
+#include <QSortFilterProxyModel>
 #include "winsubmenu.h"
-#include "dataobjecthandover.h"
 #include <QWidget>
 #include "datainterface.h"
 #include "viewdatascanner.h"
 #include <QSqlRelationalTableModel>
 #include "databaseimpl.h"
-#include "viewdatakeychainstatus.h"
+#include "viewdatakeychain.h"
 
 KeychainStatusView::KeychainStatusView(QWidget *parent)
     : WinSubmenu {parent}
@@ -27,6 +27,8 @@ KeychainStatusView::KeychainStatusView(QWidget *parent)
     mKeys = 0;
     mKeychain = 0;
     mKeysImgPreview = 0;
+    mFilteredKeyModel = 0;
+    mFilteredKeychainModel = 0;
 
     setHeader("Informationen zum Schlüsselbund");
 
@@ -34,6 +36,7 @@ KeychainStatusView::KeychainStatusView(QWidget *parent)
     layout()->addWidget(keyChainHeader);
 
     mKeychain = new QTableView ();
+
     layout()->addWidget(mKeychain);
 
     mKeysImgPreview = new QPushButton ("Bild hinzufügen...");
@@ -54,29 +57,54 @@ KeychainStatusView::KeychainStatusView(QWidget *parent)
     menuButtons.append(Gui::Next);
     setMenuButtons(menuButtons);
 
-    mKeysOverviewModel = new QSqlRelationalTableModel ();
     mKeychainModel = new QSqlRelationalTableModel ();
+    mFilteredKeychainModel = new QSortFilterProxyModel ();
+    mFilteredKeychainModel->setSourceModel(mKeychainModel);
+    mKeychain->setModel(mFilteredKeychainModel);
+
+    mKeyModel = new QSqlRelationalTableModel ();
+    mFilteredKeyModel= new QSortFilterProxyModel ();
+    mFilteredKeyModel->setSourceModel(mKeyModel);
+    mKeys->setModel(mFilteredKeyModel);
 }
 
 void KeychainStatusView::showEvent(QShowEvent *)
 {
-    int barcode = dataInterface()->getDataScanner()->getBarcode();
+    int barcode = dataInterface()->getScannedCode();
 
-    dataInterface()->initKeyOverviewModel(mKeysOverviewModel, barcode);
-    setKeysModel(mKeysOverviewModel);
+    QString filterKeyTable = "keychainId = ";
+    filterKeyTable.append(QString::number(barcode));
+    dataInterface()->initKeyOverviewModel(mKeyModel, filterKeyTable);
+    setKeysModel(mKeyModel);
+    mKeychain->update();
 
-    dataInterface()->initKeychainModel(mKeychainModel, barcode);
+    QString filterKeychainTable = "barcode = ";
+    filterKeychainTable.append(QString::number(barcode));
+    dataInterface()->initKeychainModel(mKeychainModel, filterKeychainTable);
     setKeychainModel(mKeychainModel);
+    mKeys->update ();
 
-    Database::eKeychainStatusId keyChainStatus = dataInterface()->getKeychainStatusId (barcode);
-    setKeychainStatus(keyChainStatus);
+    // mFilteredKeychainModel->setFilterKeyColumn(0);
+    // mFilteredKeychainModel->setFilterWildcard(QString::number(barcode));
+    // mKeychain->update();
+
+    // mFilteredKeyModel->setFilterKeyColumn(1);
+    // //mFilteredKeyModel->setFilterWildcard(QString::number(barcode));
+    // mFilteredKeyModel->setFilterWildcard("JKKSJFKSJF");
+    // mKeys->update();
+
+    update ();
+
+    dataInterface()->resetKeychainData ();
+
+    setKeychainImagePath (dataInterface()->getKeychainImgPath ());
+
+    setNextBtnText ();
 }
 
-void KeychainStatusView::setKeychainStatus (const int &statusId)
+void KeychainStatusView::setNextBtnText ()
 {
-    mKeychainStatusId = statusId;
-
-    switch (mKeychainStatusId)
+    switch (dataInterface()->getKeychainStatusId())
     {
         case Database::AdministrationEnded:
         case Database::TemporaryOut:
@@ -101,9 +129,12 @@ bool KeychainStatusView::setKeychainModel (QSqlRelationalTableModel* model)
         model->setHeaderData(5, Qt::Horizontal, tr("PLZ"), Qt::DisplayRole);
         model->setHeaderData(6, Qt::Horizontal, tr("Ort"), Qt::DisplayRole);
 
+        if (!mFilteredKeychainModel)
+            return false;
+
         if (mKeychain)
         {
-            mKeychain->setModel(model);
+            mFilteredKeychainModel->setSourceModel(model);
             mKeychain->hideColumn(7); // hide image column
             mKeychain->setEditTriggers(QTableView::NoEditTriggers);
             mKeychain->setSelectionMode(QTableView::NoSelection);
@@ -117,7 +148,7 @@ bool KeychainStatusView::setKeychainModel (QSqlRelationalTableModel* model)
             mKeychain->resizeColumnsToContents();
 
             //barcode must be unique
-            if (1 != mKeychain->model()->rowCount())
+            if (mKeychain->model()->rowCount() > 1)
             {
                 QMessageBox::critical(0, "Datenbankfehler",
                                       "Barcode nicht eindeutig, Tabelle enthält Duplikate. \n"
@@ -125,12 +156,6 @@ bool KeychainStatusView::setKeychainModel (QSqlRelationalTableModel* model)
                 //prevent user to proceed to next step
                 return false;
             }
-
-            ViewDataKeychainStatus *keychainData = new ViewDataKeychainStatus ();
-            int internalLoc = mKeychain->model()->index(0, 2).data().toInt();
-            keychainData->setInternalLocation(internalLoc);
-            keychainData->setStatus(mKeychain->model()->index(0, 1).data().toInt());
-            dataInterface()->setData (keychainData);
 
             return true;
         }
@@ -151,6 +176,7 @@ bool KeychainStatusView::setKeysModel (QSqlRelationalTableModel* model)
 
         if (mKeys)
         {
+            mFilteredKeyModel->setSourceModel(model);
             qDebug () << "KeychainStatusView::setModel QSqlRelationalTableModel";
             mKeys->setModel(model);
             mKeys->hideColumn(0); // hide table id
@@ -174,6 +200,8 @@ bool KeychainStatusView::setKeysModel (QSqlRelationalTableModel* model)
 
 void KeychainStatusView::setKeychainImagePath (const QString& imgPath)
 {
+    qDebug () << "KeychainStatusView::setKeychainImagePath: " << imgPath;
+
     if ("" == imgPath)
         return;
 
@@ -187,9 +215,27 @@ void KeychainStatusView::setKeychainImagePath (const QString& imgPath)
 
 KeychainStatusView::~KeychainStatusView ()
 {
-    if (mKeysOverviewModel)
-        delete mKeysOverviewModel;
+    if (mKeyOverview)
+    {
+        delete mKeyOverview;
+        mKeyOverview = 0;
+    }
+
+    if (mFilteredKeyModel)
+    {
+        delete mFilteredKeyModel;
+        mFilteredKeyModel = 0;
+    }
+
+    if (mFilteredKeychainModel)
+    {
+        delete mFilteredKeychainModel;
+        mFilteredKeychainModel = 0;
+    }
 
     if (mKeychainModel)
+    {
         delete mKeychainModel;
+        mKeychainModel = 0;
+    }
 }

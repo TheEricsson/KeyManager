@@ -8,16 +8,15 @@
 #include "dataobjecthandover.h"
 
 ReturnDateView::ReturnDateView (QWidget *parent)
-    : WinSubmenu {parent}
 {
     mCalendar = 0;
 
-    setHeader("Rückgabedatum wählen");
+    //setHeader("Rückgabedatum wählen");
 
     mCalendar = new QCalendarWidget (this);
 
-    QCheckBox* handoverTemporary= new QCheckBox ("Befristete Ausgabe", this);
-    handoverTemporary->setChecked(true);
+    mHandoverTemporary= new QCheckBox ("Befristete Ausgabe", this);
+    mHandoverTemporary->setChecked(true);
 
     QCheckBox* handoverPermanent = new QCheckBox ("Dauerhafte Ausgabe", this);
     handoverPermanent->setChecked(false);
@@ -26,33 +25,49 @@ ReturnDateView::ReturnDateView (QWidget *parent)
     handoverEndOfService->setChecked(false);
 
     QButtonGroup *btnGroup = new QButtonGroup (this);
-    btnGroup->addButton(handoverTemporary);
+    btnGroup->addButton(mHandoverTemporary);
     btnGroup->addButton(handoverPermanent);
     btnGroup->addButton(handoverEndOfService);
 
     mReturnDateLabel = new QLabel (this);
 
-    layout()->addWidget(handoverTemporary);
-    layout()->addWidget(handoverPermanent);
-    layout()->addWidget(handoverEndOfService);
-    layout()->addWidget(mCalendar);
-    layout()->addWidget(mReturnDateLabel);
+    QVBoxLayout *layout = new QVBoxLayout ();
+
+    layout->addWidget(mHandoverTemporary);
+    layout->addWidget(handoverPermanent);
+    layout->addWidget(handoverEndOfService);
+    layout->addWidget(mCalendar);
+    layout->addWidget(mReturnDateLabel);
+
+    setLayout(layout);
 
     mCalendar->setMinimumDate(QDate::currentDate());
     mCalendar->setSelectedDate(QDate::currentDate().addDays(14));
     onDateClicked(mCalendar->selectedDate());
-    mDurationHandout = Database::eKeychainStatusId::TemporaryOut;
+    mDurationHandout = Database::KeychainStatus::TemporaryOut;
 
-    QList<Gui::MenuButton> menuButtons;
-    menuButtons.append(Gui::Back);
-    menuButtons.append(Gui::Next);
-    setMenuButtons(menuButtons);
+    // QList<Gui::MenuButton> menuButtons;
+    // menuButtons.append(Gui::Back);
+    // menuButtons.append(Gui::Next);
+    // setMenuButtons(menuButtons);
 
-    connect (handoverTemporary, SIGNAL (clicked (bool)), this, SLOT(onHandoverTemporaryClicked (bool)));
+    connect (mHandoverTemporary, SIGNAL (clicked (bool)), this, SLOT(onHandoverTemporaryClicked (bool)));
     connect (handoverPermanent, SIGNAL (clicked (bool)), this, SLOT(onHandoverPermanentClicked (bool)));
     connect (handoverEndOfService, SIGNAL (clicked (bool)), this, SLOT(onHandoverEndOfServiceClicked (bool)));
     connect (mCalendar, SIGNAL(clicked(QDate)), this, SLOT(onDateClicked(QDate)));
 }
+
+void ReturnDateView::showEvent(QShowEvent *)
+{
+    mHandoverTemporary->setChecked (true);
+    mCalendar->setMinimumDate(QDate::currentDate());
+    mCalendar->setSelectedDate(QDate::currentDate().addDays(14));
+    mDurationHandout = Database::KeychainStatus::TemporaryOut;
+
+    emit keychainStatusChanged (mDurationHandout);
+    emit dateSelectionChanged (mCalendar->selectedDate());
+}
+
 
 void ReturnDateView::onHandoverTemporaryClicked (bool aChecked)
 {
@@ -60,7 +75,8 @@ void ReturnDateView::onHandoverTemporaryClicked (bool aChecked)
         return;
 
     mCalendar->setDisabled(!aChecked);
-    mDurationHandout = Database::eKeychainStatusId::TemporaryOut;
+    mDurationHandout = Database::KeychainStatus::TemporaryOut;
+    emit keychainStatusChanged (mDurationHandout);
 
     update ();
 }
@@ -71,7 +87,8 @@ void ReturnDateView::onHandoverPermanentClicked(bool aChecked)
         return;
 
     mCalendar->setDisabled(aChecked);
-    mDurationHandout = Database::eKeychainStatusId::PermanentOut;
+    mDurationHandout = Database::KeychainStatus::PermanentOut;
+    emit keychainStatusChanged (mDurationHandout);
 
     update ();
 }
@@ -82,7 +99,8 @@ void ReturnDateView::onHandoverEndOfServiceClicked(bool aChecked)
         return;
 
     mCalendar->setDisabled(aChecked);
-    mDurationHandout = Database::eKeychainStatusId::AdministrationEnded;
+    mDurationHandout = Database::KeychainStatus::AdministrationEnded;
+    emit keychainStatusChanged (mDurationHandout);
 
     update ();
 }
@@ -109,6 +127,8 @@ void ReturnDateView::onDateClicked (QDate date)
     mReturnDateLabel->setText(dateLabel);
 
     update ();
+
+    emit dateSelectionChanged (date);
 }
 
 void ReturnDateView::onSecondBtnClicked ()

@@ -19,10 +19,6 @@ private:
     QPushButton* mBtnExit;
     QGridLayout* mLayout;
 
-private slots:
-    void onScanButtonReleased();
-    void onSearchButtonReleased();
-
 signals:
     void showScannerView ();
     void showTableView ();

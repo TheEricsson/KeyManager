@@ -42,7 +42,7 @@ private:
 
     RecipientData mRecipientData;
 
-    RecipientType mRecipientType;
+    Database::RecipientType mRecipientType;
     QLineEdit* mRecipientNameEdit;
     QLineEdit* mStreetEdit;
     QLineEdit* mStreetNumberEdit;

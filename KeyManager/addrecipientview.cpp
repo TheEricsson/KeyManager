@@ -18,7 +18,7 @@ AddRecipientView::AddRecipientView (QWidget *parent)
     mStreetNumberEdit = 0;
     mAreaCodeEdit = 0;
     mCityEdit = 0;
-    mRecipientType = RecipientType::Company; // usual case
+    mRecipientType = Database::RecipientType::Company; // usual case
 
     QGridLayout* layout = new QGridLayout (this);
 
@@ -116,7 +116,7 @@ void AddRecipientView::clearForm()
 {
     mIsCompany->setChecked(true);
     mLabelRecipientName->setText("Firmenbezeichnung");
-    mRecipientType = RecipientType::Company;
+    mRecipientType = Database::RecipientType::Company;
     mRecipientNameEdit->setText("");
     mStreetEdit->setText("");
     mStreetNumberEdit->setText("");
@@ -211,20 +211,20 @@ void AddRecipientView::onOkBtnClicked ()
 void AddRecipientView::onIsCompanyBtnClicked ()
 {
     mLabelRecipientName->setText("Firmenbezeichnung");
-    mRecipientType = RecipientType::Company;
+    mRecipientType = Database::RecipientType::Company;
     update (); // do a screen update, since behaviour with android is like there is no auto screen refresh after clicking a radio button.
 }
 
 void AddRecipientView::onIsPrivatePersonBtnClicked ()
 {
     mLabelRecipientName->setText("Empfängername");
-    mRecipientType = RecipientType::PrivatePerson;
+    mRecipientType = Database::RecipientType::PrivatePerson;
     update (); // do a screen update, since behaviour with android is like there is no auto screen refresh after clicking a radio button.
 }
 
 void AddRecipientView::onIsEmployeeBtnClicked ()
 {
     mLabelRecipientName->setText("Mitarbeitername");
-    mRecipientType = RecipientType::Employee;
+    mRecipientType = Database::RecipientType::Employee;
     update (); // do a screen update, since behaviour with android is like there is no auto screen refresh after clicking a radio button.
 }

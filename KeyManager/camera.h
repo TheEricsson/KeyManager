@@ -15,6 +15,7 @@ class Camera : public QWidget
     Q_OBJECT
 public:
     explicit Camera(QWidget *parent = nullptr);
+    ~Camera();
     QCamera* getCamera ();
     QImageCapture* getImageCapture ();
     void startCamera ();

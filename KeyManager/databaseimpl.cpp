@@ -10,6 +10,8 @@
 #include <QSqlError>
 #include <QMessageBox>
 #include "dataobjecthandover.h"
+#include "viewdatascanner.h"
+#include "viewdatakeychain.h"
 
 #ifdef Q_OS_ANDROID
     #include <QCoreApplication>
@@ -46,7 +48,7 @@ DatabaseImpl::DatabaseImpl()
     qDebug () << "QStandardPaths::RuntimeLocation" << QStandardPaths::writableLocation(QStandardPaths::RuntimeLocation);
     qDebug () << "QStandardPaths::DocumentsLocation" << QStandardPaths::writableLocation(QStandardPaths::DocumentsLocation);
 
-    mKeychainStatusId = Database::eKeychainStatusId::Undefined;
+    mKeychainStatusId = Database::Undefined;
 
     QSqlDatabase mDb = QSqlDatabase::addDatabase("QSQLITE");
 
@@ -101,25 +103,7 @@ DatabaseImpl::DatabaseImpl()
     // database is empty -> create
     if (0 == tables.count())
     {
-        QSqlQuery query;
-
-        query.exec ("CREATE TABLE keyAddresses ( \
-                   id           INTEGER PRIMARY KEY AUTOINCREMENT \
-                   UNIQUE, \
-                   street       TEXT, \
-                   streetNumber TEXT, \
-                   areaCode     INTEGER, \
-                   city         TEXT)");
-
-        // query.exec ("CREATE TABLE handovers ( \
-        //     id            INTEGER PRIMARY KEY AUTOINCREMENT \
-        //         UNIQUE, \
-        //     keychainId    INTEGER REFERENCES keychains (barcode), \
-        //     dateHandover  TEXT, \
-        //     dateDeadline  TEXT, \
-        //     recipientId   INTEGER REFERENCES recipientAddresses (id), \
-        //     signatureName TEXT, \
-        //     signature     BLOB)");
+        firstStart ();
     }
 }
 
@@ -158,6 +142,35 @@ bool DatabaseImpl::checkPermission()
 }
 #endif
 
+bool DatabaseImpl::firstStart ()
+{
+    QSqlQuery query;
+
+    // TODO before deployment!!! add all tables for first start
+
+    bool retVal = false;
+
+    retVal = query.exec ("CREATE TABLE keyAddresses ( \
+               id           INTEGER PRIMARY KEY AUTOINCREMENT \
+               UNIQUE, \
+               street       TEXT, \
+               streetNumber TEXT, \
+               areaCode     INTEGER, \
+               city         TEXT)");
+
+    // query.exec ("CREATE TABLE handovers ( \
+    //     id            INTEGER PRIMARY KEY AUTOINCREMENT \
+    //         UNIQUE, \
+    //     keychainId    INTEGER REFERENCES keychains (barcode), \
+    //     dateHandover  TEXT, \
+    //     dateDeadline  TEXT, \
+    //     recipientId   INTEGER REFERENCES recipientAddresses (id), \
+    //     signatureName TEXT, \
+    //     signature     BLOB)");
+
+    return retVal;
+}
+
 bool DatabaseImpl::findKeyCode(int aCode)
 {
     mDb.transaction();
@@ -175,190 +188,308 @@ bool DatabaseImpl::findKeyCode(int aCode)
     return false;
 }
 
-bool DatabaseImpl::setKeyCode (int aCode)
+//keychain data
+Database::KeychainStatus DatabaseImpl::getKeychainStatusId (const int& keyCode)
 {
-    qDebug () << "DatabaseImpl::setKeyCode";
+    mDb.transaction();
+
+    QSqlQuery query;
+    query.prepare("SELECT keychainStatusId FROM keychains WHERE barcode = ?");
+    query.bindValue(0, keyCode);
+    query.exec();
+
+    if (query.next())
+    {
+        return (Database::KeychainStatus) query.value(0).toInt();
+    }
+    else
+        return Database::Undefined;
+}
+
+const QString DatabaseImpl::getKeychainStatusText (int statusId)
+{
+    mDb.transaction();
+
+    QSqlQuery query;
+    query.prepare("SELECT status FROM keychainStates WHERE id = ?");
+    query.bindValue(0, statusId);
+    query.exec();
+
+    if (query.next())
+    {
+        return query.value(0).toString();
+    }
+    else
+        return "Fehler: Status unbekannt!";
+}
+
+int DatabaseImpl::getKeychainInternalLocation (const int& keyCode)
+{
+    mDb.transaction();
+
+    QSqlQuery query;
+    query.prepare("SELECT internalLocation FROM keychains WHERE barcode = ?");
+    query.bindValue(0, keyCode);
+    query.exec();
+
+    if (query.next())
+    {
+        return query.value(0).toInt();
+    }
+    else
+        return _UNDEFINED;
+}
+
+int DatabaseImpl::getKeychainAddressId (const int& keyCode)
+{
+    mDb.transaction();
+
+    QSqlQuery query;
+    query.prepare("SELECT addressId FROM keychains WHERE barcode = ?");
+    query.bindValue(0, keyCode);
+    query.exec();
+
+    if (query.next())
+    {
+        return query.value(0).toInt();
+    }
+    else
+        return _UNDEFINED;
+}
+
+const QString DatabaseImpl::getKeychainImgPath (const int& keyCode)
+{
+    mDb.transaction();
+
+    QSqlQuery query;
+    query.prepare("SELECT imagePath FROM keychains WHERE barcode = ?");
+    query.bindValue(0, keyCode);
+    query.exec();
+
+    if (query.next())
+    {
+        return query.value(0).toString();
+    }
+    else
+        return "UNKNOWN";
+}
+
+bool DatabaseImpl::setKeychainData (ViewDataKeychain* data, const int& keyCode)
+{
+    if (!data)
+        return false;
 
     mDb.transaction();
 
     QSqlQuery query;
-    query.setForwardOnly(true);
-    query.prepare("SELECT barcode, keychainStatusId, addressId, internalLocation, image FROM keychains WHERE barcode = ?");
-    query.bindValue(0, aCode);
+
+    query.prepare("SELECT keychainStatusId, internalLocation, addressId, imagePath FROM keychains WHERE barcode = ?");
+    query.bindValue(0, keyCode);
     query.exec();
 
     if (query.next())
     {
         qDebug () << "ok";
-        mKeychainId = query.value(0).toInt();
-        qDebug () << "mKeychainId: " << mKeychainId;
-        mKeychainInternalLocation = query.value(3).toInt();
-        mKeychainImg = QImage::fromData(query.value(4).toByteArray(), "jpg");
-        int addressId = query.value(2).toInt();
 
-        int keychainStatusId = query.value(1).toInt();
-        query.prepare("SELECT status FROM keychainStates WHERE id = ?");
-        query.bindValue(0, keychainStatusId);
-        query.exec();
+        data->setStatus ((Database::KeychainStatus) query.value(0).toInt());
+        data->setInternalLocation(query.value(1).toInt());
+        data->setAddressId (query.value(2).toInt());
+        data->setImgPath (query.value(3).toString());
 
-        // set keychain status
-        if (query.next())
-        {
-            qDebug () << "ok";
-            mKeychainStatus = query.value(0).toString();
-        }
-        else
-        {
-            return false;
-        }
-
-        // get all keys of the keychain
-        query.prepare("SELECT id, categoryId, statusId, description FROM keys WHERE keychainId = ?");
-        query.bindValue(0, mKeychainId);
-        query.exec();
-
-        int count = 0;
-
-        mKeychainItems.clear();
-
-        while (query.next()) // todo: always returns only 1 value
-        {
-            count++;
-            qDebug () << "ok: " << count;
-
-            int keyId = query.value(0).toInt();
-            int categoryId = query.value(1).toInt();
-            int statusId = query.value(2).toInt();
-            QString description = query.value(3).toString();
-
-            QSqlQuery queryKeyContents;
-
-            //get address from id
-            queryKeyContents.prepare("SELECT street, streetNumber, areaCode, city FROM keyAddresses WHERE id = ?");
-            queryKeyContents.bindValue(0, addressId);
-            queryKeyContents.exec();
-
-            QString street = "";
-            QString streetNumber = "";
-            int areaCode = 0;
-            QString city = "";
-
-            if (queryKeyContents.next())
-            {
-                qDebug () << "okA";
-                street = queryKeyContents.value(0).toString();
-                streetNumber = queryKeyContents.value(1).toString();
-                areaCode = queryKeyContents.value(2).toInt();
-                city = queryKeyContents.value(3).toString();
-            }
-            else
-                return false;
-
-            // get category
-            queryKeyContents.prepare("SELECT category FROM keyCategories WHERE id = ?");
-            queryKeyContents.bindValue(0, categoryId);
-            queryKeyContents.exec();
-
-            QString category ("");
-
-            if (queryKeyContents.next())
-            {
-                qDebug () << "okB";
-                category = queryKeyContents.value(0).toString();
-            }
-            else
-                return false;
-
-            // get status
-            queryKeyContents.prepare("SELECT status FROM keyStates WHERE id = ?");
-            queryKeyContents.bindValue(0, statusId);
-            queryKeyContents.exec();
-
-            QString status ("");
-
-            if (queryKeyContents.next())
-            {
-                qDebug () << "okC";
-                status = queryKeyContents.value(0).toString();
-            }
-            else
-                return false;
-
-            mKey key;
-            key.street = street;
-            key.streetNumber = streetNumber;
-            key.areaCode = areaCode;
-            key.category = category;
-            key.dbId = keyId;
-            key.description = description;
-            key.keychainId = mKeychainId;
-            key.status = status;
-
-            mKeychainItems.append(key);
-        }
+        return true;
     }
-    else
-        return false;
-    {
-        for (int i = 0; i < mKeychainItems.count(); i++)
-        {
-            qDebug () << "mKeychainItems[i].street: " << mKeychainItems[i].street;
-            qDebug () << "mKeychainItems[i].streetNumber: " << mKeychainItems[i].streetNumber;
-            qDebug () << "mKeychainItems[i].areaCode: " << mKeychainItems[i].areaCode;
-            qDebug () << "mKeychainItems[i].category: " << mKeychainItems[i].category;
-            qDebug () << "mKeychainItems[i].dbId: " << mKeychainItems[i].dbId;
-            qDebug () << "mKeychainItems[i].description: " << mKeychainItems[i].description;
-            qDebug () << "mKeychainItems[i].keychainId: " << mKeychainItems[i].keychainId;
-            qDebug () << "mKeychainItems[i].status: " << mKeychainItems[i].status;
+    return false;
+}
 
-        }
-    }
+bool DatabaseImpl::setKeyCode (int aCode)
+{
+    qDebug () << "DatabaseImpl::setKeyCode";
+
+    return false;
+
+    // mDb.transaction();
+
+    // QSqlQuery query;
+    // query.setForwardOnly(true);
+    // query.prepare("SELECT keychainStatusId, internalLocation, addressId, imagePath FROM keychains WHERE barcode = ?");
+    // query.bindValue(0, aCode);
+    // query.exec();
+
+    // if (query.next())
+    // {
+    //     qDebug () << "ok";
+
+    //     mKeychainId = query.value(0).toInt();
+    //     mKeychainInternalLocation = query.value(1).toInt();
+    //     int addressId = query.value(2).toInt();
+    //     mKeychainImgPath = query.value(4).toString();
+
+
+    //     int keychainStatusId = query.value(1).toInt();
+    //     qDebug () << "mKeychainId: " << mKeychainId;
+
+    //     query.prepare("SELECT status FROM keychainStates WHERE id = ?");
+    //     query.bindValue(0, keychainStatusId);
+    //     query.exec();
+
+    //     // set keychain status
+    //     if (query.next())
+    //     {
+    //         qDebug () << "ok";
+    //         mKeychainStatus = query.value(0).toString();
+    //     }
+    //     else
+    //     {
+    //         return false;
+    //     }
+
+    //     // get all keys of the keychain
+    //     query.prepare("SELECT id, categoryId, statusId, description FROM keys WHERE keychainId = ?");
+    //     query.bindValue(0, mKeychainId);
+    //     query.exec();
+
+    //     int count = 0;
+
+    //     mKeychainItems.clear();
+
+    //     while (query.next()) // todo: always returns only 1 value
+    //     {
+    //         count++;
+    //         qDebug () << "ok: " << count;
+
+    //         int keyId = query.value(0).toInt();
+    //         int categoryId = query.value(1).toInt();
+    //         int statusId = query.value(2).toInt();
+    //         QString description = query.value(3).toString();
+
+    //         QSqlQuery queryKeyContents;
+
+    //         //get address from id
+    //         queryKeyContents.prepare("SELECT street, streetNumber, areaCode, city FROM keyAddresses WHERE id = ?");
+    //         queryKeyContents.bindValue(0, addressId);
+    //         queryKeyContents.exec();
+
+    //         QString street = "";
+    //         QString streetNumber = "";
+    //         int areaCode = 0;
+    //         QString city = "";
+
+    //         if (queryKeyContents.next())
+    //         {
+    //             qDebug () << "okA";
+    //             street = queryKeyContents.value(0).toString();
+    //             streetNumber = queryKeyContents.value(1).toString();
+    //             areaCode = queryKeyContents.value(2).toInt();
+    //             city = queryKeyContents.value(3).toString();
+    //         }
+    //         else
+    //             return false;
+
+    //         // get category
+    //         queryKeyContents.prepare("SELECT category FROM keyCategories WHERE id = ?");
+    //         queryKeyContents.bindValue(0, categoryId);
+    //         queryKeyContents.exec();
+
+    //         QString category ("");
+
+    //         if (queryKeyContents.next())
+    //         {
+    //             qDebug () << "okB";
+    //             category = queryKeyContents.value(0).toString();
+    //         }
+    //         else
+    //             return false;
+
+    //         // get status
+    //         queryKeyContents.prepare("SELECT status FROM keyStates WHERE id = ?");
+    //         queryKeyContents.bindValue(0, statusId);
+    //         queryKeyContents.exec();
+
+    //         QString status ("");
+
+    //         if (queryKeyContents.next())
+    //         {
+    //             qDebug () << "okC";
+    //             status = queryKeyContents.value(0).toString();
+    //         }
+    //         else
+    //             return false;
+
+    //         mKey key;
+    //         key.street = street;
+    //         key.streetNumber = streetNumber;
+    //         key.areaCode = areaCode;
+    //         key.category = category;
+    //         key.dbId = keyId;
+    //         key.description = description;
+    //         key.keychainId = mKeychainId;
+    //         key.status = status;
+
+    //         mKeychainItems.append(key);
+    //     }
+    // }
+    // else
+    //     return false;
+    // {
+    //     for (int i = 0; i < mKeychainItems.count(); i++)
+    //     {
+    //         qDebug () << "mKeychainItems[i].street: " << mKeychainItems[i].street;
+    //         qDebug () << "mKeychainItems[i].streetNumber: " << mKeychainItems[i].streetNumber;
+    //         qDebug () << "mKeychainItems[i].areaCode: " << mKeychainItems[i].areaCode;
+    //         qDebug () << "mKeychainItems[i].category: " << mKeychainItems[i].category;
+    //         qDebug () << "mKeychainItems[i].dbId: " << mKeychainItems[i].dbId;
+    //         qDebug () << "mKeychainItems[i].description: " << mKeychainItems[i].description;
+    //         qDebug () << "mKeychainItems[i].keychainId: " << mKeychainItems[i].keychainId;
+    //         qDebug () << "mKeychainItems[i].status: " << mKeychainItems[i].status;
+
+    //     }
+    // }
     return true;
 }
 
-Database::eKeychainStatusId DatabaseImpl::getKeychainStatusId (int aId)
-{
-    mDb.transaction();
+// Database::KeychainStatus DatabaseImpl::getKeychainStatusId (const int& keyCode)
+// {
+//     mDb.transaction();
 
-    QSqlQuery query;
-    query.setForwardOnly(true);
+//     QSqlQuery query;
+//     query.setForwardOnly(true);
 
-    // get all keys of the keychain
-    query.prepare("SELECT keychainStatusId FROM keychains WHERE barcode = ?");
-    query.bindValue(0, aId);
-    query.exec();
+//     // get all keys of the keychain
+//     query.prepare("SELECT keychainStatusId FROM keychains WHERE barcode = ?");
+//     query.bindValue(0, keyCode);
+//     query.exec();
 
-    // set keychain status
-    if (query.next())
-    {
-        mKeychainStatusId = (Database::eKeychainStatusId) query.value(0).toInt();
-    }
+//     // set keychain status
+//     if (query.next())
+//     {
+//         mKeychainStatusId = (Database::KeychainStatus) query.value(0).toInt();
+//     }
 
-    return mKeychainStatusId;
-}
+//     return mKeychainStatusId;
+// }
 
-bool DatabaseImpl::initKeyOverviewModel (QSqlRelationalTableModel *model, int aId)
+bool DatabaseImpl::initKeyOverviewModel (QSqlRelationalTableModel *model, const QString &filter)
 {
     if (model)
     {
         model->setTable("keys");
         model->setRelation(2, QSqlRelation ("keyCategories", "id", "category"));
         model->setRelation(3, QSqlRelation("keyStates", "id", "status"));
-        model->setFilter(QString::number(aId));
+        model->setFilter(filter);
         model->select();
         return true;
     }
     else return false;
 }
 
-bool DatabaseImpl::initKeychainModel (QSqlRelationalTableModel *model, int aId)
+bool DatabaseImpl::initKeychainModel (QSqlRelationalTableModel *model, const QString &filter)
 {
     if (model)
     {
         model->setTable("keychains");
         model->setRelation(1, QSqlRelation ("keychainStates", "id", "status"));
         model->setRelation(3, QSqlRelation("keyAddresses", "id", "street, streetNumber, areaCode, city"));
-        model->setFilter(QString::number(aId));
+        model->setFilter (filter);
         model->select();
         return true;
     }
@@ -378,7 +509,7 @@ bool DatabaseImpl::initRecipientModel (QSqlRelationalTableModel *model)
         return false;
 }
 
-bool DatabaseImpl::addNewRecipient(const RecipientType& type, const QString& name, const QString& street, const QString& number, const QString& areaCode, const QString& city)
+bool DatabaseImpl::addNewRecipient(const Database::RecipientType& type, const QString& name, const QString& street, const QString& number, const QString& areaCode, const QString& city)
 {
     mDb.transaction();
 
@@ -427,13 +558,21 @@ bool DatabaseImpl::dataUpdate (DataObject *data)
     return false;
 }
 
+bool DatabaseImpl::update (ViewDataScanner *data)
+{
+    if (!data)
+        return false;
+
+    return setKeyCode(data->getBarcode());
+}
+
 const QString DatabaseImpl::getKeychainImagePath (int aId)
 {
     mDb.transaction();
     QSqlQuery query;
 
     // get all keys of the keychain
-    query.prepare("SELECT image FROM keychains WHERE barcode = ?");
+    query.prepare("SELECT imagePath FROM keychains WHERE barcode = ?");
     query.bindValue(0, aId);
     query.exec();
 
@@ -446,6 +585,119 @@ const QString DatabaseImpl::getKeychainImagePath (int aId)
     }
     qDebug () << "getKeychainImagePath: " << result;
     return result;
+}
+
+bool DatabaseImpl::dbInsertHandover (DataInterface *data)
+{
+    qDebug () << "DatabaseImpl::handoverInsertEntry:";
+
+    bool queryOk = false;
+
+    if (data)
+    {
+        qDebug () << data->getScannedCode();
+        qDebug () << data->getKeychainStatusText(data->getNewKeychainStatusId());
+        qDebug () << data->getInternalLocation ();
+        qDebug () << data->getRecipientName();
+        qDebug () << data->getRecipientStreet();
+        qDebug () << data->getRecipientStreetNumber();
+        qDebug () << data->getRecipientAreaCode();
+        qDebug () << data->getRecipientCity();
+        qDebug () << data->getHandoverDate();
+        qDebug () << data->getDeadlineDate();
+        qDebug () << data->getRecipientAnnotation();
+        qDebug () << data->getRecipientSigName();
+
+        mDb.transaction();
+        QSqlQuery query;
+
+        // insert new handout entry
+        query.prepare("INSERT INTO handovers (keychainId, dateHandover, dateDeadline, duration, recipient, recipientStreet, recipientStreetNumber, recipientAreaCode, recipientCity, signatureName, signature, annotation) \
+                        VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)");
+        query.bindValue(0, data->getScannedCode());
+        query.bindValue(1, data->getHandoverDate());
+        query.bindValue(2, data->getDeadlineDate());
+        query.bindValue(3, data->getKeychainStatusText(data->getNewKeychainStatusId()));
+        query.bindValue(4, data->getRecipientName());
+        query.bindValue(5, data->getRecipientStreet());
+        query.bindValue(6, data->getRecipientStreetNumber());
+        query.bindValue(7, data->getRecipientAreaCode());
+        query.bindValue(8, data->getRecipientCity());
+        query.bindValue(9, data->getRecipientSigName());
+        query.bindValue(10, "image.png");
+        //query.bindValue(10, data->getRecipientSignature ()); TODO: bytearray shit
+        query.bindValue(11, data->getRecipientAnnotation());
+
+        queryOk = query.exec();
+
+        if (queryOk)
+        {
+            query.prepare("UPDATE keychains SET keychainStatusId = ? WHERE barcode = ?");
+            query.bindValue(0, data->getNewKeychainStatusId());
+            query.bindValue(1, data->getScannedCode());
+
+            queryOk = query.exec();
+        }
+
+        return queryOk;
+    }
+    return queryOk;
+}
+
+bool DatabaseImpl::dbCleanupTable (const QString& tablename, const int numberOfEntriesToKeep)
+{
+    mDb.transaction();
+    QSqlQuery query;
+
+    int firstId = _UNDEFINED;
+    int lastId = _UNDEFINED;
+    int numberOfEntries = _UNDEFINED;
+
+    qDebug () << "dbCleanupTable (const QString& tablename, const int numberOfEntriesToKeep): " << tablename << ", " << numberOfEntriesToKeep;
+
+    //get first and last index
+    QString queryString = "SELECT id FROM ";
+    queryString.append(tablename);
+    query.prepare(queryString);
+
+    if (!query.exec())
+        return false;
+
+    if (!query.first ())
+        return false;
+
+    firstId = query.value(0).toInt();
+
+    if (!query.last ())
+        return false;
+
+    lastId = query.value(0).toInt();
+
+    if (firstId != _UNDEFINED && lastId != _UNDEFINED)
+    {
+        numberOfEntries = lastId - firstId;
+
+        // are there more entries than desired?
+        if (numberOfEntries > numberOfEntriesToKeep)
+        {
+            qDebug () << "dbCleanupHandoverTable: " << numberOfEntries << " handover entries in Database";
+            qDebug () << "deleting " << numberOfEntries - numberOfEntriesToKeep << " entries";
+            qDebug () << "starting with id: " << firstId;
+            qDebug () << "ending with id: " << lastId - numberOfEntriesToKeep;
+
+            //delete selection
+            queryString = "DELETE FROM ";
+            queryString.append(tablename);
+            queryString.append(" WHERE id < ");
+            queryString.append(QString::number(lastId - numberOfEntriesToKeep));
+            qDebug () << "delete query: " << queryString;
+            query.prepare(queryString);
+            return query.exec();
+        }
+        else
+            return true; // all queries ok, but there is nothing to delete
+    }
+    return false;
 }
 
 bool DatabaseImpl::dataUpdate (DataObjectHandover *data)
