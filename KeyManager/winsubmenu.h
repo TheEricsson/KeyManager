@@ -17,6 +17,7 @@ class ViewDataHandover;
 class DataInterface;
 class DatabaseImpl;
 class QHBoxLayout;
+class IOInterface;
 
 class WinSubmenu : public QWidget
 {
@@ -25,11 +26,13 @@ public:
     explicit WinSubmenu (QWidget *parent = nullptr);
     ~WinSubmenu ();
     void setDataInterface (DataInterface *data);
+    void setIOInterface (IOInterface *ioData);
     void setData (ViewDataScanner *data);
 
 protected:
 
     DataInterface* dataInterface (){return mDataInterface;};
+    IOInterface* ioInterface (){return mIOInterface;};
     void setHeader (const QString& label);
     void setButtonText (int column, const QString &btnText);
     void setMenuButtons (const QList<Gui::MenuButton> &buttons);
@@ -55,6 +58,7 @@ private:
     bool mButtonsSet;
 
     QHBoxLayout *mButtonLayout;
+    IOInterface *mIOInterface;
 };
 
 #endif // WINSUBMENU_H

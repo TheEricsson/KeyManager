@@ -36,7 +36,8 @@ namespace Gui
         Search,
         Settings,
         Exit,
-        NewCode
+        NewCodeScanned,
+        AddKey
     };
 }
 

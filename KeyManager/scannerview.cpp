@@ -19,6 +19,7 @@
 #include "dataobject.h"
 #include "viewdatascanner.h"
 #include "datainterface.h"
+#include "iointerface.h"
 
 #if QT_CONFIG(permissions)
 #include <QPermission>
@@ -71,7 +72,7 @@ ScannerView::ScannerView(QWidget *parent)
     QList<Gui::MenuButton> menuButtons;
     menuButtons.append(Gui::Back);
     menuButtons.append(Gui::Repeat);
-    menuButtons.append(Gui::NewCode);
+    menuButtons.append(Gui::NewCodeScanned);
     menuButtons.append(Gui::Next);
     setMenuButtons(menuButtons);
     hideButton(2, true);
@@ -206,7 +207,7 @@ void ScannerView::setScannerState (ScannerState aStatus)
         case SCANSUCCEEDED:
             qDebug() <<  "ScannerState is SCANSUCCEEDED";
             int code = dataInterface()->getScannedCode();
-            bool foundCode = dataInterface()->findKeycode(code);
+            bool foundCode = ioInterface()->findKeyCode(code);
 
             if (foundCode)
             {

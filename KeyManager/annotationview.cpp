@@ -36,6 +36,7 @@ void AnnotationView::reset()
         mDataAnnotation = new ViewDataAnnotation ();
         dataInterface()->setData(mDataAnnotation);
         mTextEditor->setText("");
+        update();
     }
 }
 
@@ -47,6 +48,7 @@ void AnnotationView::onTextChanged ()
         dataInterface()->setData(mDataAnnotation);
     }
     mDataAnnotation->setAnnotation(mTextEditor->toPlainText());
+    update();
 }
 
 AnnotationView::~AnnotationView()

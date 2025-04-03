@@ -4,6 +4,7 @@
 #include <QObject>
 #include <QWidget>
 #include "winsubmenu.h"
+#include "viewdatakeychain.h"
 
 class QLabel;
 class QSqlQueryModel;
@@ -31,7 +32,7 @@ private:
     QSortFilterProxyModel *mFilteredKeychainModel;
     QSortFilterProxyModel *mFilteredKeyModel;
 
-    QSqlQueryModel *mKeyOverview;
+    //QSqlQueryModel *mKeyOverview;
     QTableView *mKeys;
     QTableView *mKeychain;
     QLabel *mIdBarcode;
@@ -42,6 +43,7 @@ private:
     QLabel *mQuantityKeys;
     QImage *mKeychainImage;
     QPushButton *mKeysImgPreview;
+    ViewDataKeychain *mViewData;
 };
 
 #endif // KEYCHAINSTATUSVIEW_H

@@ -8,12 +8,14 @@
 #include "dataobject.h"
 #include "menubutton.h"
 #include "datainterface.h"
+#include "iointerface.h"
 
 WinSubmenu::WinSubmenu(QWidget *parent)
     : QWidget{parent}
 {
     mButtonsSet = false;
     mDataInterface = 0;
+    mIOInterface = 0;
     mButtonLayout = 0;
 
     mLayout = new QVBoxLayout (this);
@@ -22,15 +24,21 @@ WinSubmenu::WinSubmenu(QWidget *parent)
     mLayout->addWidget(mHeaderLabel,0,Qt::AlignCenter);
 
     mHeaderLabel->setSizePolicy(QSizePolicy::Expanding, QSizePolicy::MinimumExpanding);
-    mHeaderLabel->setStyleSheet("QLabel {background-color: #C0C0C0; color: black; font: 20pt; font-color: #696969; border-style: outset; border-width: 3px; border-radius: 10px; border-color: #A9A9A9; }");
+    mHeaderLabel->setStyleSheet("QLabel {background-color: #e0ffff; color: black; font: bold 30px; border-style: solid; border-width: 1px; border-radius: 10px; border-color: #A9A9A9; }");
 
-    setStyleSheet("QToolButton {background-color: #C0C0C0; border-style: outset; border-width: 3px; border-radius: 10px; border-color: #A9A9A9; font: bold 14px; padding: 6px;}");
+    setStyleSheet("QToolButton {background-color: #e0ffff; border-style: solid; border-width: 3px; border-radius: 10px; border-color: #A9A9A9; font: bold 14px; padding: 6px;}");
 }
 
 void WinSubmenu::setDataInterface (DataInterface *data)
 {
     if (data)
         mDataInterface = data;
+}
+
+void WinSubmenu::setIOInterface (IOInterface *ioData)
+{
+    if (ioData)
+        mIOInterface = ioData;
 }
 
 void WinSubmenu::setHeader (const QString& label)

@@ -21,6 +21,9 @@ class AnnotationView;
 class WinSubmenu;
 class ViewStackManager;
 class DataInterface;
+class AddKeychainView;
+class EditKeyView;
+class IOInterfaceSQLITE;
 
 class ViewStack;
 
@@ -56,7 +59,10 @@ private:
     AddRecipientView *mAddRecipientView;
     HandoverView *mHandoverView;
     AnnotationView *mAnnotationView;
+    AddKeychainView *mAddKeychainView;
+    EditKeyView *mEditKeyView;
 
     DataInterface *mDataInterface;
+    IOInterfaceSQLITE *mDbInterface;
 };
 #endif // MAINWINDOW_H

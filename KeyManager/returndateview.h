@@ -22,7 +22,6 @@ class ReturnDateView : public QWidget
         void onHandoverPermanentClicked(bool aChecked);
         void onHandoverEndOfServiceClicked(bool aChecked);
         void onDateClicked (QDate date);
-        void onSecondBtnClicked (); //override
     private:
         void showEvent(QShowEvent *);
         QCalendarWidget *mCalendar;

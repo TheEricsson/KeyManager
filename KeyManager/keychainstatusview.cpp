@@ -13,9 +13,11 @@
 #include <QSpacerItem>
 #include <QMessageBox>
 #include <QSortFilterProxyModel>
+#include "iointerface.h"
 #include "winsubmenu.h"
 #include <QWidget>
 #include "datainterface.h"
+#include "iointerface.h"
 #include "viewdatascanner.h"
 #include <QSqlRelationalTableModel>
 #include "databaseimpl.h"
@@ -29,6 +31,7 @@ KeychainStatusView::KeychainStatusView(QWidget *parent)
     mKeysImgPreview = 0;
     mFilteredKeyModel = 0;
     mFilteredKeychainModel = 0;
+    mViewData = 0;
 
     setHeader("Informationen zum Schlüsselbund");
 
@@ -74,13 +77,13 @@ void KeychainStatusView::showEvent(QShowEvent *)
 
     QString filterKeyTable = "keychainId = ";
     filterKeyTable.append(QString::number(barcode));
-    dataInterface()->initKeyOverviewModel(mKeyModel, filterKeyTable);
+    ioInterface()->initKeyOverviewModel(mKeyModel, filterKeyTable);
     setKeysModel(mKeyModel);
     mKeychain->update();
 
     QString filterKeychainTable = "barcode = ";
     filterKeychainTable.append(QString::number(barcode));
-    dataInterface()->initKeychainModel(mKeychainModel, filterKeychainTable);
+    ioInterface()->initKeychainModel(mKeychainModel, filterKeychainTable);
     setKeychainModel(mKeychainModel);
     mKeys->update ();
 
@@ -95,8 +98,16 @@ void KeychainStatusView::showEvent(QShowEvent *)
 
     update ();
 
-    dataInterface()->resetKeychainData ();
+    if (mViewData)
+    {
+        delete mViewData;
+        mViewData = 0;
+    }
 
+    mViewData = new ViewDataKeychain();
+    dataInterface()->setData(mViewData);
+
+    ioInterface()->setKeychainData(mViewData, dataInterface()->getScannedCode());
     setKeychainImagePath (dataInterface()->getKeychainImgPath ());
 
     setNextBtnText ();
@@ -215,11 +226,11 @@ void KeychainStatusView::setKeychainImagePath (const QString& imgPath)
 
 KeychainStatusView::~KeychainStatusView ()
 {
-    if (mKeyOverview)
-    {
-        delete mKeyOverview;
-        mKeyOverview = 0;
-    }
+    // if (mKeyOverview)
+    // {
+    //     delete mKeyOverview;
+    //     mKeyOverview = 0;
+    // }
 
     if (mFilteredKeyModel)
     {

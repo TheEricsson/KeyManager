@@ -21,7 +21,7 @@ class ViewStackManager
         enum ViewStackId
         {
             HandoverOut = 0,
-            HandoverIn = 1,
+            NewCodeScanned = 1,
             Search = 2,
             Settings = 3,
         };

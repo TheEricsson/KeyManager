@@ -15,34 +15,7 @@ DataInterface::DataInterface()
     mDataScanner = 0;
     mDataKeychain = 0;
     mDataAnnotation = 0;
-
-    mDatabase = new DatabaseImpl ();
 }
-
-bool DataInterface::initKeyOverviewModel (QSqlRelationalTableModel *model, const QString& filter)
-{
-    return mDatabase->initKeyOverviewModel(model, filter);
-}
-
-bool DataInterface::initKeychainModel (QSqlRelationalTableModel *model, const QString& filter)
-{
-    return mDatabase->initKeychainModel(model, filter);
-}
-
-bool DataInterface::initRecipientModel (QSqlRelationalTableModel *model)
-{
-    return mDatabase->initRecipientModel(model);
-}
-
-bool DataInterface::findKeycode (int keyCode)
-{
-    return mDatabase->findKeyCode(keyCode);
-}
-
-// Database::eKeychainStatusId DataInterface::getKeychainStatusId (int keyCode)
-// {
-//     return mDatabase->getKeychainStatusId(keyCode);
-// }
 
 Database::KeychainStatus DataInterface::getKeychainStatusId ()
 {
@@ -54,14 +27,14 @@ Database::KeychainStatus DataInterface::getNewKeychainStatusId ()
     return mDataKeychain->getNewStatus();
 }
 
-int DataInterface::getInternalLocation ()
+int DataInterface::getKeychainAddressId ()
 {
-    return mDatabase->getKeychainInternalLocation(getScannedCode());
+    return mDataKeychain->getAddressId();
 }
 
-const QString DataInterface::getKeychainStatusText (int statusId)
+int DataInterface::getInternalLocation ()
 {
-    return mDatabase->getKeychainStatusText(statusId);
+    return mDataKeychain->getInternalLocation();
 }
 
 const QString DataInterface::getHandoverDate ()
@@ -177,67 +150,50 @@ bool DataInterface::setDeadlineDate (const QString& date)
     return true;
 }
 
-bool DataInterface::submitHandover ()
-{
-    bool retVal = false;
+// bool DataInterface::submitHandover ()
+// {
+//     bool retVal = false;
 
-    retVal = mDatabase->dbInsertHandover(this);
+//     retVal = mDatabase->dbInsertHandover(this);
 
-    if (retVal)
-    {
-        retVal = mDatabase->dbCleanupTable ("handovers", Database::maxHandoverEntries);
-    }
+//     QString filter ("");
+//     filter.append("keychainId = ");
+//     filter.append(QString::number(getScannedCode()));
 
-    // if (0 != mDataHandover)
-    // {
-    //     delete mDataHandover;
-    //     mDataHandover = 0;
-    // }
-    // if (0 != mDataKeychain)
-    // {
-    //     delete mDataKeychain;
-    //     mDataKeychain = 0;
-    // }
-    // if (0 != mDataRecipient)
-    // {
-    //     delete mDataRecipient;
-    //     mDataRecipient = 0;
-    // }
-    // if (0 != mDataReturnDate)
-    // {
-    //     delete mDataReturnDate;
-    //     mDataReturnDate = 0;
-    // }
-    // if (0 != mDataScanner)
-    // {
-    //     delete mDataScanner;
-    //     mDataScanner = 0;
-    // }
+//     if (retVal)
+//     {
+//         retVal = mDatabase->dbCleanupTable ("handovers", filter, Database::maxHandoverEntries);
+//     }
 
-    return retVal;
-}
+//     return retVal;
+// }
 
-bool DataInterface::resetKeychainData ()
-{
-    if (mDataScanner)
-    {
-        // free memory before updating data
-        if (mDataKeychain)
-        {
-            delete mDataKeychain;
-            mDataKeychain = 0;
-        }
+// bool DataInterface::submitNewKeychain ()
+// {
+//     return mDatabase->dbInsertKeychain(this);
+// }
 
-        mDataKeychain = new ViewDataKeychain ();
-        return mDatabase->setKeychainData(mDataKeychain, mDataScanner->getBarcode());
-    }
-    return false;
-}
+// bool DataInterface::resetKeychainData ()
+// {
+//     if (mDataScanner)
+//     {
+//         // free memory before updating data
+//         if (mDataKeychain)
+//         {
+//             delete mDataKeychain;
+//             mDataKeychain = 0;
+//         }
+
+//         mDataKeychain = new ViewDataKeychain ();
+//         return mDatabase->setKeychainData(mDataKeychain, mDataScanner->getBarcode());
+//     }
+//     return false;
+// }
 
 bool DataInterface::resetRecipientData ()
 {
-    // if (mDataRecipient)
-    //     delete mDataRecipient;
+    if (mDataRecipient)
+        delete mDataRecipient;
 
     mDataRecipient = new ViewDataRecipient();
 
@@ -263,49 +219,31 @@ int DataInterface::getScannedCode ()
 
 void DataInterface::setData (ViewDataAnnotation* data)
 {
-    // if (mDataAnnotation)
-    //     delete mDataAnnotation;
-
     mDataAnnotation = data;
 }
 
 void DataInterface::setData (ViewDataHandover* data)
 {
-    // if (mDataHandover)
-    //     delete mDataHandover;
-
     mDataHandover = data;
 }
 
 void DataInterface::setData (ViewDataKeychain* data)
 {
-    // if (mDataKeychain)
-    //     delete mDataKeychain;
-
     mDataKeychain = data;
 }
 
 void DataInterface::setData (ViewDataRecipient* data)
 {
-    // if (mDataRecipient)
-    //     delete mDataRecipient;
-
     mDataRecipient = data;
 }
 
 void DataInterface::setData (ViewDataReturnDate* data)
 {
-    // if (mDataReturnDate)
-    //     delete mDataReturnDate;
-
     mDataReturnDate = data;
 }
 
 void DataInterface::setData (ViewDataScanner* data)
 {
-    // if (mDataScanner)
-    //     delete mDataScanner;
-
     mDataScanner = data;
 }
 

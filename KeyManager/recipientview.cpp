@@ -22,6 +22,7 @@
 #include "dataobject.h"
 #include "dataobjecthandover.h"
 #include "datainterface.h"
+#include "iointerface.h"
 #include "returndateview.h"
 #include "viewdatarecipient.h"
 
@@ -77,6 +78,7 @@ RecipientView::RecipientView(QWidget *parent) : WinSubmenu {parent}
     connect (mSearchField, SIGNAL (textChanged(const QString &)), this, SLOT(setTableFilter(const QString &)));
     connect (mReturnDateWidget, SIGNAL (dateSelectionChanged(QDate)), this, SLOT(onSelectedDateChanged (QDate)));
     connect (mReturnDateWidget, SIGNAL (keychainStatusChanged(Database::KeychainStatus)), this, SLOT(onKeychainStatusChanged (Database::KeychainStatus)));
+    connect (mRecipientNameEdit, SIGNAL (textChanged(const QString &)), this, SLOT(onRecipientNameTextChanged(const QString &)));
 }
 
 bool RecipientView::setModel (QSqlRelationalTableModel* model)
@@ -150,7 +152,7 @@ void RecipientView::reset()
     if (!mRecipientsModel)
     {
         mRecipientsModel = new QSqlRelationalTableModel ();
-        dataInterface()->initRecipientModel(mRecipientsModel);
+        ioInterface()->initRecipientModel(mRecipientsModel);
         setModel(mRecipientsModel);
     }
 
@@ -169,8 +171,10 @@ void RecipientView::reset()
             hideNameField(true);
             setTableFilter(2, "Mitarbeiter");
             mReturnDateWidget->hide();
-            update ();
             mViewDataRecipient->setDeadlineDate("");
+
+            update ();
+
             dataInterface()->setNewKeychainStatusId(Database::KeychainStatus::Available);
             break;
         default:
@@ -292,7 +296,6 @@ void RecipientView::setTableFilter(const int column, const QString &searchString
     qDebug () << "column: " << column;
     qDebug () << "searchString: " << searchString;
 
-    mRecipients->update();
     update();
 }
 
@@ -346,10 +349,10 @@ void RecipientView::onTableSelectionChanged (const QItemSelection &itemNew, cons
     if ("Firma" == recipientType)
     {
         mRecipientNameEdit->setEnabled(true);
-        mViewDataRecipient->setSignatureName(mRecipientNameEdit->text());
     }
     else
     {
+        mRecipientNameEdit->setText("");
         mRecipientNameEdit->setEnabled(false);
         mViewDataRecipient->setSignatureName(mViewDataRecipient->getRecipientName());
 
@@ -378,12 +381,19 @@ void RecipientView::onSelectedDateChanged (QDate date)
     dateDeadline.append(QString::number(year));
 
     mViewDataRecipient->setDeadlineDate(dateDeadline);
+    update ();
 }
 
 void RecipientView::onKeychainStatusChanged (Database::KeychainStatus newStatus)
 {
     dataInterface()->setNewKeychainStatusId(newStatus);
-    //mViewDataRecipient->setNewKeychainStatus(newStatus);
+    update ();
+}
+
+void RecipientView::onRecipientNameTextChanged (const QString &text)
+{
+    mViewDataRecipient->setSignatureName(mRecipientNameEdit->text());
+    update ();
 }
 
 RecipientView::~RecipientView()

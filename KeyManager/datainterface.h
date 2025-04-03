@@ -19,14 +19,11 @@ class DataInterface
         DataInterface();
         ~DataInterface();
 
-        bool initKeyOverviewModel (QSqlRelationalTableModel *model, const QString& filter);
-        bool initKeychainModel (QSqlRelationalTableModel *model, const QString& filter);
-        bool initRecipientModel (QSqlRelationalTableModel *model);
-        bool findKeycode (int keyCode);
+        DataInterface* getHandle (){return this;};
         Database::KeychainStatus getKeychainStatusId ();
         Database::KeychainStatus getNewKeychainStatusId ();
+        int getKeychainAddressId ();
         int getInternalLocation ();
-        const QString getKeychainStatusText (int statusId);
         const QString getHandoverDate ();
         const QString getDeadlineDate ();
         const QString getRecipientName ();
@@ -41,7 +38,6 @@ class DataInterface
         bool setNewKeychainStatusId (Database::KeychainStatus status);
         bool setRecipientSigImg (QImage sigImg);
         bool setDeadlineDate (const QString& date);
-        bool submitHandover ();
 
         bool resetKeychainData ();
         bool resetRecipientData ();
@@ -62,7 +58,6 @@ class DataInterface
         ViewDataReturnDate* getDataReturnDate () {return mDataReturnDate;};
         ViewDataScanner* getDataScanner () {return mDataScanner;};
 
-        DatabaseImpl *mDatabase;
         ViewDataAnnotation *mDataAnnotation;
         ViewDataHandover *mDataHandover;
         ViewDataKeychain *mDataKeychain;

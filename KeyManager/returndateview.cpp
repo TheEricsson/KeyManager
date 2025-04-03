@@ -30,6 +30,7 @@ ReturnDateView::ReturnDateView (QWidget *parent)
     btnGroup->addButton(handoverEndOfService);
 
     mReturnDateLabel = new QLabel (this);
+    mReturnDateLabel->setStyleSheet("{font: bold 25px; color: #EE2C2C}");
 
     QVBoxLayout *layout = new QVBoxLayout ();
 
@@ -63,6 +64,9 @@ void ReturnDateView::showEvent(QShowEvent *)
     mCalendar->setMinimumDate(QDate::currentDate());
     mCalendar->setSelectedDate(QDate::currentDate().addDays(14));
     mDurationHandout = Database::KeychainStatus::TemporaryOut;
+    mReturnDateLabel->setVisible(true);
+
+    update ();
 
     emit keychainStatusChanged (mDurationHandout);
     emit dateSelectionChanged (mCalendar->selectedDate());
@@ -75,10 +79,12 @@ void ReturnDateView::onHandoverTemporaryClicked (bool aChecked)
         return;
 
     mCalendar->setDisabled(!aChecked);
+    mCalendar->setVisible(aChecked);
+    mReturnDateLabel->setVisible(true);
     mDurationHandout = Database::KeychainStatus::TemporaryOut;
-    emit keychainStatusChanged (mDurationHandout);
 
     update ();
+    emit keychainStatusChanged (mDurationHandout);
 }
 
 void ReturnDateView::onHandoverPermanentClicked(bool aChecked)
@@ -87,10 +93,12 @@ void ReturnDateView::onHandoverPermanentClicked(bool aChecked)
         return;
 
     mCalendar->setDisabled(aChecked);
+    mCalendar->setVisible(!aChecked);
+    mReturnDateLabel->setVisible(false);
     mDurationHandout = Database::KeychainStatus::PermanentOut;
-    emit keychainStatusChanged (mDurationHandout);
 
     update ();
+    emit keychainStatusChanged (mDurationHandout);
 }
 
 void ReturnDateView::onHandoverEndOfServiceClicked(bool aChecked)
@@ -99,10 +107,12 @@ void ReturnDateView::onHandoverEndOfServiceClicked(bool aChecked)
         return;
 
     mCalendar->setDisabled(aChecked);
+    mCalendar->setVisible(!aChecked);
+    mReturnDateLabel->setVisible(false);
     mDurationHandout = Database::KeychainStatus::AdministrationEnded;
-    emit keychainStatusChanged (mDurationHandout);
 
     update ();
+    emit keychainStatusChanged (mDurationHandout);
 }
 
 void ReturnDateView::onDateClicked (QDate date)
@@ -129,51 +139,4 @@ void ReturnDateView::onDateClicked (QDate date)
     update ();
 
     emit dateSelectionChanged (date);
-}
-
-void ReturnDateView::onSecondBtnClicked ()
-{
-    // //set current data in data object
-    // if (mDataObject)
-    // {
-    //     DataObjectHandover *dataObj = (DataObjectHandover*)mDataObject;
-
-    //     dataObj->setKeychainStatus(mDurationHandout);
-
-    //     QDate date = QDate::currentDate();
-    //     QString currentDate = QString::number(date.day());
-    //     currentDate.append(".");
-    //     currentDate.append(QString::number(date.month()));
-    //     currentDate.append(".");
-    //     currentDate.append(QString::number(date.year()));
-
-    //     dataObj->setDateHandover(currentDate);
-
-    //     if (mDurationHandout == Database::eKeychainStatusId::TemporaryOut)
-    //     {
-    //         int day = 0;
-    //         int month = 0;
-    //         int year = 0;
-    //         QString dateDeadline;
-
-    //         date = mCalendar->selectedDate();
-    //         date.getDate (&year, &month, &day);
-
-    //         dateDeadline.append(QString::number(day));
-    //         dateDeadline.append(".");
-    //         dateDeadline.append(QString::number(month));
-    //         dateDeadline.append(".");
-    //         dateDeadline.append(QString::number(year));
-
-    //         dataObj->setDateDeadline(dateDeadline);
-    //     }
-
-    //     if (mDurationHandout == Database::eKeychainStatusId::AdministrationEnded ||
-    //         mDurationHandout == Database::eKeychainStatusId::PermanentOut)
-    //     {
-    //         dataObj->setDateDeadline("31.12.9999");
-    //     }
-    // }
-
-    // emit secondButtonClicked ();
 }

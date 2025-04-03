@@ -90,13 +90,19 @@ public:
     bool initKeyOverviewModel (QSqlRelationalTableModel *model, const QString &filter);
     bool initKeychainModel (QSqlRelationalTableModel *model, const QString &filter);
     bool initRecipientModel (QSqlRelationalTableModel *model);
+    bool initBuildingModel (QSqlRelationalTableModel *model);
     bool addNewRecipient(const Database::RecipientType &type, const QString& name, const QString& street, const QString& number, const QString& areaCode, const QString& city);
     bool addNewRecipient (const RecipientData& data);
     bool dataUpdate (DataObject *data);
     bool update (ViewDataScanner *data);
     const QString getKeychainImagePath (int aId);
     bool dbInsertHandover (DataInterface *data);
-    bool dbCleanupTable (const QString& tablename, const int numberOfEntriesToKeep);
+    bool dbInsertKeychain (DataInterface *data);
+    bool dbCleanupTable (const QString& tablename, const QString& filter, const int numberOfEntriesToKeep);
+    int getFreeInternalLocation ();
+
+    //searches for the given internal location and returns the barcode of the keychain, if available
+    int findInternalLocation (const int internalLoc);
     //bool initializeKeyOverviewModel (QSqlQueryModel *model, int aCode);
     //const QSqlQueryModel& getKeysModel (int aId);
 

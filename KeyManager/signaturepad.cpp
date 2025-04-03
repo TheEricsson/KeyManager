@@ -31,6 +31,8 @@ void SignaturePad::clearImage()
     update();
 }
 
+
+
 void SignaturePad::mousePressEvent(QMouseEvent *event)
 {
     if (event->button() == Qt::LeftButton) {

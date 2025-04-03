@@ -21,6 +21,9 @@
 #include "viewstackmanager.h"
 #include "datainterface.h"
 #include "scannerview.h"
+#include "addkeychainview.h"
+#include "editkeyview.h"
+#include "iointerfacesqlite.h"
 
 #ifndef GMANDANTID
     #define GMANDANTID 1
@@ -29,6 +32,9 @@
 MainWindow::MainWindow(QWidget *parent)
     : QWidget(parent)
 {
+    setStyleSheet("QWidget {background-color: #FFFAFA; font: bold 14px;}");
+    setStyleSheet("QTableView {background-color: #FFFAFA; font: 14px;}");
+
     mScanView = 0;
     mHomeView = 0;
     mTableView = 0;
@@ -38,10 +44,14 @@ MainWindow::MainWindow(QWidget *parent)
     //mReturnDateView = 0;
     mAnnotationView = 0;
     mDataInterface = 0;
+    mAddKeychainView = 0;
+    mEditKeyView = 0;
 
     mViewStack = 0;
 
     mDataInterface = new DataInterface();
+
+    mDbInterface = new IOInterfaceSQLITE ();
 
     mViewStack = new QStackedLayout (this);
     setLayout(mViewStack);
@@ -54,6 +64,8 @@ MainWindow::MainWindow(QWidget *parent)
     mAddRecipientView = new AddRecipientView (this);
     mHandoverView = new HandoverView (this);
     mAnnotationView = new AnnotationView (this);
+    mAddKeychainView = new AddKeychainView (this);
+    mEditKeyView = new EditKeyView (this);
 
     registerView (mHomeView);
     registerView (mScanView);
@@ -63,6 +75,8 @@ MainWindow::MainWindow(QWidget *parent)
     registerView (mAddRecipientView);
     registerView (mHandoverView);
     registerView (mAnnotationView);
+    registerView (mAddKeychainView);
+    registerView (mEditKeyView);
 
     mViewStack->setCurrentWidget(mHomeView);
 
@@ -76,6 +90,9 @@ MainWindow::MainWindow(QWidget *parent)
     mViewStackManager->addNode(ViewStackManager::HandoverOut, mHandoverView);
     mViewStackManager->setCurrentStackId(ViewStackManager::HandoverOut);
 
+    mViewStackManager->addNode(ViewStackManager::NewCodeScanned, mAddKeychainView);
+    mViewStackManager->addNode(ViewStackManager::NewCodeScanned, mEditKeyView);
+
     mViewStack->setCurrentWidget(mHomeView);
 }
 
@@ -83,6 +100,7 @@ void MainWindow::registerView (WinSubmenu *view)
 {
     connect (view, SIGNAL(menuButtonClicked(Gui::MenuButton)), this, SLOT (onMenuBtnClicked(Gui::MenuButton)));
     view->setDataInterface(mDataInterface);
+    view->setIOInterface(mDbInterface);
     mViewStack->addWidget(view);
 }
 
@@ -113,7 +131,9 @@ void MainWindow::onMenuBtnClicked (Gui::MenuButton btnType)
             case (Gui::MainMenu):
                 nextWidget = mHomeView;
                 break;
-            case (Gui::NewCode):
+            case (Gui::NewCodeScanned):
+                mViewStackManager->setCurrentStackId(ViewStackManager::NewCodeScanned);
+                nextWidget = mViewStackManager->begin();
                 break;
             default:
                 qDebug () << "MainWindow::onMenuBtnClicked. Button not catched: " << btnType;

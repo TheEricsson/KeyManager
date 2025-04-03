@@ -11,6 +11,8 @@ CONFIG += c++17
 include(../QZXing/QZXing.pri)
 
 SOURCES += \
+    addkeychainview.cpp \
+    addkeyview.cpp \
     addrecipientview.cpp \
     annotationview.cpp \
     camera.cpp \
@@ -18,8 +20,11 @@ SOURCES += \
     datainterface.cpp \
     dataobject.cpp \
     dataobjecthandover.cpp \
+    editkeyview.cpp \
     handoverview.cpp \
     homeview.cpp \
+    iointerface.cpp \
+    iointerfacesqlite.cpp \
     keychainstatusview.cpp \
     main.cpp \
     mainwindow.cpp \
@@ -41,6 +46,8 @@ SOURCES += \
     winsubmenu.cpp
 
 HEADERS += \
+    addkeychainview.h \
+    addkeyview.h \
     addrecipientview.h \
     annotationview.h \
     camera.h \
@@ -48,10 +55,13 @@ HEADERS += \
     datainterface.h \
     dataobject.h \
     dataobjecthandover.h \
+    editkeyview.h \
     globals.h \
     handoverview.h \
     homeview.h \
     initdb.h \
+    iointerface.h \
+    iointerfacesqlite.h \
     keychainstatusview.h \
     mainwindow.h \
     menubutton.h \

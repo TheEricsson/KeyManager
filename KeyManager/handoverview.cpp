@@ -9,6 +9,7 @@
 #include <QCalendarWidget>
 #include "dataobjecthandover.h"
 #include "datainterface.h"
+#include "iointerface.h"
 #include <QTextEdit>
 
 HandoverView::HandoverView (QWidget *parent)
@@ -30,11 +31,11 @@ HandoverView::HandoverView (QWidget *parent)
     mNewStatusEdit = new QLineEdit (this);
     mNewStatusEdit->setDisabled(true);
 
-    QLabel *handoverDate = new QLabel ("Ausgabedatum", this);
+    QLabel *handoverDate = new QLabel ("Übergabedatum", this);
     mHandoverDateEdit = new QLineEdit (this);
     mHandoverDateEdit->setDisabled(true);
 
-    QLabel *deadlineDate = new QLabel ("Rückgabedatum", this);
+    QLabel *deadlineDate = new QLabel ("Rückgabefrist", this);
     mDeadlineDateEdit = new QLineEdit (this);
     mDeadlineDateEdit->setDisabled(true);
 
@@ -118,7 +119,7 @@ void  HandoverView::onMenuBtnClicked (Gui::MenuButton btnType)
             break;
         case (Gui::Next):
             dataInterface()->setRecipientSigImg(mSigPad->getSignature());
-            dataInterface()->submitHandover();
+            ioInterface()->dbInsertHandover(dataInterface()->getHandle());
         //no catch in this class, emit signal
         default:
             emit menuButtonClicked(btnType);
@@ -135,7 +136,7 @@ void HandoverView::reset ()
 {
     mBarcodeLineEdit->setText(QString::number(dataInterface()->getScannedCode()));
     Database::KeychainStatus status = dataInterface()->getNewKeychainStatusId();
-    QString statusById = dataInterface()->getKeychainStatusText(status);
+    QString statusById = ioInterface()->getKeychainStatusText(status);
     mNewStatusEdit->setText(statusById);
     mHandoverDateEdit->setText(dataInterface()->getHandoverDate());
     mDeadlineDateEdit->setText(dataInterface()->getDeadlineDate());
