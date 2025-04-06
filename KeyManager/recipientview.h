@@ -17,6 +17,7 @@ class QLineEdit;
 class QLabel;
 class QCalendarWidget;
 class ReturnDateView;
+class AddRecipientView;
 
 class RecipientView : public WinSubmenu
 {
@@ -35,6 +36,7 @@ private slots:
     void onSelectedDateChanged (QDate date);
     void onKeychainStatusChanged (Database::KeychainStatus newStatus);
     void onRecipientNameTextChanged (const QString &text);
+    void onAddRecipientButtonClicked(Gui::MenuButton btn);
 
 private:
     bool setModel (QSqlRelationalTableModel* model);
@@ -56,6 +58,7 @@ private:
     Database::KeychainStatus mDurationHandout;
     QVBoxLayout *mDateLayout;
 
+    AddRecipientView *mAddRecipientView;
     ReturnDateView *mReturnDateWidget;
 
     ViewDataRecipient *mViewDataRecipient;

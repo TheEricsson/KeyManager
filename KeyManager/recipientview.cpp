@@ -25,6 +25,7 @@
 #include "iointerface.h"
 #include "returndateview.h"
 #include "viewdatarecipient.h"
+#include "addrecipientview.h"
 
 RecipientView::RecipientView(QWidget *parent) : WinSubmenu {parent}
 {
@@ -33,12 +34,11 @@ RecipientView::RecipientView(QWidget *parent) : WinSubmenu {parent}
     mRecipientsModel = 0;
     mRowSelected = false;
     mViewDataRecipient = 0;
+    mAddRecipientView = 0;
 
     mFilteredModel = new QSortFilterProxyModel (this);
 
     setHeader("Empfänger auswählen");
-
-    //QVBoxLayout* layout = new QVBoxLayout (this);
 
     QHBoxLayout* searchLayout = new QHBoxLayout ();
     mSearchLabel = new QLabel ("Suche", this);
@@ -51,7 +51,6 @@ RecipientView::RecipientView(QWidget *parent) : WinSubmenu {parent}
     mRecipients->setModel(mFilteredModel);
     layout()->addWidget(mRecipients);
 
-    //mRecipients->clearSelection();
     mRecipients->update();
     mRecipients->setFocus();
 
@@ -70,8 +69,6 @@ RecipientView::RecipientView(QWidget *parent) : WinSubmenu {parent}
     menuButtons.append(Gui::AddRecipient);
     menuButtons.append(Gui::Next);
     setMenuButtons(menuButtons);
-
-    //setMenuButtons(Gui::Back, Gui::AddRecipient, Gui::Next);
     disableButton(2, true);
 
     connect (mRecipients->selectionModel(), SIGNAL(selectionChanged(const QItemSelection &, const QItemSelection &)), this, SLOT(onTableSelectionChanged(const QItemSelection &, const QItemSelection &)));
@@ -150,8 +147,10 @@ void RecipientView::reset()
 
     //init model/view at first show event
     if (!mRecipientsModel)
+        mRecipientsModel = new QSqlRelationalTableModel(this);
+
+    if (mRecipientsModel)
     {
-        mRecipientsModel = new QSqlRelationalTableModel ();
         ioInterface()->initRecipientModel(mRecipientsModel);
         setModel(mRecipientsModel);
     }
@@ -208,8 +207,20 @@ void RecipientView::onMenuBtnClicked (Gui::MenuButton btnType)
             case Database::KeychainStatus::Lost:
             case Database::KeychainStatus::PermanentOut:
                 dataInterface()->setDeadlineDate("");
+                break;
+            default:
+                break;
         }
-
+        break;
+    case (Gui::AddRecipient):
+        if (!mAddRecipientView)
+        {
+            mAddRecipientView = new AddRecipientView();
+            mAddRecipientView->setDataInterface (dataInterface());
+            mAddRecipientView->setIOInterface (ioInterface());
+            mAddRecipientView->show();
+            connect (mAddRecipientView, SIGNAL(menuButtonClicked(Gui::MenuButton)), this, SLOT(onAddRecipientButtonClicked(Gui::MenuButton)));
+        }
         break;
     default:
         break;
@@ -228,61 +239,6 @@ void RecipientView::setTableFilter(const QString &text)
     mRecipients->update();
     update ();
 }
-
-// void RecipientView::onThirdBtnClicked ()
-// {
-//     // if (!mRowSelected)
-    //     return;
-
-    // if (mRecipientNameEdit->isEnabled() && "" == mRecipientNameEdit->text())
-    // {
-    //     mRecipientNameEdit->setStyleSheet("border-style: solid;border-width: 1px;border-color: red");
-
-    //     QMessageBox msgBox;
-    //     msgBox.setText("Unvollständige Eingaben");
-    //     msgBox.setInformativeText("Es wurde ein Unternehmen als Empfänger \n"
-    //                              "ausgewählt. Der Name der Person, die den \n"
-    //                               "Schlüssel entgegennimmt, wurde nicht angegeben.");
-
-    //     msgBox.setStandardButtons(QMessageBox::Ignore | QMessageBox::Ok);
-    //     msgBox.setDefaultButton(QMessageBox::Ok);
-
-    //     int selection = msgBox.exec();
-
-    //     bool ignore = false;
-
-    //     switch (selection)
-    //     {
-    //         case QMessageBox::Ignore:
-    //             ignore = true;
-    //             break;
-    //         case QMessageBox::Ok:
-    //             break;
-    //         default:
-    //             break;
-    //     }
-
-    //     if (!ignore)
-    //         return;
-    // }
-
-    // //set current data
-    // if (mDataObject)
-    // {
-    //     DataObjectHandover *dataObj = (DataObjectHandover*)mDataObject;
-    //     if (dataObj)
-    //     {
-    //         int row = mRecipients->selectionModel()->currentIndex().row();
-    //         dataObj->setRecipient(mRecipients->model()->index(row, 1).data().toString ());
-    //         dataObj->setSignatureName(mRecipientNameEdit->text());
-    //         dataObj->setRecipientStreet(mRecipients->model()->index(row, 3).data().toString ());
-    //         dataObj->setRecipientStreetNumber(mRecipients->model()->index(row, 4).data().toInt());
-    //         dataObj->setRecipientAreaCode(mRecipients->model()->index(row, 5).data().toInt ());
-    //         dataObj->setRecipientCity(mRecipients->model()->index(row, 6).data().toString ());
-    //     }
-    // }
-    // emit thirdButtonClicked();
-//}
 
 void RecipientView::setTableFilter(const int column, const QString &searchString)
 {
@@ -396,6 +352,39 @@ void RecipientView::onRecipientNameTextChanged (const QString &text)
     update ();
 }
 
+void RecipientView::onAddRecipientButtonClicked(Gui::MenuButton btn)
+{
+    switch (btn)
+    {
+        case Gui::Back:
+            if (mAddRecipientView)
+            {
+                mAddRecipientView->hide();
+                delete mAddRecipientView;
+                mAddRecipientView = 0;
+                setFocus();
+            }
+            break;
+        case Gui::Ok:
+            if (mAddRecipientView)
+            {
+                mAddRecipientView->hide();
+                delete mAddRecipientView;
+                mAddRecipientView = 0;
+                reset();
+                setFocus();
+            }
+            break;
+        default:
+            break;
+    }
+}
+
 RecipientView::~RecipientView()
 {
+    if (mAddRecipientView)
+    {
+        delete mAddRecipientView;
+        mAddRecipientView = 0;
+    }
 }

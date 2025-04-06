@@ -14,7 +14,7 @@ class IOInterfaceSQLITE : public IOInterface
 
         IOInterfaceSQLITE();
         ~IOInterfaceSQLITE();
-        bool addKey (IOInterface::keyData *data);
+        bool addKey (const IOInterface::keyData *data);
         bool findKeyCode(int aCode);
         Database::KeychainStatus getKeychainStatusId (const int& keyCode);
         const QString getKeychainStatusText (int statusId);
@@ -27,8 +27,7 @@ class IOInterfaceSQLITE : public IOInterface
         bool initKeychainModel (QSqlRelationalTableModel *model, const QString &filter);
         bool initRecipientModel (QSqlRelationalTableModel *model);
         bool initBuildingModel (QSqlRelationalTableModel *model);
-        bool addNewRecipient(const Database::RecipientType& type, const QString& name, const QString& street, const QString& number, const QString& areaCode, const QString& city);
-        bool addNewRecipient (const RecipientData& data);
+        bool addNewRecipient (const IOInterface::recipientData *data);
         const QString getKeychainImgPath (const int& keyCode);
         bool dbInsertHandover (DataInterface *data);
         bool dbInsertKeychain (DataInterface *data);

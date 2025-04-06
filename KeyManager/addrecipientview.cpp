@@ -7,6 +7,7 @@
 #include <QButtonGroup>
 #include <QRegularExpressionValidator>
 #include <QMessageBox>
+#include "iointerface.h"
 
 AddRecipientView::AddRecipientView (QWidget *parent)
     : WinSubmenu {parent}
@@ -20,26 +21,26 @@ AddRecipientView::AddRecipientView (QWidget *parent)
     mCityEdit = 0;
     mRecipientType = Database::RecipientType::Company; // usual case
 
-    QGridLayout* layout = new QGridLayout (this);
+    setHeader("Empfänger anlegen");
 
-    QLabel *header= new QLabel ("Empfänger anlegen", this);
+    QGridLayout* gridLayout = new QGridLayout ();
 
-    mIsCompany = new QRadioButton ("Firma");
+    mIsCompany = new QRadioButton ("Firma", this);
     mIsCompany->setChecked(true); // this is the common case
-    QRadioButton *isPrivatePerson = new QRadioButton ("Privatperson");
-    QRadioButton *isEmployee = new QRadioButton ("Mitarbeiter");
-    QButtonGroup *btnGroup = new QButtonGroup (this);
+    QRadioButton *isPrivatePerson = new QRadioButton ("Privatperson", this);
+    QRadioButton *isEmployee = new QRadioButton ("Mitarbeiter", this);
+    // QButtonGroup *btnGroup = new QButtonGroup (this);
 
-    btnGroup->addButton(mIsCompany, 0);
-    btnGroup->addButton(isPrivatePerson, 1);
-    btnGroup->addButton(isEmployee, 2);
+    // btnGroup->addButton(mIsCompany, 0);
+    // btnGroup->addButton(isPrivatePerson, 1);
+    // btnGroup->addButton(isEmployee, 2);
 
     QHBoxLayout *recipientTypeBtnBox = new QHBoxLayout ();
     recipientTypeBtnBox->addWidget(mIsCompany);
     recipientTypeBtnBox->addWidget(isPrivatePerson);
     recipientTypeBtnBox->addWidget(isEmployee);
-    QSpacerItem *btnSpacer = new QSpacerItem (0, 0, QSizePolicy::Expanding,QSizePolicy::Minimum);
-    recipientTypeBtnBox->addSpacerItem(btnSpacer);
+    // QSpacerItem *btnSpacer = new QSpacerItem (0, 0, QSizePolicy::Expanding,QSizePolicy::Minimum);
+    // recipientTypeBtnBox->addSpacerItem(btnSpacer);
 
     mLabelRecipientName = new QLabel ("Firmenbezeichnung", this);
     mRecipientNameEdit = new QLineEdit (this);
@@ -62,50 +63,37 @@ AddRecipientView::AddRecipientView (QWidget *parent)
     mCityEdit = new QLineEdit (this);
     //mCityEdit->setValidator(new QRegularExpressionValidator(QRegularExpression("\\w+\\^( |ß|-)\\w+\\^( |ß|-)"), mCityEdit));
 
-    QSpacerItem *spacer = new QSpacerItem (0, 0, QSizePolicy::Expanding,QSizePolicy::Expanding);
+    //QSpacerItem *spacer = new QSpacerItem (0, 0, QSizePolicy::Expanding,QSizePolicy::Expanding);
 
-    QPushButton* btnPrevious = new QPushButton (this);
-    btnPrevious->setIcon(QIcon(":/images/menu_back.png"));
-    btnPrevious->setIconSize(QSize(Gui::buttonWidth,Gui::buttonHeight));
-
-    QPushButton* btnOk = new QPushButton (this);
-    btnOk->setIcon(QIcon(":/images/btn_Ok.png"));
-    btnOk->setIconSize(QSize(Gui::buttonWidth,Gui::buttonHeight));
-    //btnOk->setDisabled(true);
-
-    //prev+next button layout
-    QHBoxLayout *buttonLayout = new QHBoxLayout ();
-    buttonLayout->addWidget(btnPrevious);
-    buttonLayout->addWidget(btnOk);
-
-    connect (btnPrevious, SIGNAL (clicked()), this, SLOT (onPreviousBtnClicked()));
-    connect (btnOk, SIGNAL (clicked()), this, SLOT (onOkBtnClicked()));
+    // connect (btnPrevious, SIGNAL (clicked()), this, SLOT (onPreviousBtnClicked()));
+    // connect (btnOk, SIGNAL (clicked()), this, SLOT (onOkBtnClicked()));
     connect (mIsCompany, SIGNAL (clicked()), this, SLOT (onIsCompanyBtnClicked()));
     connect (isPrivatePerson, SIGNAL (clicked()), this, SLOT (onIsPrivatePersonBtnClicked()));
     connect (isEmployee, SIGNAL (clicked()), this, SLOT (onIsEmployeeBtnClicked()));
 
-    layout->addWidget(header, 0, 0, 1, 2, Qt::AlignCenter);
-    layout->addLayout(recipientTypeBtnBox, 1, 0, 1, 2);
+    gridLayout->addLayout(recipientTypeBtnBox, 1, 0, 1, 2);
 
-    layout->addWidget(mLabelRecipientName, 2, 0, 1, 1);
-    layout->addWidget(mRecipientNameEdit, 2, 1, 1, 1);
+    gridLayout->addWidget(mLabelRecipientName, 2, 0, 1, 1);
+    gridLayout->addWidget(mRecipientNameEdit, 2, 1, 1, 1);
 
-    layout->addWidget(street, 3, 0, 1, 1);
-    layout->addWidget(mStreetEdit, 3, 1, 1, 1);
+    gridLayout->addWidget(street, 3, 0, 1, 1);
+    gridLayout->addWidget(mStreetEdit, 3, 1, 1, 1);
 
-    layout->addWidget(streetNumber, 4, 0, 1, 1);
-    layout->addWidget(mStreetNumberEdit, 4, 1, 1, 1);
+    gridLayout->addWidget(streetNumber, 4, 0, 1, 1);
+    gridLayout->addWidget(mStreetNumberEdit, 4, 1, 1, 1);
 
-    layout->addWidget(areaCode, 5, 0, 1, 1);
-    layout->addWidget(mAreaCodeEdit, 5, 1, 1, 1);
+    gridLayout->addWidget(areaCode, 5, 0, 1, 1);
+    gridLayout->addWidget(mAreaCodeEdit, 5, 1, 1, 1);
 
-    layout->addWidget(city, 6, 0, 1, 1);
-    layout->addWidget(mCityEdit, 6, 1, 1, 1);
+    gridLayout->addWidget(city, 6, 0, 1, 1);
+    gridLayout->addWidget(mCityEdit, 6, 1, 1, 1);
 
-    layout->addItem(spacer, 7, 0, 1, 1);
-    layout->addLayout(buttonLayout, 8, 0, 1, 2);
+    layout()->addItem(gridLayout);
 
-    setLayout(layout);
+    QList<Gui::MenuButton> menuButtons;
+    menuButtons.append(Gui::Back);
+    menuButtons.append(Gui::Ok);
+    setMenuButtons(menuButtons);
 
     // line edit manipulators
     // convert all chars to uppercase
@@ -124,17 +112,17 @@ void AddRecipientView::clearForm()
     mCityEdit->setText("");
 }
 
-const RecipientData AddRecipientView::getRecipientData ()
-{
-    mRecipientData.type = mRecipientType;
-    mRecipientData.name = mRecipientNameEdit->displayText();
-    mRecipientData.street = mStreetEdit->displayText();
-    mRecipientData.number = mStreetNumberEdit->displayText();
-    mRecipientData.areaCode = mAreaCodeEdit->displayText();
-    mRecipientData.city = mCityEdit->displayText();
+// const RecipientData AddRecipientView::getRecipientData ()
+// {
+//     mRecipientData.type = mRecipientType;
+//     mRecipientData.name = mRecipientNameEdit->displayText();
+//     mRecipientData.street = mStreetEdit->displayText();
+//     mRecipientData.number = mStreetNumberEdit->displayText();
+//     mRecipientData.areaCode = mAreaCodeEdit->displayText();
+//     mRecipientData.city = mCityEdit->displayText();
 
-    return mRecipientData;
-}
+//     return mRecipientData;
+// }
 
 void AddRecipientView::toUpper(QString text)
 {
@@ -146,57 +134,95 @@ void AddRecipientView::toUpper(QString text)
     lineEdit->setText(text.toUpper());
 }
 
-void AddRecipientView::onPreviousBtnClicked ()
+void AddRecipientView::onMenuBtnClicked (Gui::MenuButton btnType)
 {
-    emit previousButtonClicked();
+    switch (btnType)
+    {
+        // user wants to add recipient
+        case (Gui::Ok):
+            // check editable fiels
+            if (checkValues ())
+            {
+                qDebug () << "AddRecipientView::onMenuBtnClicked OK";
+                IOInterface::recipientData *data = new IOInterface::recipientData ();
+                data->areaCode = mAreaCodeEdit->text();
+                data->city = mCityEdit->text();
+                data->name = mRecipientNameEdit->text();
+                data->street = mStreetEdit->text();
+                data->number = mStreetNumberEdit->text();
+                data->type = mRecipientType;
+
+                ioInterface()->addNewRecipient(data);
+                delete data;
+
+                clearForm();
+
+                emit menuButtonClicked(btnType);
+            }
+            break;
+        case (Gui::Back):
+                clearForm();
+                emit menuButtonClicked(btnType);
+                break;
+
+        // fall through for any other button
+        default:
+            emit menuButtonClicked(btnType);
+            break;
+    }
 }
 
-void AddRecipientView::onOkBtnClicked ()
+// void AddRecipientView::onPreviousBtnClicked ()
+// {
+//     emit previousButtonClicked();
+// }
+
+bool AddRecipientView::checkValues ()
 {
-    bool fail = false;
+    bool checkOk = true;
 
     //check all line edits
-    if ("" == mRecipientNameEdit->displayText())
+    if ("" == mRecipientNameEdit->text())
     {
         mRecipientNameEdit->setStyleSheet("border-style: solid;border-width: 1px;border-color: red");
-        fail = true;
+        checkOk = false;
     }
     else
         mRecipientNameEdit->setStyleSheet("");
 
-    if ("" == mStreetEdit->displayText())
+    if ("" == mStreetEdit->text())
     {
         mStreetEdit->setStyleSheet("border-style: solid;border-width: 1px;border-color: red");
-        fail = true;
+        checkOk = false;
     }
     else
         mStreetEdit->setStyleSheet("");
 
-    if ("" == mStreetNumberEdit->displayText())
+    if ("" == mStreetNumberEdit->text())
     {
         mStreetNumberEdit->setStyleSheet("border-style: solid;border-width: 1px;border-color: red");
-        fail = true;
+        checkOk = false;
     }
     else
         mStreetNumberEdit->setStyleSheet("");
 
-    if ("" == mAreaCodeEdit->displayText())
+    if ("" == mAreaCodeEdit->text())
     {
         mAreaCodeEdit->setStyleSheet("border-style: solid;border-width: 1px;border-color: red");
-        fail = true;
+        checkOk = false;
     }
     else
         mAreaCodeEdit->setStyleSheet("");
 
-    if ("" == mCityEdit->displayText())
+    if ("" == mCityEdit->text())
     {
         mCityEdit->setStyleSheet("border-style: solid;border-width: 1px;border-color: red");
-        fail = true;
+        checkOk = false;
     }
     else
         mCityEdit->setStyleSheet("");
 
-    if (fail)
+    if (!checkOk)
     {
         QMessageBox::information(0, "Unvollständige Eingaben",
                               "Einige erforderliche Felder wurden \n"
@@ -204,8 +230,7 @@ void AddRecipientView::onOkBtnClicked ()
                               "Ihre Eingaben.", QMessageBox::Ok);
     }
 
-    if (!fail)
-        emit OkClicked();
+    return checkOk;
 }
 
 void AddRecipientView::onIsCompanyBtnClicked ()

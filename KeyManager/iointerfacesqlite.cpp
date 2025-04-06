@@ -9,9 +9,10 @@
 #include <QSqlRelationalTableModel>
 #include <QSqlError>
 #include <QMessageBox>
-#include "dataobjecthandover.h"
-#include "viewdatascanner.h"
+//#include "dataobjecthandover.h"
+//#include "viewdatascanner.h"
 #include "viewdatakeychain.h"
+#include "datainterface.h"
 
 #ifdef Q_OS_ANDROID
     #include <QCoreApplication>
@@ -171,7 +172,7 @@ bool IOInterfaceSQLITE::firstStart ()
     return retVal;
 }
 
-bool IOInterfaceSQLITE::addKey (IOInterface::keyData *data)
+bool IOInterfaceSQLITE::addKey (const IOInterface::keyData *data)
 {
     if (!data)
         return false;
@@ -424,36 +425,22 @@ bool IOInterfaceSQLITE::initBuildingModel (QSqlRelationalTableModel *model)
         return false;
 }
 
-bool IOInterfaceSQLITE::addNewRecipient(const Database::RecipientType& type, const QString& name, const QString& street, const QString& number, const QString& areaCode, const QString& city)
+bool IOInterfaceSQLITE::addNewRecipient (const IOInterface::recipientData *data)
 {
+    if (!data)
+        return false;
+
     mDb.transaction();
 
     QSqlQuery query;
     query.prepare("INSERT INTO recipientAddresses (name, type, street, houseNr, areaCode, city) \
                     VALUES (?, ?, ?, ?, ?, ?)");
-    query.bindValue(0, name);
-    query.bindValue(1, type);
-    query.bindValue(2, street);
-    query.bindValue(3, number);
-    query.bindValue(4, areaCode);
-    query.bindValue(5, city);
-
-    return query.exec();
-}
-
-bool IOInterfaceSQLITE::addNewRecipient (const RecipientData& data)
-{
-    mDb.transaction();
-
-    QSqlQuery query;
-    query.prepare("INSERT INTO recipientAddresses (name, type, street, houseNr, areaCode, city) \
-                    VALUES (?, ?, ?, ?, ?, ?)");
-    query.bindValue(0, data.name);
-    query.bindValue(1, data.type);
-    query.bindValue(2, data.street);
-    query.bindValue(3, data.number);
-    query.bindValue(4, data.areaCode);
-    query.bindValue(5, data.city);
+    query.bindValue(0, data->name);
+    query.bindValue(1, data->type);
+    query.bindValue(2, data->street);
+    query.bindValue(3, data->number);
+    query.bindValue(4, data->areaCode);
+    query.bindValue(5, data->city);
 
     return query.exec();
 }
@@ -565,9 +552,9 @@ bool IOInterfaceSQLITE::dbCleanupTable (const QString& tablename, const QString&
     QSqlQuery searchQuery;
     //query.setForwardOnly(true);
 
-    int firstId = _UNDEFINED;
-    int lastId = _UNDEFINED;
-    int numberOfEntries = _UNDEFINED;
+    // int firstId = _UNDEFINED;
+    // int lastId = _UNDEFINED;
+    // int numberOfEntries = _UNDEFINED;
 
     qDebug () << "dbCleanupTable (const QString& tablename, const int numberOfEntriesToKeep): " << tablename << ", " << numberOfEntriesToKeep;
 
@@ -647,9 +634,9 @@ int IOInterfaceSQLITE::getFreeInternalLocation ()
             if (!query.next())
                 return i;
         }
-        else
-            return _UNDEFINED;
     }
+
+    return _UNDEFINED;
 }
 
 int IOInterfaceSQLITE::findInternalLocation (const int internalLoc)

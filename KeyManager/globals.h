@@ -63,14 +63,4 @@ namespace Database
     const int maxHandoverEntries = 10;
 }
 
-struct RecipientData
-{
-    Database::RecipientType type;
-    QString name;
-    QString street;
-    QString number;
-    QString areaCode;
-    QString city;
-};
-
 #endif // GLOBALS_H

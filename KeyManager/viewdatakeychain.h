@@ -1,7 +1,7 @@
 #ifndef VIEWDATAKEYCHAIN_H
 #define VIEWDATAKEYCHAIN_H
 
-#include "globals.h";
+#include "globals.h"
 
 class ViewDataKeychain
 {

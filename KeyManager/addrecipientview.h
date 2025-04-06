@@ -16,12 +16,11 @@ class AddRecipientView : public WinSubmenu
 public:
     explicit AddRecipientView(QWidget *parent = nullptr);
     void clearForm();
-    const RecipientData getRecipientData ();
-    const QString getName ()    {return mRecipientNameEdit->displayText();};
-    const QString getStreet ()  {return mStreetEdit->displayText();};
-    const QString getNumber ()  {return mStreetNumberEdit->displayText();};
-    const QString getAreaCode () {return mAreaCodeEdit->displayText();};
-    const QString getCity ()    {return mCityEdit->displayText();};
+    // const QString getName ()    {return mRecipientNameEdit->displayText();};
+    // const QString getStreet ()  {return mStreetEdit->displayText();};
+    // const QString getNumber ()  {return mStreetNumberEdit->displayText();};
+    // const QString getAreaCode () {return mAreaCodeEdit->displayText();};
+    // const QString getCity ()    {return mCityEdit->displayText();};
 
 signals:
     void previousButtonClicked ();
@@ -29,18 +28,21 @@ signals:
 
 private slots:
     void toUpper(QString text);
-    void onPreviousBtnClicked ();
-    void onOkBtnClicked ();
+    virtual void onMenuBtnClicked (Gui::MenuButton btnType);
+    // void onPreviousBtnClicked ();
+    // void onOkBtnClicked ();
     void onIsCompanyBtnClicked ();
     void onIsPrivatePersonBtnClicked ();
     void onIsEmployeeBtnClicked ();
 
 private:
 
+    bool checkValues ();
+
     QLabel* mLabelRecipientName;
     QRadioButton* mIsCompany;
 
-    RecipientData mRecipientData;
+    //RecipientData mRecipientData;
 
     Database::RecipientType mRecipientType;
     QLineEdit* mRecipientNameEdit;
