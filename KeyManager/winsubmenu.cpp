@@ -24,7 +24,7 @@ WinSubmenu::WinSubmenu(QWidget *parent)
     mLayout->addWidget(mHeaderLabel,0,Qt::AlignCenter);
 
     mHeaderLabel->setSizePolicy(QSizePolicy::Expanding, QSizePolicy::MinimumExpanding);
-    mHeaderLabel->setStyleSheet("QLabel {background-color: #e0ffff; color: black; font: bold 30px; border-style: solid; border-width: 1px; border-radius: 10px; border-color: #A9A9A9; }");
+    mHeaderLabel->setStyleSheet("QLabel {background-color: #e0ffff; color: black; font: bold 30px; border-style: solid; border-width: 1px; border-radius: 5px; border-color: #A9A9A9; }");
 
     setStyleSheet("QToolButton {background-color: #e0ffff; border-style: solid; border-width: 3px; border-radius: 10px; border-color: #A9A9A9; font: bold 14px; padding: 6px;}");
 }

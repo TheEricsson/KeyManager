@@ -10,28 +10,19 @@ class DataObject;
 
 class IOInterfaceSQLITE : public IOInterface
 {
-        struct mKey
-        {
-            int dbId;
-            int keychainId;
-            QString street;
-            QString streetNumber;
-            int areaCode;
-            QString category;
-            QString status;
-            QString description;
-        };
-
     public:
 
         IOInterfaceSQLITE();
         ~IOInterfaceSQLITE();
+        bool addKey (IOInterface::keyData *data);
         bool findKeyCode(int aCode);
         Database::KeychainStatus getKeychainStatusId (const int& keyCode);
         const QString getKeychainStatusText (int statusId);
         int getKeychainInternalLocation (const int& keyCode);
         int getKeychainAddressId (const int& keyCode);
         bool setKeychainData (ViewDataKeychain* data, const int& keyCode);
+        int getNumberOfEntries (const QString &tableName);
+        QVariant getValue (const QString &tableName, const QString& columnName, int index);
         bool initKeyOverviewModel (QSqlRelationalTableModel *model, const QString &filter);
         bool initKeychainModel (QSqlRelationalTableModel *model, const QString &filter);
         bool initRecipientModel (QSqlRelationalTableModel *model);
@@ -58,7 +49,6 @@ class IOInterfaceSQLITE : public IOInterface
         int mKeychainInternalLocation;
         QImage mKeychainImg;
         QString mKeychainStatus;
-        QList <mKey> mKeychainItems;
         Database::KeychainStatus mKeychainStatusId;
 };
 

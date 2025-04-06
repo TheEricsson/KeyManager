@@ -2,31 +2,42 @@
 #include <QComboBox>
 #include <QTextEdit>
 #include <QLayout>
-#include <QSqlRelationalTableModel>
+#include <QLabel>
 #include "datainterface.h"
+#include "checkboxarray.h"
+#include "iointerface.h"
+#include <QMessageBox>
 
 AddKeyView::AddKeyView(QWidget *parent) : WinSubmenu {parent}
 {
-    setHeader("Schlüssel hinzufügen");
+    mKeyCategories = 0;
+    mKeyStates = 0;
 
-    QComboBox *boxKeyCategory = new QComboBox (this);
-    QComboBox *boxKeyStatus = new QComboBox (this);
-    QTextEdit *keyDescription = new QTextEdit (this);
+    setHeader("Schlüsseleigenschaften setzen");
 
-    mViewModel = new QSqlRelationalTableModel(this);
-    mViewModel->setTable("keys");
-    mViewModel->setEditStrategy(QSqlTableModel::OnManualSubmit);
-    boxKeyCategory->setModel(mViewModel);
+    mKeyDescription = new QTextEdit (this);
+    mKeyCategories = new CheckBoxArray (this);
+    mKeyStates = new CheckBoxArray (this);
 
-    //dataInterface()->getKeychainStatusCount ();
+    QLabel *headerKeyCat = new QLabel ("Schlüsselkategorie");
+    headerKeyCat->setAlignment(Qt::AlignHCenter);
+    headerKeyCat->setContentsMargins(0,0,0,0);
+    headerKeyCat->setSizePolicy(QSizePolicy::MinimumExpanding, QSizePolicy::MinimumExpanding);
+    QLabel *headerKeyStatus = new QLabel ("Schlüsselstatus");
+    headerKeyStatus->setAlignment(Qt::AlignHCenter);
+    headerKeyStatus->setContentsMargins(0,0,0,0);
+    headerKeyStatus->setSizePolicy(QSizePolicy::MinimumExpanding, QSizePolicy::MinimumExpanding);
+    QLabel *headerDescription = new QLabel ("Zusätzliche Angaben");
+    headerKeyStatus->setAlignment(Qt::AlignHCenter);
+    headerKeyStatus->setContentsMargins(0,0,0,0);
+    headerKeyStatus->setSizePolicy(QSizePolicy::MinimumExpanding, QSizePolicy::MinimumExpanding);
 
-    boxKeyStatus->addItem("test1");
-    boxKeyStatus->addItem("test2");
-    boxKeyStatus->addItem("test3");
-
-    layout()->addWidget(boxKeyCategory);
-    layout()->addWidget(boxKeyStatus);
-    layout()->addWidget(keyDescription);
+    layout()->addWidget(headerKeyCat);
+    layout()->addWidget(mKeyCategories);
+    layout()->addWidget(headerKeyStatus);
+    layout()->addWidget(mKeyStates);
+    layout()->addWidget(headerDescription);
+    layout()->addWidget(mKeyDescription);
 
     QList<Gui::MenuButton> menuButtons;
     menuButtons.append(Gui::Back);
@@ -34,14 +45,65 @@ AddKeyView::AddKeyView(QWidget *parent) : WinSubmenu {parent}
     setMenuButtons(menuButtons);
 
     update ();
-
-    connect (boxKeyStatus, SIGNAL(highlighted(int)), this, SLOT(updateView()));
-    connect (boxKeyStatus, SIGNAL(currentIndexChanged(int)), this, SLOT(updateView()));
-
 }
 
-void AddKeyView::updateView ()
+void AddKeyView::onMenuBtnClicked (Gui::MenuButton btnType)
 {
-    qDebug () << "AddKeyView::updateView";
-    update ();
+    switch (btnType)
+    {
+        // check valid selection
+        case (Gui::Ok):
+            if (checkSelections ())
+            {
+                int keyCode = _UNDEFINED;
+                if (dataInterface())
+                    keyCode = dataInterface()->getScannedCode();
+
+                //check if keycode is valid
+                if (_UNDEFINED != keyCode)
+                {
+                    IOInterface::keyData *data = new IOInterface::keyData();
+                    data->keychainId = keyCode;
+                    data->categoryId = mKeyCategories->getCheckedButtonIndex();
+                    data->statusId = mKeyStates->getCheckedButtonIndex();
+                    data->description = mKeyDescription->toPlainText();
+                    ioInterface()->addKey (data);
+                    delete data;
+                }
+
+                emit menuButtonClicked(btnType);
+            }
+            break;
+        // fall through for any other button
+        default:
+            emit menuButtonClicked(btnType);
+            break;
+    }
+}
+
+void AddKeyView::showEvent(QShowEvent *)
+{
+    qDebug () << "AddKeyView::showEvent(QShowEvent *)";
+    reset ();
+}
+
+void AddKeyView::reset ()
+{
+    mKeyCategories->setData (ioInterface(), dataInterface());
+    mKeyCategories->init ("keyCategories", "category");
+
+    mKeyStates->setData (ioInterface(), dataInterface());
+    mKeyStates->init ("keyStates", "status");
+}
+
+bool AddKeyView::checkSelections ()
+{
+    if (_UNDEFINED == mKeyCategories->getCheckedButtonIndex() ||
+        _UNDEFINED == mKeyStates->getCheckedButtonIndex())
+    {
+        QMessageBox::information(0, "Unvollständige Eingaben",
+                                 "Bitte vollständige Auswahl treffen.", QMessageBox::Ok);
+        return false;
+    }
+    return true;
 }

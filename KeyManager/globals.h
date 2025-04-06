@@ -16,8 +16,8 @@ namespace Gui
     const int buttonImgWidth = buttonWidth - buttonBorder;
 
     //logo dimensions
-    const int logoWidth = 300;
-    const int logoHeight = 100;
+    const int logoWidth = 600;
+    const int logoHeight = 200;
 
     //menu button types
     enum MenuButton

@@ -24,6 +24,7 @@
 #include "addkeychainview.h"
 #include "editkeyview.h"
 #include "iointerfacesqlite.h"
+#include "addkeyview.h"
 
 #ifndef GMANDANTID
     #define GMANDANTID 1
@@ -46,6 +47,7 @@ MainWindow::MainWindow(QWidget *parent)
     mDataInterface = 0;
     mAddKeychainView = 0;
     mEditKeyView = 0;
+    //mAddKeyView = 0;
 
     mViewStack = 0;
 
@@ -66,6 +68,7 @@ MainWindow::MainWindow(QWidget *parent)
     mAnnotationView = new AnnotationView (this);
     mAddKeychainView = new AddKeychainView (this);
     mEditKeyView = new EditKeyView (this);
+    //mAddKeyView = new AddKeyView (this);
 
     registerView (mHomeView);
     registerView (mScanView);
@@ -77,6 +80,7 @@ MainWindow::MainWindow(QWidget *parent)
     registerView (mAnnotationView);
     registerView (mAddKeychainView);
     registerView (mEditKeyView);
+    //registerView (mAddKeyView);
 
     mViewStack->setCurrentWidget(mHomeView);
 

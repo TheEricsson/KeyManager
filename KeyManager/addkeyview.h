@@ -4,17 +4,24 @@
 #include <QWidget>
 #include "winsubmenu.h"
 
-class QSqlRelationalTableModel;
+class CheckBoxArray;
+class QTextEdit;
 
 class AddKeyView : public WinSubmenu
 {
     Q_OBJECT
     public:
         explicit AddKeyView(QWidget *parent = nullptr);
-    private:
-        QSqlRelationalTableModel *mViewModel;
     private slots:
-        void updateView ();
+        virtual void onMenuBtnClicked (Gui::MenuButton btnType);
+    private:
+        void reset ();
+        bool checkSelections ();
+        void showEvent(QShowEvent *);
+
+        CheckBoxArray *mKeyCategories;
+        CheckBoxArray *mKeyStates;
+        QTextEdit *mKeyDescription;
 };
 
 #endif // ADDKEYVIEW_H

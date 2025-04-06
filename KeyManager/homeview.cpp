@@ -11,12 +11,6 @@
 HomeView::HomeView(QWidget *parent)
     : WinSubmenu {parent}
 {
-    mBtnScan = 0;
-    mBtnSearch = 0;
-    mBtnManage = 0;
-    mBtnExit = 0;
-    mLayout = 0;
-
     setHeader("KEYMANAGER");
 
     QPixmap logo (":/images/logo.png");
@@ -24,8 +18,10 @@ HomeView::HomeView(QWidget *parent)
     label->setScaledContents(true);
     label->setMaximumHeight(Gui::logoHeight);
     label->setMaximumWidth(Gui::logoWidth);
-    label->setAlignment(Qt::AlignHCenter);
+    label->setContentsMargins(0,0,0,0);
     label->setPixmap(logo);
+    label->setAlignment(Qt::AlignHCenter);
+    label->setSizePolicy(QSizePolicy::MinimumExpanding, QSizePolicy::MinimumExpanding);
     layout()->addWidget(label);
 
     QList <Gui::MenuButton> menuButtons;
@@ -36,13 +32,3 @@ HomeView::HomeView(QWidget *parent)
 
     setMenuButtons(menuButtons);
 }
-
-// void HomeView::onScanButtonReleased()
-// {
-//     emit showScannerView ();
-// }
-
-// void HomeView::onSearchButtonReleased()
-// {
-//     emit showTableView ();
-// }

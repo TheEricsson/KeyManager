@@ -128,7 +128,7 @@ void AddKeychainView::reset()
     if (mViewDataKeychain)
     {
         delete mViewDataKeychain;
-        mViewDataKeychain = 0;
+        mViewDataKeychain = nullptr;
     }
 
     mViewDataKeychain = new ViewDataKeychain ();

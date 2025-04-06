@@ -7,13 +7,23 @@ class ViewDataKeychain;
 class DataInterface;
 class ViewDataScanner;
 
+#include <QVariant>
 #include "globals.h"
 
 class IOInterface
 {
 public:
+    struct keyData
+    {
+        int keychainId = _UNDEFINED;
+        int categoryId = _UNDEFINED;
+        int statusId = _UNDEFINED;
+        QString description = "";
+    };
+
     IOInterface();
     virtual ~IOInterface();
+    virtual bool addKey (IOInterface::keyData *data)                                            {Q_UNUSED(data); return false;};
     virtual bool findKeyCode(int aCode)                                                         {Q_UNUSED(aCode); return false;};
     virtual Database::KeychainStatus getKeychainStatusId (const int& keyCode)                   {Q_UNUSED(keyCode); return Database::Undefined;};
     virtual const QString getKeychainStatusText (int statusId)                                  {Q_UNUSED(statusId); return "IOInterface::getKeychainStatusText - not implemented.";};
@@ -21,6 +31,8 @@ public:
     virtual int getKeychainAddressId (const int& keyCode)                                       {Q_UNUSED(keyCode); return _UNDEFINED;};
     virtual const QString getKeychainImgPath (const int& keyCode)                               {Q_UNUSED(keyCode); return "IOInterface::getKeychainImgPath - not implemented.";};
     virtual bool setKeychainData (ViewDataKeychain* data, const int& keyCode)                   {Q_UNUSED(keyCode); Q_UNUSED(data); return false;};
+    virtual int getNumberOfEntries (const QString &tableName)                                         {Q_UNUSED(tableName); return _UNDEFINED;};
+    virtual QVariant getValue (const QString &tableName, const QString& columnName, int index)  {Q_UNUSED(tableName); Q_UNUSED(columnName); Q_UNUSED(index); return _UNDEFINED;};
     virtual bool initKeyOverviewModel (QSqlRelationalTableModel *model, const QString &filter)  {Q_UNUSED(model); Q_UNUSED(filter); return false;};
     virtual bool initKeychainModel (QSqlRelationalTableModel *model, const QString &filter)     {Q_UNUSED(model); Q_UNUSED(filter); return false;};
     virtual bool initRecipientModel (QSqlRelationalTableModel *model)                           {Q_UNUSED(model); return false;};

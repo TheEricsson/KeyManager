@@ -171,6 +171,24 @@ bool IOInterfaceSQLITE::firstStart ()
     return retVal;
 }
 
+bool IOInterfaceSQLITE::addKey (IOInterface::keyData *data)
+{
+    if (!data)
+        return false;
+
+    mDb.transaction();
+
+    QSqlQuery query;
+    query.prepare("INSERT INTO keys (keychainId, categoryId, statusId, description) \
+                    VALUES (?, ?, ?, ?)");
+    query.bindValue(0, data->keychainId);
+    query.bindValue(1, data->categoryId);
+    query.bindValue(2, data->statusId);
+    query.bindValue(3, data->description);
+
+    return query.exec();
+}
+
 bool IOInterfaceSQLITE::findKeyCode(int aCode)
 {
     mDb.transaction();
@@ -330,7 +348,55 @@ bool IOInterfaceSQLITE::initKeychainModel (QSqlRelationalTableModel *model, cons
         model->select();
         return true;
     }
-    else return false;
+    else
+        return false;
+}
+
+int IOInterfaceSQLITE::getNumberOfEntries (const QString &tableName)
+{
+    QString queryString = "SELECT id FROM ";
+    queryString.append (tableName);
+
+    mDb.transaction();
+    QSqlQuery query;
+    query.setForwardOnly(true);
+    query.prepare(queryString);
+
+    if (!query.exec())
+        return false;
+
+    //query.size() not supported by sqlite -> workaround to retrieve number of rows
+    int numberOfResults = 0;
+    if (query.last())
+    {
+        numberOfResults = query.at() + 1;
+    }
+    qDebug () << "IOInterfaceSQLITE::getNumberOfEntries: " << numberOfResults;
+    return numberOfResults;
+}
+
+QVariant IOInterfaceSQLITE::getValue (const QString &tableName, const QString& columnName, int index)
+{
+    QString queryString = "SELECT ";
+    queryString.append(columnName);
+    queryString.append(" FROM ");
+    queryString.append(tableName);
+    queryString.append(" WHERE id = ");
+    queryString.append(QString::number(index));
+
+    mDb.transaction();
+    QSqlQuery query;
+    query.setForwardOnly(true);
+    query.prepare(queryString);
+    query.exec();
+
+    if (query.next())
+    {
+        qDebug () << "IOInterfaceSQLITE::getValue: " << query.value(0);
+        return query.value(0);
+    }
+
+    return _UNDEFINED;
 }
 
 bool IOInterfaceSQLITE::initRecipientModel (QSqlRelationalTableModel *model)

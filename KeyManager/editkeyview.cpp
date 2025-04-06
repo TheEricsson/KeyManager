@@ -93,7 +93,10 @@ void EditKeyView::onMenuBtnClicked (Gui::MenuButton btnType)
             if (!mAddKeyView)
             {
                 mAddKeyView = new AddKeyView();
+                mAddKeyView->setDataInterface (dataInterface());
+                mAddKeyView->setIOInterface (ioInterface());
                 mAddKeyView->show();
+                connect (mAddKeyView, SIGNAL(menuButtonClicked(Gui::MenuButton)), this, SLOT(onAddKeyMenuButtonClicked(Gui::MenuButton)));
             }
             break;
 
@@ -118,6 +121,36 @@ void EditKeyView::onTableSelectionChanged (const QItemSelection &itemNew, const 
 
     mKeys->update();
     update();
+}
+
+void EditKeyView::onAddKeyMenuButtonClicked (Gui::MenuButton btn)
+{
+    qDebug () << "onAddKeyMenuButtonClicked";
+
+    switch (btn)
+    {
+        case Gui::Ok:
+            // delete addkeyview instance
+            if (mAddKeyView)
+            {
+                mAddKeyView->hide();
+                delete mAddKeyView;
+                mAddKeyView = nullptr;
+            }
+            break;
+        case Gui::Back:
+            setFocus();
+            // delete addkeyview instance
+            if (mAddKeyView)
+            {
+                mAddKeyView->hide();
+                delete mAddKeyView;
+                mAddKeyView = nullptr;
+            }
+            break;
+        default:
+            break;
+    }
 }
 
 EditKeyView::~EditKeyView()

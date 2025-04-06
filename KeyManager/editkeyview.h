@@ -18,6 +18,7 @@ class EditKeyView : public WinSubmenu
     private slots:
         virtual void onMenuBtnClicked (Gui::MenuButton btnType);
         void onTableSelectionChanged (const QItemSelection &itemNew, const QItemSelection &itemOld);
+        void onAddKeyMenuButtonClicked (Gui::MenuButton btn);
     private:
         void showEvent(QShowEvent *);
         bool setKeysModel (QSqlRelationalTableModel* model);

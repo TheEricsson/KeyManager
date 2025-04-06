@@ -24,6 +24,7 @@ class DataInterface;
 class AddKeychainView;
 class EditKeyView;
 class IOInterfaceSQLITE;
+//class AddKeyView;
 
 class ViewStack;
 
@@ -61,6 +62,7 @@ private:
     AnnotationView *mAnnotationView;
     AddKeychainView *mAddKeychainView;
     EditKeyView *mEditKeyView;
+    //AddKeyView *mAddKeyView;
 
     DataInterface *mDataInterface;
     IOInterfaceSQLITE *mDbInterface;

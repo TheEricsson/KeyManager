@@ -50,14 +50,12 @@ private slots:
 private:
 
     QList <QPushButton*> mMenuButtons;
-
-    DataInterface *mDataInterface;
-
     QVBoxLayout *mLayout;
     QLabel *mHeaderLabel;
     bool mButtonsSet;
-
     QHBoxLayout *mButtonLayout;
+
+    DataInterface *mDataInterface;
     IOInterface *mIOInterface;
 };
 

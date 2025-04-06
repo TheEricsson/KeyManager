@@ -16,6 +16,7 @@ SOURCES += \
     addrecipientview.cpp \
     annotationview.cpp \
     camera.cpp \
+    checkboxarray.cpp \
     databaseimpl.cpp \
     datainterface.cpp \
     dataobject.cpp \
@@ -51,6 +52,7 @@ HEADERS += \
     addrecipientview.h \
     annotationview.h \
     camera.h \
+    checkboxarray.h \
     databaseimpl.h \
     datainterface.h \
     dataobject.h \
