@@ -30,24 +30,14 @@ void AnnotationView::showEvent(QShowEvent *)
 
 void AnnotationView::reset()
 {
-    if (mDataAnnotation)
-    {
-        delete mDataAnnotation;
-        mDataAnnotation = new ViewDataAnnotation ();
-        dataInterface()->setData(mDataAnnotation);
-        mTextEditor->setText("");
-        update();
-    }
+    dataInterface()->resetAnnotationData();
+    mTextEditor->setText("");
+    update();
 }
 
 void AnnotationView::onTextChanged ()
 {
-    if (!mDataAnnotation)
-    {
-        mDataAnnotation = new ViewDataAnnotation ();
-        dataInterface()->setData(mDataAnnotation);
-    }
-    mDataAnnotation->setAnnotation(mTextEditor->toPlainText());
+    dataInterface()->setAnnotationText(mTextEditor->toPlainText());
     update();
 }
 

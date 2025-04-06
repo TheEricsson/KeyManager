@@ -19,12 +19,9 @@
 
 #include "winsubmenu.h"
 #include "globals.h"
-#include "dataobject.h"
-#include "dataobjecthandover.h"
 #include "datainterface.h"
 #include "iointerface.h"
 #include "returndateview.h"
-#include "viewdatarecipient.h"
 #include "addrecipientview.h"
 
 RecipientView::RecipientView(QWidget *parent) : WinSubmenu {parent}
@@ -33,7 +30,6 @@ RecipientView::RecipientView(QWidget *parent) : WinSubmenu {parent}
     mFilteredModel = 0;
     mRecipientsModel = 0;
     mRowSelected = false;
-    mViewDataRecipient = 0;
     mAddRecipientView = 0;
 
     mFilteredModel = new QSortFilterProxyModel (this);
@@ -54,7 +50,7 @@ RecipientView::RecipientView(QWidget *parent) : WinSubmenu {parent}
     mRecipients->update();
     mRecipients->setFocus();
 
-    mRecipientNameLabel = new QLabel ("Empfängername:", this);
+    mRecipientNameLabel = new QLabel ("Unterzeichner:", this);
     mRecipientNameEdit = new QLineEdit ("", this);
     QVBoxLayout *recipientNameLayout = new QVBoxLayout ();
     recipientNameLayout->addWidget(mRecipientNameLabel);
@@ -122,14 +118,7 @@ bool RecipientView::setModel (QSqlRelationalTableModel* model)
 
 void RecipientView::reset()
 {
-    if (mViewDataRecipient)
-    {
-        delete mViewDataRecipient;
-        mViewDataRecipient = 0;
-    }
-
-    mViewDataRecipient = new ViewDataRecipient ();
-    dataInterface()->setData(mViewDataRecipient);
+    dataInterface()->resetRecipientData();
 
     QDate curDate = QDate::currentDate();
     int day = 0;
@@ -143,7 +132,7 @@ void RecipientView::reset()
     curDateString.append(".");
     curDateString.append(QString::number(year));
 
-    mViewDataRecipient->setCurrentDate(curDateString);
+    dataInterface()->setRecipientCurrentDate(curDateString);
 
     //init model/view at first show event
     if (!mRecipientsModel)
@@ -170,10 +159,9 @@ void RecipientView::reset()
             hideNameField(true);
             setTableFilter(2, "Mitarbeiter");
             mReturnDateWidget->hide();
-            mViewDataRecipient->setDeadlineDate("");
+            dataInterface()->setRecipientDeadlineDate("");
 
             update ();
-
             dataInterface()->setNewKeychainStatusId(Database::KeychainStatus::Available);
             break;
         default:
@@ -206,7 +194,7 @@ void RecipientView::onMenuBtnClicked (Gui::MenuButton btnType)
             case Database::KeychainStatus::Available:
             case Database::KeychainStatus::Lost:
             case Database::KeychainStatus::PermanentOut:
-                dataInterface()->setDeadlineDate("");
+                dataInterface()->setRecipientDeadlineDate("");
                 break;
             default:
                 break;
@@ -273,9 +261,6 @@ void RecipientView::hideNameField (bool hide)
 
 void RecipientView::onTableSelectionChanged (const QItemSelection &itemNew, const QItemSelection &itemOld)
 {
-    if (!mViewDataRecipient)
-        return;
-
     Q_UNUSED(itemOld);
     Q_UNUSED(itemNew);
 
@@ -283,13 +268,13 @@ void RecipientView::onTableSelectionChanged (const QItemSelection &itemNew, cons
     mRecipientNameEdit->setText("");
 
     int row = mRecipients->selectionModel()->currentIndex().row();
-    mViewDataRecipient->setRecipientName(mRecipients->model()->index(row, 1).data().toString ());
+    dataInterface()->setRecipientName(mRecipients->model()->index(row, 1).data().toString ());
     QString recipientType = mRecipients->model()->index(row, 2).data().toString ();
-    mViewDataRecipient->setRecipientType(recipientType);
-    mViewDataRecipient->setRecipientStreet(mRecipients->model()->index(row, 3).data().toString ());
-    mViewDataRecipient->setRecipientStreetNumber(mRecipients->model()->index(row, 4).data().toInt ());
-    mViewDataRecipient->setRecipientAreaCode(mRecipients->model()->index(row, 5).data().toInt ());
-    mViewDataRecipient->setRecipientCity(mRecipients->model()->index(row, 6).data().toString());
+    dataInterface()->setRecipientType(recipientType);
+    dataInterface()->setRecipientStreet(mRecipients->model()->index(row, 3).data().toString ());
+    dataInterface()->setRecipientStreetNumber(mRecipients->model()->index(row, 4).data().toInt ());
+    dataInterface()->setRecipientAreaCode(mRecipients->model()->index(row, 5).data().toInt ());
+    dataInterface()->setRecipientCity(mRecipients->model()->index(row, 6).data().toString());
 
     if (!itemNew.isEmpty())
     {
@@ -310,8 +295,6 @@ void RecipientView::onTableSelectionChanged (const QItemSelection &itemNew, cons
     {
         mRecipientNameEdit->setText("");
         mRecipientNameEdit->setEnabled(false);
-        mViewDataRecipient->setSignatureName(mViewDataRecipient->getRecipientName());
-
     }
 
     update();
@@ -319,9 +302,6 @@ void RecipientView::onTableSelectionChanged (const QItemSelection &itemNew, cons
 
 void RecipientView::onSelectedDateChanged (QDate date)
 {
-    if (!mViewDataRecipient)
-        return;
-
     QString dateDeadline;
 
     int day = 0;
@@ -336,7 +316,7 @@ void RecipientView::onSelectedDateChanged (QDate date)
     dateDeadline.append(".");
     dateDeadline.append(QString::number(year));
 
-    mViewDataRecipient->setDeadlineDate(dateDeadline);
+    dataInterface()->setRecipientDeadlineDate(dateDeadline);
     update ();
 }
 
@@ -348,7 +328,7 @@ void RecipientView::onKeychainStatusChanged (Database::KeychainStatus newStatus)
 
 void RecipientView::onRecipientNameTextChanged (const QString &text)
 {
-    mViewDataRecipient->setSignatureName(mRecipientNameEdit->text());
+    dataInterface()->setRecipientSigName(text);
     update ();
 }
 

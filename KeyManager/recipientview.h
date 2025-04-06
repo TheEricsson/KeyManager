@@ -60,8 +60,6 @@ private:
 
     AddRecipientView *mAddRecipientView;
     ReturnDateView *mReturnDateWidget;
-
-    ViewDataRecipient *mViewDataRecipient;
 };
 
 #endif // RECIPIENTVIEW_H

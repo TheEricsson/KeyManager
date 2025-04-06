@@ -5,16 +5,15 @@
 #include "viewdatareturndate.h"
 #include "viewdatascanner.h"
 #include "viewdataannotation.h"
-#include "databaseimpl.h"
 
 DataInterface::DataInterface()
 {
-    mDataHandover = 0;
-    mDataRecipient = 0;
-    mDataReturnDate = 0;
-    mDataScanner = 0;
-    mDataKeychain = 0;
-    mDataAnnotation = 0;
+    mDataHandover = new ViewDataHandover();
+    mDataRecipient = new ViewDataRecipient();
+    mDataReturnDate = new ViewDataReturnDate();
+    mDataScanner = new ViewDataScanner();
+    mDataKeychain = new ViewDataKeychain();
+    mDataAnnotation = new ViewDataAnnotation();
 }
 
 Database::KeychainStatus DataInterface::getKeychainStatusId ()
@@ -132,6 +131,69 @@ bool DataInterface::setNewKeychainStatusId (Database::KeychainStatus status)
     return true;
 }
 
+bool DataInterface::setRecipientName(const QString& name)
+{
+    if (!mDataRecipient)
+        return false;
+
+    mDataRecipient->setRecipientName(name);
+    return true;
+}
+
+bool DataInterface::setRecipientType(const QString& type)
+{
+    if (!mDataRecipient)
+        return false;
+
+    mDataRecipient->setRecipientType(type);
+    return true;
+}
+
+bool DataInterface::setRecipientStreet(const QString& street)
+{
+    if (!mDataRecipient)
+        return false;
+
+    mDataRecipient->setRecipientStreet(street);
+    return true;
+}
+
+bool DataInterface::setRecipientStreetNumber(const int streetNr)
+{
+    if (!mDataRecipient)
+        return false;
+
+    mDataRecipient->setRecipientStreetNumber(streetNr);
+    return true;
+}
+
+bool DataInterface::setRecipientAreaCode(const int areaCode)
+{
+    if (!mDataRecipient)
+        return false;
+
+    mDataRecipient->setRecipientAreaCode(areaCode);
+    return true;
+}
+
+bool DataInterface::setRecipientCity(const QString& city)
+{
+    if (!mDataRecipient)
+        return false;
+
+    mDataRecipient->setRecipientCity(city);
+    return true;
+}
+
+bool DataInterface::setRecipientSigName (const QString &name)
+{
+    if (!mDataRecipient)
+        return false;
+
+    mDataRecipient->setSignatureName(name);
+    return true;
+}
+
 bool DataInterface::setRecipientSigImg (QImage sigImg)
 {
     if (!mDataRecipient)
@@ -141,7 +203,16 @@ bool DataInterface::setRecipientSigImg (QImage sigImg)
     return true;
 }
 
-bool DataInterface::setDeadlineDate (const QString& date)
+bool DataInterface::setRecipientCurrentDate (const QString& date)
+{
+    if (!mDataRecipient)
+        return false;
+
+    mDataRecipient->setCurrentDate(date);
+    return true;
+}
+
+bool DataInterface::setRecipientDeadlineDate (const QString& date)
 {
     if (!mDataRecipient)
         return false;
@@ -150,54 +221,70 @@ bool DataInterface::setDeadlineDate (const QString& date)
     return true;
 }
 
-// bool DataInterface::submitHandover ()
-// {
-//     bool retVal = false;
+bool DataInterface::setAnnotationText(const QString& text)
+{
+    if (!mDataAnnotation)
+        return false;
 
-//     retVal = mDatabase->dbInsertHandover(this);
+    mDataAnnotation->setAnnotation(text);
+    return true;
+}
 
-//     QString filter ("");
-//     filter.append("keychainId = ");
-//     filter.append(QString::number(getScannedCode()));
+bool DataInterface::setScannedCode (const int keyCode)
+{
+    if (!mDataScanner)
+        return false;
 
-//     if (retVal)
-//     {
-//         retVal = mDatabase->dbCleanupTable ("handovers", filter, Database::maxHandoverEntries);
-//     }
+    mDataScanner->setBarcode(keyCode);
+    return true;
+}
 
-//     return retVal;
-// }
-
-// bool DataInterface::submitNewKeychain ()
-// {
-//     return mDatabase->dbInsertKeychain(this);
-// }
-
-// bool DataInterface::resetKeychainData ()
-// {
-//     if (mDataScanner)
-//     {
-//         // free memory before updating data
-//         if (mDataKeychain)
-//         {
-//             delete mDataKeychain;
-//             mDataKeychain = 0;
-//         }
-
-//         mDataKeychain = new ViewDataKeychain ();
-//         return mDatabase->setKeychainData(mDataKeychain, mDataScanner->getBarcode());
-//     }
-//     return false;
-// }
-
-bool DataInterface::resetRecipientData ()
+void DataInterface::resetRecipientData ()
 {
     if (mDataRecipient)
         delete mDataRecipient;
 
     mDataRecipient = new ViewDataRecipient();
+}
 
-    return true;
+void DataInterface::resetAnnotationData ()
+{
+    if (mDataAnnotation)
+        delete mDataAnnotation;
+
+    mDataAnnotation = new ViewDataAnnotation();
+}
+
+void DataInterface::resetHandoverData ()
+{
+    if (mDataHandover)
+        delete mDataHandover;
+
+    mDataHandover = new ViewDataHandover();
+}
+
+void DataInterface::resetKeychainData ()
+{
+    if (mDataKeychain)
+        delete mDataKeychain;
+
+    mDataKeychain = new ViewDataKeychain();
+}
+
+void DataInterface::resetReturnDateData ()
+{
+    if (mDataReturnDate)
+        delete mDataReturnDate;
+
+    mDataReturnDate = new ViewDataReturnDate();
+}
+
+void DataInterface::resetScannerData ()
+{
+    if (mDataScanner)
+        delete mDataScanner;
+
+    mDataScanner = new ViewDataScanner();
 }
 
 const QString DataInterface::getKeychainImgPath ()

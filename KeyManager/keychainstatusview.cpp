@@ -18,10 +18,7 @@
 #include <QWidget>
 #include "datainterface.h"
 #include "iointerface.h"
-#include "viewdatascanner.h"
 #include <QSqlRelationalTableModel>
-#include "databaseimpl.h"
-#include "viewdatakeychain.h"
 
 KeychainStatusView::KeychainStatusView(QWidget *parent)
     : WinSubmenu {parent}
@@ -98,17 +95,15 @@ void KeychainStatusView::showEvent(QShowEvent *)
 
     update ();
 
-    if (mViewData)
-    {
-        delete mViewData;
-        mViewData = 0;
-    }
+    dataInterface()->resetKeychainData();
 
-    mViewData = new ViewDataKeychain();
-    dataInterface()->setData(mViewData);
+    int keyCode = dataInterface()->getScannedCode();
 
-    ioInterface()->setKeychainData(mViewData, dataInterface()->getScannedCode());
-    setKeychainImagePath (dataInterface()->getKeychainImgPath ());
+    QString imgPath = ioInterface()->getKeychainImgPath(keyCode);
+    setKeychainImagePath (imgPath);
+
+    //set values for keychainstatus data from db
+    ioInterface()->setKeychainData(dataInterface()->getDataKeychain(), keyCode);
 
     setNextBtnText ();
 }

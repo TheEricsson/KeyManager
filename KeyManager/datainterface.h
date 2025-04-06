@@ -36,11 +36,28 @@ class DataInterface
         const QString getRecipientAnnotation ();
         bool setKeychainStatusId (Database::KeychainStatus status);
         bool setNewKeychainStatusId (Database::KeychainStatus status);
-        bool setRecipientSigImg (QImage sigImg);
-        bool setDeadlineDate (const QString& date);
 
-        bool resetKeychainData ();
-        bool resetRecipientData ();
+        bool setRecipientName(const QString& name);
+        bool setRecipientType(const QString& type);
+        bool setRecipientStreet(const QString& street);
+        bool setRecipientStreetNumber(const int streetNr);
+        bool setRecipientAreaCode(const int areaCode);
+        bool setRecipientCity(const QString& city);
+        bool setRecipientSigName (const QString &name);
+        bool setRecipientSigImg (QImage sigImg);
+        bool setRecipientCurrentDate (const QString& date);
+        bool setRecipientDeadlineDate (const QString& date);
+
+        bool setAnnotationText(const QString& text);
+        bool setScannedCode (const int keyCode);
+
+        void resetKeychainData ();
+        void resetRecipientData ();
+        void resetAnnotationData ();
+        void resetHandoverData ();
+        void resetReturnDateData ();
+        void resetScannerData ();
+
         const QString getKeychainImgPath ();
         int getScannedCode ();
 
@@ -51,9 +68,10 @@ class DataInterface
         void setData (ViewDataReturnDate* data);
         void setData (ViewDataScanner* data);
 
+        ViewDataKeychain* getDataKeychain () {return mDataKeychain;};
+
     private:
         ViewDataHandover* getDataHandover () {return mDataHandover;};
-        ViewDataKeychain* getDataKeychain () {return mDataKeychain;};
         ViewDataRecipient* getDataRecipient () {return mDataRecipient;};
         ViewDataReturnDate* getDataReturnDate () {return mDataReturnDate;};
         ViewDataScanner* getDataScanner () {return mDataScanner;};

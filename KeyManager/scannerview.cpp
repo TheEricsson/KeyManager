@@ -167,15 +167,8 @@ void ScannerView::decodeFromVideoFrame ()
 
         setKeyLabel(barcodeAsNumber);
 
-        //emit keycodeRecognised (barcodeAsInt);
-        if (mScannerData)
-        {
-            delete mScannerData;
-            mScannerData = 0;
-        }
-        mScannerData = new ViewDataScanner ();
-        mScannerData->setBarcode(barcodeAsInt);
-        dataInterface()->setData (mScannerData);
+        dataInterface()->resetScannerData();
+        dataInterface()->setScannedCode (barcodeAsInt);
 
         // set scanview ui state
         setScannerState(ScannerState::SCANSUCCEEDED);

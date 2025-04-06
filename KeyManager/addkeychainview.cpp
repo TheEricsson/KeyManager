@@ -125,14 +125,7 @@ bool AddKeychainView::setModel (QSqlRelationalTableModel* model)
 
 void AddKeychainView::reset()
 {
-    if (mViewDataKeychain)
-    {
-        delete mViewDataKeychain;
-        mViewDataKeychain = nullptr;
-    }
-
-    mViewDataKeychain = new ViewDataKeychain ();
-    dataInterface()->setData(mViewDataKeychain);
+    dataInterface()->resetKeychainData();
 
     //init model/view at first show event
     if (!mBuildingsModel)
