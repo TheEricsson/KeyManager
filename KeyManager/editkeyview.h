@@ -22,6 +22,7 @@ class EditKeyView : public WinSubmenu
     private:
         void showEvent(QShowEvent *);
         bool setKeysModel (QSqlRelationalTableModel* model);
+        void reset();
         QLabel* mKeychainCode;
         QTableView *mKeys;
         QSqlRelationalTableModel *mKeyModel;

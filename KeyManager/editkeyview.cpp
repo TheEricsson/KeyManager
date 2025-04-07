@@ -21,7 +21,7 @@ EditKeyView::EditKeyView(QWidget *parent) : WinSubmenu {parent}
     QLabel *headerTable = new QLabel ("Hinterlegte Schlüssel:");
     mKeys = new QTableView;
 
-    mKeyModel = new QSqlRelationalTableModel (this);
+    //mKeyModel = new QSqlRelationalTableModel (this);
     mKeys->setModel(mKeyModel);
 
     layout()->addWidget(mKeychainCode);
@@ -39,17 +39,7 @@ EditKeyView::EditKeyView(QWidget *parent) : WinSubmenu {parent}
 
 void EditKeyView::showEvent(QShowEvent *)
 {
-    int barcode = dataInterface()->getScannedCode();
-
-    QString labelText = "Schlüsselbund Nr: ";
-    labelText.append (QString::number(barcode));
-    mKeychainCode->setText(labelText);
-
-    QString filterKeyTable = "keychainId = ";
-    filterKeyTable.append(QString::number(barcode));
-    ioInterface()->initKeyOverviewModel(mKeyModel, filterKeyTable);
-    setKeysModel(mKeyModel);
-    mKeys->update();
+    reset ();
 }
 
 bool EditKeyView::setKeysModel (QSqlRelationalTableModel* model)
@@ -125,21 +115,10 @@ void EditKeyView::onTableSelectionChanged (const QItemSelection &itemNew, const 
 
 void EditKeyView::onAddKeyMenuButtonClicked (Gui::MenuButton btn)
 {
-    qDebug () << "onAddKeyMenuButtonClicked";
-
     switch (btn)
     {
         case Gui::Ok:
-            // delete addkeyview instance
-            if (mAddKeyView)
-            {
-                mAddKeyView->hide();
-                delete mAddKeyView;
-                mAddKeyView = nullptr;
-            }
-            break;
         case Gui::Back:
-            setFocus();
             // delete addkeyview instance
             if (mAddKeyView)
             {
@@ -147,10 +126,35 @@ void EditKeyView::onAddKeyMenuButtonClicked (Gui::MenuButton btn)
                 delete mAddKeyView;
                 mAddKeyView = nullptr;
             }
+            reset ();
+            setFocus();
             break;
         default:
             break;
     }
+}
+
+void EditKeyView::reset()
+{
+    int barcode = dataInterface()->getScannedCode();
+
+    QString labelText = "Schlüsselbund Nr: ";
+    labelText.append (QString::number(barcode));
+    mKeychainCode->setText(labelText);
+
+    QString filterKeyTable = "keychainId = ";
+    filterKeyTable.append(QString::number(barcode));
+
+    //init model/view at first show event
+    if (!mKeyModel)
+        mKeyModel = new QSqlRelationalTableModel(this);
+
+    if (mKeyModel)
+    {
+        ioInterface()->initKeyOverviewModel(mKeyModel, filterKeyTable);
+        setKeysModel(mKeyModel);
+    }
+    update ();
 }
 
 EditKeyView::~EditKeyView()
