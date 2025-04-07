@@ -24,6 +24,8 @@ class DataInterface
         Database::KeychainStatus getNewKeychainStatusId ();
         int getKeychainAddressId ();
         int getInternalLocation ();
+        bool setKeychainInternalLocation (const int location);
+        bool setKeychainAddressId (const int addressId);
         const QString getHandoverDate ();
         const QString getDeadlineDate ();
         const QString getRecipientName ();
@@ -61,14 +63,14 @@ class DataInterface
         const QString getKeychainImgPath ();
         int getScannedCode ();
 
+        ViewDataKeychain* getDataKeychain () {return mDataKeychain;};
+
         void setData (ViewDataAnnotation* data);
         void setData (ViewDataHandover* data);
         void setData (ViewDataKeychain* data);
         void setData (ViewDataRecipient* data);
         void setData (ViewDataReturnDate* data);
         void setData (ViewDataScanner* data);
-
-        ViewDataKeychain* getDataKeychain () {return mDataKeychain;};
 
     private:
         ViewDataHandover* getDataHandover () {return mDataHandover;};

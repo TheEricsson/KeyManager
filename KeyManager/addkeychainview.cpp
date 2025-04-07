@@ -19,12 +19,12 @@
 
 #include "winsubmenu.h"
 #include "globals.h"
-#include "dataobject.h"
-#include "dataobjecthandover.h"
+//#include "dataobject.h"
+//#include "dataobjecthandover.h"
 #include "datainterface.h"
 #include "iointerface.h"
 #include "returndateview.h"
-#include "viewdatakeychain.h"
+//#include "viewdatakeychain.h"
 
 AddKeychainView::AddKeychainView(QWidget *parent) : WinSubmenu {parent}
 {
@@ -32,7 +32,7 @@ AddKeychainView::AddKeychainView(QWidget *parent) : WinSubmenu {parent}
     mFilteredModel = 0;
     mBuildingsModel = 0;
     mRowSelected = false;
-    mViewDataKeychain = 0;
+    //mViewDataKeychain = 0;
 
     mFilteredModel = new QSortFilterProxyModel (this);
 
@@ -149,13 +149,15 @@ void AddKeychainView::showEvent(QShowEvent *)
 
 void AddKeychainView::onMenuBtnClicked (Gui::MenuButton btnType)
 {
+    QMessageBox msgBox;
+    int retVal = ioInterface()->getKeycodeFromInternalLocation(mInternalLocation->text().toInt());
+
     switch (btnType)
     {
         case (Gui::Next):
 
             if ("" == mInternalLocation->text())
             {
-                QMessageBox msgBox;
                 msgBox.setStandardButtons(QMessageBox::Abort);
                 msgBox.setDefaultButton(QMessageBox::Abort);
                 msgBox.setText ("Fehler!");
@@ -166,7 +168,6 @@ void AddKeychainView::onMenuBtnClicked (Gui::MenuButton btnType)
 
             if (!mRowSelected)
             {
-                QMessageBox msgBox;
                 msgBox.setStandardButtons(QMessageBox::Abort);
                 msgBox.setDefaultButton(QMessageBox::Abort);
                 msgBox.setText ("Fehler!");
@@ -175,11 +176,8 @@ void AddKeychainView::onMenuBtnClicked (Gui::MenuButton btnType)
                 return;
             }
 
-            int retVal = ioInterface()->getKeycodeFromInternalLocation(mInternalLocation->text().toInt());
-
             if (_UNDEFINED == retVal)
             {
-                QMessageBox msgBox;
                 msgBox.setStandardButtons(QMessageBox::Abort);
                 msgBox.setDefaultButton(QMessageBox::Abort);
                 msgBox.setText ("Fehler!");
@@ -192,7 +190,6 @@ void AddKeychainView::onMenuBtnClicked (Gui::MenuButton btnType)
                 QString text = "Schlüsselhaken ist bereits belegt mit folgendem Schlüsselbund:\n";
                 text.append ("Barcode: ");
                 text.append (QString::number(retVal));
-                QMessageBox msgBox;
                 msgBox.setStandardButtons(QMessageBox::Abort);
                 msgBox.setDefaultButton(QMessageBox::Abort);
                 msgBox.setText ("Fehler!");
@@ -204,14 +201,16 @@ void AddKeychainView::onMenuBtnClicked (Gui::MenuButton btnType)
             {
                 if (ConfirmationDialog ())
                 {
-                    mViewDataKeychain->setNewStatus(Database::KeychainStatus::Available);
-                    mViewDataKeychain->setInternalLocation(mInternalLocation->text().toInt());
+                    dataInterface()->setNewKeychainStatusId(Database::KeychainStatus::Available);
+                    dataInterface()->setKeychainInternalLocation(mInternalLocation->text().toInt());
+
+                    //mViewDataKeychain->setNewStatus(Database::KeychainStatus::Available);
+                    //mViewDataKeychain->setInternalLocation(mInternalLocation->text().toInt());
 
                     bool retVal = ioInterface()->dbInsertKeychain (dataInterface()->getHandle());
                     if (!retVal)
                     {
                         QString text = "Fehler!";
-                        QMessageBox msgBox;
                         msgBox.setStandardButtons(QMessageBox::Abort);
                         msgBox.setDefaultButton(QMessageBox::Abort);
                         msgBox.setText ("AddKeychainView::onMenuBtnClicked -> submitNewKeychain () - SQL Fehler!");
@@ -223,9 +222,8 @@ void AddKeychainView::onMenuBtnClicked (Gui::MenuButton btnType)
                 else
                     return;
             }
+        default:
             break;
-        // default:
-        //     break;
     }
 
     emit menuButtonClicked(btnType);
@@ -288,8 +286,8 @@ void AddKeychainView::onTableSelectionChanged (const QItemSelection &itemNew, co
     Q_UNUSED(itemOld);
     Q_UNUSED(itemNew);
 
-    if (!mViewDataKeychain)
-        return;
+    // if (!mViewDataKeychain)
+    //     return;
 
     if (!mBuildings)
         return;
@@ -297,7 +295,8 @@ void AddKeychainView::onTableSelectionChanged (const QItemSelection &itemNew, co
     int row = mBuildings->selectionModel()->currentIndex().row();
     mRowSelected = true;
 
-    mViewDataKeychain->setAddressId(mBuildings->model()->index(row, 0).data().toInt ());
+    dataInterface()->setKeychainAddressId(mBuildings->model()->index(row, 0).data().toInt ());
+    //mViewDataKeychain->setAddressId(mBuildings->model()->index(row, 0).data().toInt ());
 
     qDebug () << "dataInterface()->getScannedCode(): " <<  dataInterface()->getScannedCode();
 

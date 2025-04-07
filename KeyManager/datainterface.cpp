@@ -36,6 +36,24 @@ int DataInterface::getInternalLocation ()
     return mDataKeychain->getInternalLocation();
 }
 
+bool DataInterface::setKeychainInternalLocation (const int location)
+{
+    if (!mDataKeychain)
+        return false;
+
+    mDataKeychain->setInternalLocation(location);
+    return true;
+}
+
+bool DataInterface::setKeychainAddressId (const int addressId)
+{
+    if (!mDataKeychain)
+        return false;
+
+    mDataKeychain->setAddressId(addressId);
+    return true;
+}
+
 const QString DataInterface::getHandoverDate ()
 {
     if (!mDataRecipient)

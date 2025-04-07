@@ -48,7 +48,7 @@ private:
     QLineEdit *mSearchField;
     QLineEdit *mInternalLocation;
 
-    ViewDataKeychain *mViewDataKeychain;
+    //ViewDataKeychain *mViewDataKeychain;
 };
 
 #endif // ADDKEYCHAINVIEW_H
