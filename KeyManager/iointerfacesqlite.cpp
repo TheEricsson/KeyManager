@@ -328,6 +328,7 @@ bool IOInterfaceSQLITE::initKeyOverviewModel (QSqlRelationalTableModel *model, c
 {
     if (model)
     {
+        qDebug () << "IOInterfaceSQLITE::initKeyOverviewModel";
         model->setTable("keys");
         model->setRelation(2, QSqlRelation ("keyCategories", "id", "category"));
         model->setRelation(3, QSqlRelation("keyStates", "id", "status"));

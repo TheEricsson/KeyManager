@@ -45,7 +45,7 @@ KeychainStatusView::KeychainStatusView(QWidget *parent)
     mKeysImgPreview->setSizePolicy(QSizePolicy::Policy::MinimumExpanding, QSizePolicy::Policy::MinimumExpanding);
     layout()->addWidget(mKeysImgPreview);
 
-    QLabel *keysHeader = new QLabel ("Enthaltene Schlüssel");
+    QLabel *keysHeader = new QLabel ("Hinterlegte Schlüssel");
     layout()->addWidget(keysHeader);
 
     mKeys = new QTableView;
