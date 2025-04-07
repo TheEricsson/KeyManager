@@ -29,18 +29,11 @@ AddRecipientView::AddRecipientView (QWidget *parent)
     mIsCompany->setChecked(true); // this is the common case
     QRadioButton *isPrivatePerson = new QRadioButton ("Privatperson", this);
     QRadioButton *isEmployee = new QRadioButton ("Mitarbeiter", this);
-    // QButtonGroup *btnGroup = new QButtonGroup (this);
-
-    // btnGroup->addButton(mIsCompany, 0);
-    // btnGroup->addButton(isPrivatePerson, 1);
-    // btnGroup->addButton(isEmployee, 2);
 
     QHBoxLayout *recipientTypeBtnBox = new QHBoxLayout ();
     recipientTypeBtnBox->addWidget(mIsCompany);
     recipientTypeBtnBox->addWidget(isPrivatePerson);
     recipientTypeBtnBox->addWidget(isEmployee);
-    // QSpacerItem *btnSpacer = new QSpacerItem (0, 0, QSizePolicy::Expanding,QSizePolicy::Minimum);
-    // recipientTypeBtnBox->addSpacerItem(btnSpacer);
 
     mLabelRecipientName = new QLabel ("Firmenbezeichnung", this);
     mRecipientNameEdit = new QLineEdit (this);
@@ -63,10 +56,6 @@ AddRecipientView::AddRecipientView (QWidget *parent)
     mCityEdit = new QLineEdit (this);
     //mCityEdit->setValidator(new QRegularExpressionValidator(QRegularExpression("\\w+\\^( |ß|-)\\w+\\^( |ß|-)"), mCityEdit));
 
-    //QSpacerItem *spacer = new QSpacerItem (0, 0, QSizePolicy::Expanding,QSizePolicy::Expanding);
-
-    // connect (btnPrevious, SIGNAL (clicked()), this, SLOT (onPreviousBtnClicked()));
-    // connect (btnOk, SIGNAL (clicked()), this, SLOT (onOkBtnClicked()));
     connect (mIsCompany, SIGNAL (clicked()), this, SLOT (onIsCompanyBtnClicked()));
     connect (isPrivatePerson, SIGNAL (clicked()), this, SLOT (onIsPrivatePersonBtnClicked()));
     connect (isEmployee, SIGNAL (clicked()), this, SLOT (onIsEmployeeBtnClicked()));
@@ -112,26 +101,12 @@ void AddRecipientView::clearForm()
     mCityEdit->setText("");
 }
 
-// const RecipientData AddRecipientView::getRecipientData ()
-// {
-//     mRecipientData.type = mRecipientType;
-//     mRecipientData.name = mRecipientNameEdit->displayText();
-//     mRecipientData.street = mStreetEdit->displayText();
-//     mRecipientData.number = mStreetNumberEdit->displayText();
-//     mRecipientData.areaCode = mAreaCodeEdit->displayText();
-//     mRecipientData.city = mCityEdit->displayText();
-
-//     return mRecipientData;
-// }
-
 void AddRecipientView::toUpper(QString text)
 {
     QLineEdit *lineEdit = qobject_cast<QLineEdit *>(sender());
 
-    if (!lineEdit)
-        return;
-
-    lineEdit->setText(text.toUpper());
+    if (lineEdit)
+        lineEdit->setText(text.toUpper());
 }
 
 void AddRecipientView::onMenuBtnClicked (Gui::MenuButton btnType)
@@ -171,11 +146,6 @@ void AddRecipientView::onMenuBtnClicked (Gui::MenuButton btnType)
             break;
     }
 }
-
-// void AddRecipientView::onPreviousBtnClicked ()
-// {
-//     emit previousButtonClicked();
-// }
 
 bool AddRecipientView::checkValues ()
 {

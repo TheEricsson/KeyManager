@@ -68,10 +68,10 @@ RecipientView::RecipientView(QWidget *parent) : WinSubmenu {parent}
     disableButton(2, true);
 
     connect (mRecipients->selectionModel(), SIGNAL(selectionChanged(const QItemSelection &, const QItemSelection &)), this, SLOT(onTableSelectionChanged(const QItemSelection &, const QItemSelection &)));
-    connect (mSearchField, SIGNAL (textChanged(const QString &)), this, SLOT(setTableFilter(const QString &)));
-    connect (mReturnDateWidget, SIGNAL (dateSelectionChanged(QDate)), this, SLOT(onSelectedDateChanged (QDate)));
-    connect (mReturnDateWidget, SIGNAL (keychainStatusChanged(Database::KeychainStatus)), this, SLOT(onKeychainStatusChanged (Database::KeychainStatus)));
-    connect (mRecipientNameEdit, SIGNAL (textChanged(const QString &)), this, SLOT(onRecipientNameTextChanged(const QString &)));
+    connect (mSearchField, SIGNAL(textChanged(const QString &)), this, SLOT(setTableFilter(const QString &)));
+    connect (mReturnDateWidget, SIGNAL(dateSelectionChanged(QDate)), this, SLOT(onSelectedDateChanged (QDate)));
+    connect (mReturnDateWidget, SIGNAL(keychainStatusChanged(Database::KeychainStatus)), this, SLOT(onKeychainStatusChanged (Database::KeychainStatus)));
+    connect (mRecipientNameEdit, SIGNAL(textChanged(const QString &)), this, SLOT(onRecipientNameTextChanged(const QString &)));
 }
 
 bool RecipientView::setModel (QSqlRelationalTableModel* model)

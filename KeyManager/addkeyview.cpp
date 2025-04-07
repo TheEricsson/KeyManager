@@ -62,6 +62,7 @@ void AddKeyView::onMenuBtnClicked (Gui::MenuButton btnType)
                 //check if keycode is valid
                 if (_UNDEFINED != keyCode)
                 {
+                    // add new key in database
                     IOInterface::keyData *data = new IOInterface::keyData();
                     data->keychainId = keyCode;
                     data->categoryId = mKeyCategories->getCheckedButtonIndex();
@@ -83,7 +84,6 @@ void AddKeyView::onMenuBtnClicked (Gui::MenuButton btnType)
 
 void AddKeyView::showEvent(QShowEvent *)
 {
-    qDebug () << "AddKeyView::showEvent(QShowEvent *)";
     reset ();
 }
 
@@ -101,8 +101,7 @@ bool AddKeyView::checkSelections ()
     if (_UNDEFINED == mKeyCategories->getCheckedButtonIndex() ||
         _UNDEFINED == mKeyStates->getCheckedButtonIndex())
     {
-        QMessageBox::information(0, "Unvollständige Eingaben",
-                                 "Bitte vollständige Auswahl treffen.", QMessageBox::Ok);
+        QMessageBox::information(0, "Unvollständige Eingaben", "Bitte vollständige Auswahl treffen.", QMessageBox::Ok);
         return false;
     }
     return true;
