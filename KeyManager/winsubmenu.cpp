@@ -86,39 +86,54 @@ void WinSubmenu::setMenuButtons (const QList<Gui::MenuButton> &buttons)
         {
             case (Gui::Back):
                 menuBtn->setIcon(QIcon(":/images/menu_back.png"));
+                menuBtn->setButtonText("Zurück");
                 break;
             case (Gui::Pdf):
                 menuBtn->setIcon(QIcon(":/images/menu_pdf.png"));
+                menuBtn->setButtonText("PDF");
                 break;
             case (Gui::Repeat):
                 menuBtn->setIcon(QIcon(":/images/menu_retry.png"));
+                menuBtn->setButtonText("Wiederholen");
                 break;
             case (Gui::Next):
                 menuBtn->setIcon(QIcon(":/images/menu_next.png"));
+                menuBtn->setButtonText("Weiter");
                 break;
             case (Gui::Ok):
                 menuBtn->setIcon(QIcon(":/images/menu_ok.png"));
                 break;
             case (Gui::AddRecipient):
                 menuBtn->setIcon(QIcon(":/images/menu_add_recipient.jpeg"));
+                menuBtn->setButtonText("Empfänger \nhinzufügen");
                 break;
             case (Gui::Handout):
                 menuBtn->setIcon(QIcon(":/images/menu_keyOut.png"));
+                menuBtn->setButtonText("Ausgabe");
                 break;
             case (Gui::TakeBack):
                 menuBtn->setIcon(QIcon(":/images/menu_keyBack.png"));
+                menuBtn->setButtonText("Rücknahme");
                 break;
             case (Gui::Scanner):
                 menuBtn->setIcon(QIcon(":/images/menu_scan.png"));
+                menuBtn->setButtonText("Scannen");
                 break;
             case (Gui::Search):
                 menuBtn->setIcon(QIcon(":/images/menu_search.svg"));
+                menuBtn->setButtonText("Suche");
                 break;
             case (Gui::Settings):
                 menuBtn->setIcon(QIcon(":/images/menu_settings.svg"));
+                menuBtn->setButtonText("Einstellungen");
                 break;
             case (Gui::Exit):
                 menuBtn->setIcon(QIcon(":/images/menu_exit.svg"));
+                menuBtn->setButtonText("Verlassen");
+                break;
+            case (Gui::MainMenu):
+                //menuBtn->setIcon(QIcon(":/images/TODO"));
+                menuBtn->setButtonText("Hauptmenü");
                 break;
             default:
                 break;
