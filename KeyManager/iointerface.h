@@ -54,7 +54,7 @@ public:
                                 const QString& filter, \
                                 const int numberOfEntriesToKeep)                                {Q_UNUSED(tablename); Q_UNUSED(filter); Q_UNUSED(numberOfEntriesToKeep); return false;};
     virtual int getFreeInternalLocation ()                                                      {return _UNDEFINED;};
-    virtual int findInternalLocation (const int internalLoc)                                    {Q_UNUSED(internalLoc); return _UNDEFINED;};
+    virtual int getKeycodeFromInternalLocation (const int internalLoc)                          {Q_UNUSED(internalLoc); return _UNDEFINED;};
 private:
     virtual bool firstStart ()                                                                  {return false;};
 #ifdef Q_OS_ANDROID

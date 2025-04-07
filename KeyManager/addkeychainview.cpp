@@ -175,7 +175,7 @@ void AddKeychainView::onMenuBtnClicked (Gui::MenuButton btnType)
                 return;
             }
 
-            int retVal = ioInterface()->findInternalLocation (mInternalLocation->text().toInt());
+            int retVal = ioInterface()->getKeycodeFromInternalLocation(mInternalLocation->text().toInt());
 
             if (_UNDEFINED == retVal)
             {
@@ -183,7 +183,7 @@ void AddKeychainView::onMenuBtnClicked (Gui::MenuButton btnType)
                 msgBox.setStandardButtons(QMessageBox::Abort);
                 msgBox.setDefaultButton(QMessageBox::Abort);
                 msgBox.setText ("Fehler!");
-                msgBox.setInformativeText("AddKeychainView::onMenuBtnClicked - findInternalLocation () - SQLQuery failed!");
+                msgBox.setInformativeText("AddKeychainView::onMenuBtnClicked - getKeycodeFromInternalLocation () - SQLQuery failed!");
                 msgBox.exec();
                 break;
             }

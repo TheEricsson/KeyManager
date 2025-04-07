@@ -33,7 +33,7 @@ class IOInterfaceSQLITE : public IOInterface
         bool dbInsertKeychain (DataInterface *data);
         bool dbCleanupTable (const QString& tablename, const QString& filter, const int numberOfEntriesToKeep);
         int getFreeInternalLocation ();
-        int findInternalLocation (const int internalLoc);
+        int getKeycodeFromInternalLocation (const int internalLoc);
 
     private:
 #ifdef Q_OS_ANDROID

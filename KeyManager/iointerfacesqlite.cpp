@@ -639,7 +639,7 @@ int IOInterfaceSQLITE::getFreeInternalLocation ()
     return _UNDEFINED;
 }
 
-int IOInterfaceSQLITE::findInternalLocation (const int internalLoc)
+int IOInterfaceSQLITE::getKeycodeFromInternalLocation (const int internalLoc)
 {
     mDb.transaction();
     QSqlQuery query;
