@@ -1,6 +1,7 @@
 #ifndef VIEWDATAKEYCHAIN_H
 #define VIEWDATAKEYCHAIN_H
 
+#include <QImage>
 #include "globals.h"
 
 class ViewDataKeychain
@@ -11,17 +12,17 @@ class ViewDataKeychain
         void setStatus (const Database::KeychainStatus& statusId){mStatusId = statusId;};
         void setNewStatus (const Database::KeychainStatus& statusId){mNewStatusId = statusId;};
         void setAddressId (const int& id){mAddressId = id;};
-        void setImgPath (const QString& path){mImgPath = path;};
+        void setImg (const QImage& img){mImg = img;};
 
         const int& getInternalLocation (){return mInternalLocation;};
         const Database::KeychainStatus& getStatus (){return mStatusId;};
         const Database::KeychainStatus& getNewStatus (){return mNewStatusId;};
         const int& getAddressId () {return mAddressId;};
-        const QString& getImgPath () {return mImgPath;};
+        const QImage& getImg () {return mImg;};
     private:
         int mInternalLocation;
         int mAddressId;
-        QString mImgPath;
+        QImage mImg;
         Database::KeychainStatus mStatusId;
         Database::KeychainStatus mNewStatusId;
 };

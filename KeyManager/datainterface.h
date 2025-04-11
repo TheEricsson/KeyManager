@@ -60,7 +60,7 @@ class DataInterface
         void resetReturnDateData ();
         void resetScannerData ();
 
-        const QString getKeychainImgPath ();
+        const QImage getKeychainImg ();
         int getScannedCode ();
 
         ViewDataKeychain* getDataKeychain () {return mDataKeychain;};

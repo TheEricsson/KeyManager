@@ -53,7 +53,7 @@ public:
     virtual const QString getAddressStreetNumber (const int& addressId)                         {Q_UNUSED(addressId); return "IOInterface::getAddressStreetNumber - not implemented.";};
     virtual int getAddressAreaCode (const int& addressId)                                       {Q_UNUSED(addressId); return _UNDEFINED;};
     virtual const QString getAddressCity (const int& addressId)                                 {Q_UNUSED(addressId); return "IOInterface::getAddressCity - not implemented.";};
-    virtual const QString getKeychainImgPath (const int& keyCode)                               {Q_UNUSED(keyCode); return "IOInterface::getKeychainImgPath - not implemented.";};
+    virtual bool getKeychainImg (const int keyCode, QImage& img)                                {Q_UNUSED(keyCode); Q_UNUSED(img); return false;};
     virtual bool setKeychainData (ViewDataKeychain* data, const int& keyCode)                   {Q_UNUSED(keyCode); Q_UNUSED(data); return false;};
     virtual int getNumberOfEntries (const QString &tableName)                                         {Q_UNUSED(tableName); return _UNDEFINED;};
     virtual QVariant getValue (const QString &tableName, const QString& columnName, int index)  {Q_UNUSED(tableName); Q_UNUSED(columnName); Q_UNUSED(index); return _UNDEFINED;};
@@ -66,12 +66,14 @@ public:
     virtual bool addNewCustomer (const IOInterface::customerData *data)                         {Q_UNUSED(data); return false;};
     virtual bool dbInsertHandover (DataInterface *data)                                         {Q_UNUSED(data); return false;};
     virtual bool dbInsertKeychain (DataInterface *data)                                         {Q_UNUSED(data); return false;};
+    virtual bool dbInsertKeychainImg (const unsigned int keyCode, const QImage& img)            {Q_UNUSED(keyCode); Q_UNUSED(img); return false;};
     virtual bool dbCleanupTable (const QString& tablename, \
                                 const QString& filter, \
                                 const int numberOfEntriesToKeep)                                {Q_UNUSED(tablename); Q_UNUSED(filter); Q_UNUSED(numberOfEntriesToKeep); return false;};
     virtual unsigned int getFreeKeycode (const unsigned int lockerId)                           {return _UNDEFINED;};
     virtual unsigned int getFreeInternalLocation (const unsigned int lockerId)                  {return _UNDEFINED;};
     virtual unsigned int getKeycodeFromInternalLocation (const unsigned int lockerId, const unsigned int internalLoc) {Q_UNUSED(internalLoc); return _UNDEFINED;};
+    virtual void byteArrayToImage (QByteArray imgBa, QImage& img)                               {Q_UNUSED(imgBa); Q_UNUSED(img);}
 private:
     virtual bool firstStart ()                                                                  {return false;};
 #ifdef Q_OS_ANDROID

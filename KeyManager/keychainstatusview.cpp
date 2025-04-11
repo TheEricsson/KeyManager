@@ -20,6 +20,7 @@
 #include "iointerface.h"
 #include <QSqlRelationalTableModel>
 #include "codegeneratorview.h"
+#include "cameraview.h"
 
 KeychainStatusView::KeychainStatusView(QWidget *parent)
     : WinSubmenu {parent}
@@ -112,6 +113,7 @@ KeychainStatusView::KeychainStatusView(QWidget *parent)
     mHistory->setModel(mFilteredHistoryModel);
 
     connect (keyCodeBtn, SIGNAL(clicked()), this, SLOT (keyCodeBtnClicked()));
+    connect (mKeysImgPreview, SIGNAL(clicked()), this, SLOT (keyImgBtnClicked()));
 }
 
 void KeychainStatusView::showEvent(QShowEvent *)
@@ -152,8 +154,11 @@ void KeychainStatusView::showEvent(QShowEvent *)
 
     int keyCode = dataInterface()->getScannedCode();
 
-    QString imgPath = ioInterface()->getKeychainImgPath(keyCode);
-    setKeychainImagePath (imgPath);
+    QImage keychainImage;
+    if  (ioInterface()->getKeychainImg(keyCode, keychainImage))
+        setKeychainImage (keychainImage);
+    else
+        qDebug () << "keychainStatusView::showEvent - no keychain img from db available.";
 
     //set values for keychainstatus data from db
     ioInterface()->setKeychainData(dataInterface()->getDataKeychain(), keyCode);
@@ -288,7 +293,9 @@ bool KeychainStatusView::setKeychainHistoryModel (QSqlRelationalTableModel* mode
             mHistory->hideColumn(7); // hide address data
             mHistory->hideColumn(8); // hide address data
             mHistory->hideColumn(9); // hide address data
+            mHistory->hideColumn(10); // signature name
             mHistory->hideColumn(11); // hide signature
+            mHistory->hideColumn(12); // hide annotation
 
             mFilteredHistoryModel->setSourceModel(model);
             mHistory->setModel(model);
@@ -309,26 +316,63 @@ bool KeychainStatusView::setKeychainHistoryModel (QSqlRelationalTableModel* mode
     return false;
 }
 
-void KeychainStatusView::setKeychainImagePath (const QString& imgPath)
+void KeychainStatusView::setKeychainImage (const QImage& img)
 {
-    qDebug () << "KeychainStatusView::setKeychainImagePath: " << imgPath;
-
-    if ("" == imgPath)
-        return;
-
     if (mKeysImgPreview)
     {
-        QIcon icon (imgPath);
-        mKeysImgPreview->setIcon(icon);
-        mKeysImgPreview->resize(100,100);
+        mKeysImgPreview->setText("");
+        mKeysImgPreview->setIconSize(mKeysImgPreview->size());
+        QIcon _img;
+        _img.addPixmap(QPixmap::fromImage(img));
+        mKeysImgPreview->setIcon(_img);
+        //mKeysImgPreview->resize(100,100);
     }
 }
 
 void KeychainStatusView::keyCodeBtnClicked()
 {
     qDebug () << "KeychainStatusView::keyCodeBtnClicked()";
-    CodeGeneratorView *view = new CodeGeneratorView ();
-    view->show ();
+    //CodeGeneratorView *view = new CodeGeneratorView ();
+    //view->show ();
+}
+
+void KeychainStatusView::keyImgBtnClicked()
+{
+    qDebug () << "KeychainStatusView::keyImgBtnClicked()";
+    mCameraView = new CameraView();
+    mCameraView->show();
+    connect (mCameraView, SIGNAL(menuButtonClicked(Gui::MenuButton)), this, SLOT(onCameraViewButtonClicked(Gui::MenuButton)));
+}
+
+void KeychainStatusView::onCameraViewButtonClicked(Gui::MenuButton btn)
+{
+    switch (btn)
+    {
+        case Gui::Save:
+            if (mCameraView)
+            {
+                ioInterface()->dbInsertKeychainImg(dataInterface()->getScannedCode(), mCameraView->getImage());
+                setKeychainImage(mCameraView->getImage());
+                mCameraView->hide();
+                delete mCameraView;
+                mCameraView = 0;
+                setFocus();
+                update();
+            }
+            break;
+        case Gui::Back:
+            if (mCameraView)
+            {
+                mCameraView->hide();
+                delete mCameraView;
+                mCameraView = 0;
+                setFocus();
+                update();
+            }
+            break;
+        default:
+            break;
+    }
 }
 
 KeychainStatusView::~KeychainStatusView ()

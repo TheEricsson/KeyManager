@@ -40,7 +40,9 @@ namespace Gui
         AddKey,
         AddCustomer,
         Edit,
-        Print
+        Print,
+        TakePicture,
+        Save
     };
 }
 

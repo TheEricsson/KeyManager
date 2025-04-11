@@ -34,13 +34,16 @@ class IOInterfaceSQLITE : public IOInterface
         bool initCustomerModel (QSqlRelationalTableModel *model);
         bool addNewRecipient (const IOInterface::recipientData *data);
         bool addNewCustomer (const IOInterface::customerData *data);
-        const QString getKeychainImgPath (const int& keyCode);
+        bool getKeychainImg (const int aId, QImage& img);
         bool dbInsertHandover (DataInterface *data);
         bool dbInsertKeychain (DataInterface *data);
+        bool dbInsertKeychainImg (const unsigned int keyCode, const QImage& img);
         bool dbCleanupTable (const QString& tablename, const QString& filter, const int numberOfEntriesToKeep);
         unsigned int getFreeKeycode (const unsigned int lockerId);
         unsigned int getFreeInternalLocation (const unsigned int lockerId);
         unsigned int getKeycodeFromInternalLocation (const unsigned int lockerId, const unsigned int internalLoc);
+
+        void byteArrayToImage (QByteArray imgBa, QImage& img);
 
     private:
 #ifdef Q_OS_ANDROID
@@ -49,6 +52,7 @@ class IOInterfaceSQLITE : public IOInterface
         bool firstStart ();
         bool initTables ();
         bool initDefaultValues();
+        QByteArray imageToByteArray (QImage img);
 
         QSqlDatabase mDb;
 

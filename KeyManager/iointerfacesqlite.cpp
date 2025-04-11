@@ -9,6 +9,7 @@
 #include <QSqlRelationalTableModel>
 #include <QSqlError>
 #include <QMessageBox>
+#include <QBuffer>
 //#include "dataobjecthandover.h"
 //#include "viewdatascanner.h"
 #include "viewdatakeychain.h"
@@ -148,8 +149,12 @@ bool IOInterfaceSQLITE::checkPermission()
 
 bool IOInterfaceSQLITE::firstStart ()
 {
+    qDebug () << "initTables";
     initTables();
+    qDebug () << "initDefaultValues";
     initDefaultValues();
+
+    return true;
 }
 
 bool IOInterfaceSQLITE::initTables()
@@ -159,16 +164,12 @@ bool IOInterfaceSQLITE::initTables()
     // TODO add all tables for first start and fill some data
 
     bool retVal = false;
-    mDb.transaction();
 
     retVal = query.exec ("CREATE TABLE recipientTypes (id INTEGER PRIMARY KEY AUTOINCREMENT UNIQUE, type TEXT UNIQUE)");
+    query.finish();
 
     if(!retVal)
-    {
-        mDb.rollback();
         return false;
-    }
-
 
     retVal = query.exec ("CREATE TABLE recipientAddresses (\
                         id       INTEGER PRIMARY KEY AUTOINCREMENT\
@@ -179,45 +180,37 @@ bool IOInterfaceSQLITE::initTables()
                         houseNr  INTEGER,\
                         areaCode INTEGER,\
                         city     TEXT)");
+    query.finish();
 
     if(!retVal)
-    {
-        mDb.rollback();
         return false;
-    }
-
 
     retVal = query.exec ("CREATE TABLE keyStates (\
                      id     INTEGER PRIMARY KEY AUTOINCREMENT\
                      UNIQUE,\
                      status TEXT)");
+    query.finish();
 
     if(!retVal)
-    {
-        mDb.rollback();
         return false;
-    }
-
 
     retVal = query.exec ("CREATE TABLE keyCategories (\
                      id       INTEGER PRIMARY KEY AUTOINCREMENT\
                      UNIQUE,\
                      category TEXT)");
+    query.finish();
 
     if(!retVal)
-    {
-        mDb.rollback();
         return false;
-    }
 
     retVal = query.exec ("CREATE TABLE keychainStates (\
                      id     INTEGER PRIMARY KEY AUTOINCREMENT\
                      UNIQUE,\
                      status TEXT)");
+    query.finish();
 
     if(!retVal)
         return false;
-
 
     retVal = query.exec ("CREATE TABLE keyAddresses (\
                      id           INTEGER PRIMARY KEY AUTOINCREMENT\
@@ -226,12 +219,10 @@ bool IOInterfaceSQLITE::initTables()
                      streetNumber TEXT,\
                      areaCode     INTEGER,\
                      city         TEXT)");
+    query.finish();
 
     if(!retVal)
-    {
-        mDb.rollback();
         return false;
-    }
 
     retVal = query.exec ("CREATE TABLE keychains (\
                      id               INTEGER NOT NULL\
@@ -241,14 +232,11 @@ bool IOInterfaceSQLITE::initTables()
                      NOT NULL,\
                      internalLocation INTEGER,\
                      addressId        INTEGER REFERENCES keyAddresses (id),\
-                     imagePath        TEXT)");
+                     image        BLOB)");
+    query.finish();
 
     if(!retVal)
-    {
-        mDb.rollback();
         return false;
-    }
-
 
     retVal = query.exec ("CREATE TABLE handovers (\
                      id                    INTEGER PRIMARY KEY AUTOINCREMENT\
@@ -265,13 +253,10 @@ bool IOInterfaceSQLITE::initTables()
                      signatureName         TEXT,\
                      signature             BLOB,\
                      annotation            TEXT)");
+    query.finish();
 
     if(!retVal)
-    {
-        mDb.rollback();
         return false;
-    }
-
 
     retVal = query.exec ("CREATE TABLE keys (\
                      id          INTEGER PRIMARY KEY AUTOINCREMENT\
@@ -281,15 +266,9 @@ bool IOInterfaceSQLITE::initTables()
                      categoryId  INTEGER REFERENCES keyCategories (id),\
                      statusId    INTEGER REFERENCES keyStates (id),\
                      description TEXT)");
+    query.finish();
 
-    if(!retVal)
-    {
-        mDb.rollback();
-        return false;
-    }
-
-    if (retVal)
-        mDb.commit();
+    return retVal;
 }
 
 bool IOInterfaceSQLITE::initDefaultValues()
@@ -297,239 +276,141 @@ bool IOInterfaceSQLITE::initDefaultValues()
     QSqlQuery query;
 
     bool retVal = false;
-    mDb.transaction();
 
     //key categories
+    QList <QString> values;
+    values.append("Wohnung");
+    values.append("Haustür");
+    values.append("Briefkasten");
+    values.append("Keller");
+    values.append("Hof");
+    values.append("Technik");
+    values.append("Haustür");
+    values.append("General");
+    values.append("Zentral");
+    values.append("E-Raum");
+    values.append("Hausmeister");
+    values.append("Sonstige");
 
-    query.prepare("INSERT INTO keyCategories (category) \
-                    VALUES ('Wohnung')");
-    retVal = query.exec();
-
-    if(!retVal)
+    for (int i = 0; i < values.count(); i++)
     {
-        mDb.rollback();
-        return false;
+        query.prepare ("INSERT INTO keyCategories (category) VALUES (?)");
+        query.bindValue(0, values.at(i));
+        query.exec();
+        query.finish();
     }
 
-    query.prepare("INSERT INTO keyCategories (category) \
-                  VALUES ('Haustür')");
-    retVal = query.exec();
-
-    if(!retVal)
-    {
-        mDb.rollback();
-        return false;
-    }
-
-    query.prepare("INSERT INTO keyCategories (category) \
-                  VALUES ('Briefkasten')");
-    retVal = query.exec();
-
-    if(!retVal)
-        return false;
-
-
-    query.prepare("INSERT INTO keyCategories (category) \
-                  VALUES ('Keller')");
-    retVal = query.exec();
-
-    if(!retVal)
-    {
-        mDb.rollback();
-        return false;
-    }
-
-    query.prepare("INSERT INTO keyCategories (category) \
-                  VALUES ('Hof')");
-    retVal = query.exec();
-
-    if(!retVal)
-        return false;
-
-
-    query.prepare("INSERT INTO keyCategories (category) \
-                  VALUES ('Technik')");
-    retVal = query.exec();
-
-    if(!retVal)
-        return false;
-
-
-    query.prepare("INSERT INTO keyCategories (category) \
-                  VALUES ('General')");
-                  query.exec();
-
-    if(!retVal)
-    {
-        mDb.rollback();
-        return false;
-    }
-
-    retVal = query.prepare("INSERT INTO keyCategories (category) \
-                  VALUES ('Zentral')");
-    query.exec();
-
-    if(!retVal)
-        return false;
-
-
-    query.prepare("INSERT INTO keyCategories (category) \
-                  VALUES ('E-Raum')");
-    retVal = query.exec();
-
-    if(!retVal)
-    {
-        mDb.rollback();
-        return false;
-    }
-
-    query.prepare("INSERT INTO keyCategories (category) \
-                  VALUES ('Hausmeister')");
-    retVal = query.exec();
-
-    if(!retVal)
-    {
-        mDb.rollback();
-        return false;
-    }
-
-    query.prepare("INSERT INTO keyCategories (category) \
-                  VALUES ('Sonstige')");
-    retVal = query.exec();
-
-    if(!retVal)
-    {
-        mDb.rollback();
-        return false;
-    }
      //keychain states
 
     query.prepare("INSERT INTO keychainStates (status) \
                   VALUES ('Verfügbar')");
     retVal = query.exec();
+    query.finish();
 
     if(!retVal)
-    {
-        mDb.rollback();
         return false;
-    }
 
     query.prepare("INSERT INTO keychainStates (status) \
                   VALUES ('Temporär ausgegeben')");
     retVal = query.exec();
+    query.finish();
 
     if(!retVal)
-    {
-        mDb.rollback();
         return false;
-    }
 
     query.prepare("INSERT INTO keychainStates (status) \
                   VALUES ('Dauerhaft ausgegeben')");
     retVal = query.exec();
+    query.finish();
 
     if(!retVal)
-    {
-        mDb.rollback();
         return false;
-    }
 
     query.prepare("INSERT INTO keychainStates (status) \
                   VALUES ('Abgabe zum Verwaltungsende')");
     retVal = query.exec();
+    query.finish();
 
     if(!retVal)
-    {
-        mDb.rollback();
         return false;
-    }
 
     query.prepare("INSERT INTO keychainStates (status) \
                   VALUES ('Verloren')");
     retVal = query.exec();
+    query.finish();
 
     if(!retVal)
-    {
-        mDb.rollback();
         return false;
-    }
+
     //key states
 
     query.prepare("INSERT INTO keyStates (status) \
                   VALUES ('In Ordnung')");
     retVal = query.exec();
+    query.finish();
 
     if(!retVal)
-    {
-        mDb.rollback();
         return false;
-    }
 
     query.prepare("INSERT INTO keyStates (status) \
                   VALUES ('Passt nicht')");
     retVal = query.exec();
+    query.finish();
 
     if(!retVal)
-    {
-        mDb.rollback();
         return false;
-    }
 
     query.prepare("INSERT INTO keyStates (status) \
                   VALUES ('Defekt')");
     retVal = query.exec();
+    query.finish();
 
     if(!retVal)
-    {
-        mDb.rollback();
         return false;
-    }
 
     query.prepare("INSERT INTO keyStates (status) \
                   VALUES ('Verloren')");
     retVal = query.exec();
+    query.finish();
 
     if(!retVal)
-    {
-        mDb.rollback();
         return false;
-    }
 
     //recipient types
 
     query.prepare("INSERT INTO recipientTypes (type) \
                 VALUES ('Unternehmen')");
     retVal = query.exec();
+    query.finish();
 
     if(!retVal)
-    {
-        mDb.rollback();
         return false;
-    }
 
     query.prepare("INSERT INTO recipientTypes (type) \
                   VALUES ('Mitarbeiter')");
     retVal = query.exec();
+    query.finish();
 
     if(!retVal)
-    {
-        mDb.rollback();
         return false;
-    }
 
     query.prepare("INSERT INTO recipientTypes (type) \
                   VALUES ('Privatperson')");
     retVal = query.exec();
-
-    if(!retVal)
-    {
-        mDb.rollback();
-        return false;
-    }
-    else
-        mDb.commit();
+    query.finish();
 
     return retVal;
+}
+
+QByteArray IOInterfaceSQLITE::imageToByteArray (QImage img)
+{
+    QByteArray baImage;
+    QBuffer buffer(&baImage);
+    buffer.open(QIODevice::WriteOnly);
+    QPixmap pixmap(QPixmap::fromImage(img));
+    pixmap.save(&buffer, "jpg", 60);
+
+    return baImage;
 }
 
 bool IOInterfaceSQLITE::addKey (const IOInterface::keyData *data)
@@ -703,11 +584,9 @@ bool IOInterfaceSQLITE::setKeychainData (ViewDataKeychain* data, const int& keyC
     if (!data)
         return false;
 
-
-
     QSqlQuery query;
 
-    query.prepare("SELECT keychainStatusId, internalLocation, addressId, imagePath FROM keychains WHERE id = ?");
+    query.prepare("SELECT keychainStatusId, internalLocation, addressId, image FROM keychains WHERE id = ?");
     query.bindValue(0, keyCode);
     query.exec();
 
@@ -718,7 +597,9 @@ bool IOInterfaceSQLITE::setKeychainData (ViewDataKeychain* data, const int& keyC
         data->setStatus ((Database::KeychainStatus) query.value(0).toInt());
         data->setInternalLocation(query.value(1).toInt());
         data->setAddressId (query.value(2).toInt());
-        data->setImgPath (query.value(3).toString());
+        QImage img;
+        byteArrayToImage (query.value(3).toByteArray(), img);
+        data->setImg(img);
 
         return true;
     }
@@ -866,8 +747,6 @@ bool IOInterfaceSQLITE::addNewRecipient (const IOInterface::recipientData *data)
     if (!data)
         return false;
 
-
-
     QSqlQuery query;
     query.prepare("INSERT INTO recipientAddresses (name, type, street, houseNr, areaCode, city) \
                     VALUES (?, ?, ?, ?, ?, ?)");
@@ -899,25 +778,22 @@ bool IOInterfaceSQLITE::addNewCustomer (const IOInterface::customerData *data)
     return query.exec();
 }
 
-const QString IOInterfaceSQLITE::getKeychainImgPath (const int& aId)
+bool IOInterfaceSQLITE::getKeychainImg (const int aId, QImage& img)
 {
-
     QSqlQuery query;
 
-    // get all keys of the keychain
-    query.prepare("SELECT imagePath FROM keychains WHERE id = ?");
+    query.prepare("SELECT image FROM keychains WHERE id = ?");
     query.bindValue(0, aId);
     query.exec();
-
-    QString result ("");
 
     // set keychain status
     if (query.next())
     {
-        result = query.value(0).toString();
+        byteArrayToImage(query.value(0).toByteArray(), img);
+        return true;
     }
-    qDebug () << "getKeychainImagePath: " << result;
-    return result;
+    else
+        return false;
 }
 
 bool IOInterfaceSQLITE::dbInsertHandover (DataInterface *data)
@@ -958,8 +834,10 @@ bool IOInterfaceSQLITE::dbInsertHandover (DataInterface *data)
         query.bindValue(7, data->getRecipientAreaCode());
         query.bindValue(8, data->getRecipientCity());
         query.bindValue(9, data->getRecipientSigName());
-        query.bindValue(10, "image.png");
-        //query.bindValue(10, data->getRecipientSignature ()); TODO: bytearray shit
+
+        QByteArray img = imageToByteArray (data->getRecipientSignature());
+        query.bindValue(10, img);
+
         query.bindValue(11, data->getRecipientAnnotation());
 
         queryOk = query.exec();
@@ -994,18 +872,39 @@ bool IOInterfaceSQLITE::dbInsertKeychain (DataInterface *data)
         QSqlQuery query;
 
         // insert new keychain entry
-        query.prepare("INSERT INTO keychains (id, keychainStatusId, internalLocation, addressId, imagePath) \
+        query.prepare("INSERT INTO keychains (id, keychainStatusId, internalLocation, addressId, image) \
                         VALUES (?, ?, ?, ?, ?)");
         query.bindValue(0, data->getScannedCode());
         query.bindValue(1, data->getNewKeychainStatusId());
         query.bindValue(2, data->getInternalLocation());
         query.bindValue(3, data->getKeychainAddressId ());
-        query.bindValue(4, data->getKeychainImgPath());
+        query.bindValue(4, data->getKeychainImg());
 
         queryOk = query.exec();
 
         qDebug () << "query.lastError().databaseText():" << query.lastError().databaseText();
     }
+
+    return queryOk;
+}
+
+bool IOInterfaceSQLITE::dbInsertKeychainImg (const unsigned int keyCode, const QImage& img)
+{
+    qDebug() << "IOInterfaceSQLITE::dbInsertKeychainImg";
+
+    QByteArray BaImg = imageToByteArray(img);
+
+    bool queryOk = false;
+
+    QSqlQuery query;
+
+    // insert new keychain entry
+    query.prepare("UPDATE keychains SET image = ? WHERE id = ?");
+
+    query.bindValue(0, BaImg);
+    query.bindValue(1, keyCode);
+
+    queryOk = query.exec();
 
     return queryOk;
 }
@@ -1181,6 +1080,11 @@ unsigned int IOInterfaceSQLITE::getKeycodeFromInternalLocation (const unsigned i
     }
     else
         return 0;
+}
+
+void IOInterfaceSQLITE::byteArrayToImage (QByteArray imgBa, QImage& img)
+{
+    img = QImage::fromData(imgBa, "jpg");
 }
 
 IOInterfaceSQLITE::~IOInterfaceSQLITE()

@@ -31,8 +31,6 @@ void SignaturePad::clearImage()
     update();
 }
 
-
-
 void SignaturePad::mousePressEvent(QMouseEvent *event)
 {
     if (event->button() == Qt::LeftButton) {
@@ -67,12 +65,20 @@ void SignaturePad::paintEvent(QPaintEvent *event)
 
 void SignaturePad::resizeEvent(QResizeEvent *event)
 {
-    if (width() > image.width() || height() > image.height()) {
-        int newWidth = qMax(width() + 128, image.width());
-        int newHeight = qMax(height() + 128, image.height());
+    // if (width() > image.width() || height() > image.height()) {
+    //     int newWidth = qMax(width() + 128, image.width());
+    //     int newHeight = qMax(height() + 128, image.height());
+    //     resizeImage(&image, QSize(newWidth, newHeight));
+    //     update();
+    // }
+
+    if (width() != image.width() || height() != image.height()) {
+        int newWidth = qMax(width(), image.width());
+        int newHeight = qMax(height(), image.height());
         resizeImage(&image, QSize(newWidth, newHeight));
         update();
     }
+
     QWidget::resizeEvent(event);
 }
 

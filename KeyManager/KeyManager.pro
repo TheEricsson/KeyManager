@@ -17,6 +17,7 @@ SOURCES += \
     addrecipientview.cpp \
     annotationview.cpp \
     camera.cpp \
+    cameraview.cpp \
     checkboxarray.cpp \
     codegeneratorview.cpp \
     datainterface.cpp \
@@ -58,6 +59,7 @@ HEADERS += \
     addrecipientview.h \
     annotationview.h \
     camera.h \
+    cameraview.h \
     checkboxarray.h \
     codegeneratorview.h \
     datainterface.h \

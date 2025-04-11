@@ -5,6 +5,8 @@
 #include "viewdatareturndate.h"
 #include "viewdatascanner.h"
 #include "viewdataannotation.h"
+#include <QBuffer>
+#include <QPixmap>
 
 DataInterface::DataInterface()
 {
@@ -119,7 +121,7 @@ const QString DataInterface::getRecipientSigName ()
 }
 
 const QImage DataInterface::getRecipientSignature ()
-{
+{   
     return mDataRecipient->getSignatureImg();
 }
 
@@ -305,13 +307,9 @@ void DataInterface::resetScannerData ()
     mDataScanner = new ViewDataScanner();
 }
 
-const QString DataInterface::getKeychainImgPath ()
+const QImage DataInterface::getKeychainImg ()
 {
-    if (!mDataKeychain)
-    {
-        return "";
-    }
-    return mDataKeychain->getImgPath();
+    return mDataKeychain->getImg();
 }
 
 int DataInterface::getScannedCode ()

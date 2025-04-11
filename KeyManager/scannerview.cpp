@@ -42,7 +42,7 @@ ScannerView::ScannerView(QWidget *parent)
     m_viewfinder = 0;
 
     // layout for the cam video/ pic screen
-    m_viewfinder = new QVideoWidget ();
+    m_viewfinder = new QVideoWidget (this);
     m_viewfinder->setMinimumSize(300, 150);
     m_viewfinder->setAspectRatioMode(Qt::AspectRatioMode::KeepAspectRatioByExpanding);
     m_viewfinder->setSizePolicy(QSizePolicy::Policy::Expanding, QSizePolicy::Policy::Expanding);
@@ -68,7 +68,6 @@ ScannerView::ScannerView(QWidget *parent)
 
     layout()->addItem(keyIdLayout);
 
-    //setMenuButtons(Gui::Back, Gui::Repeat);
     QList<Gui::MenuButton> menuButtons;
     menuButtons.append(Gui::Back);
     menuButtons.append(Gui::Repeat);
