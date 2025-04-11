@@ -15,6 +15,7 @@ class QItemSelection;
 class QPushButton;
 class QLineEdit;
 class QLabel;
+class AddCustomerView;
 
 class ViewDataKeychain;
 
@@ -33,6 +34,7 @@ private slots:
     virtual void onMenuBtnClicked (Gui::MenuButton btnType);
     void onTableSelectionChanged (const QItemSelection &itemNew, const QItemSelection &itemOld);
     void onButtonProposeLocationClicked ();
+    void onAddCustomerButtonClicked(Gui::MenuButton btn);
 
 private:
     bool setModel (QSqlRelationalTableModel* model);
@@ -40,8 +42,9 @@ private:
     void setTableFilter(const int column, const QString &searchString);
     bool ConfirmationDialog ();
 
-    QSqlRelationalTableModel *mBuildingsModel;
-    QTableView *mBuildings;
+    AddCustomerView *mAddCustomerView;
+    QSqlRelationalTableModel *mCustomersModel;
+    QTableView *mCustomersView;
     QSortFilterProxyModel *mFilteredModel;
     bool mRowSelected;
     QLabel *mSearchLabel;

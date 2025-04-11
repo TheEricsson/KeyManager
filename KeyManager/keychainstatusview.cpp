@@ -19,37 +19,76 @@
 #include "datainterface.h"
 #include "iointerface.h"
 #include <QSqlRelationalTableModel>
+#include "codegeneratorview.h"
 
 KeychainStatusView::KeychainStatusView(QWidget *parent)
     : WinSubmenu {parent}
 {
     mKeys = 0;
-    mKeychain = 0;
+    //mKeychain = 0;
     mKeysImgPreview = 0;
     mFilteredKeyModel = 0;
-    mFilteredKeychainModel = 0;
+    //mFilteredKeychainModel = 0;
     mViewData = 0;
 
     setHeader("Informationen zum Schlüsselbund");
 
-    QLabel *keyChainHeader = new QLabel ("Schlüsselbund");
-    layout()->addWidget(keyChainHeader);
+    QLabel* keychainKeycode = new QLabel ("Gescannter Code: ", this);
+    QLabel* keychainStatus = new QLabel ("Aktueller Status: ", this);
+    QLabel* keychainInternalLocation = new QLabel ("Schlüsselhaken: ", this);
 
-    mKeychain = new QTableView ();
+    QLabel* customer = new QLabel ("Kunde", this);
 
-    layout()->addWidget(mKeychain);
+    mKeychainKeycode = new QLabel (this);
+    mKeychainStatus = new QLabel (this);
+    mKeychainInternalLocation = new QLabel (this);
+    mKeychainStreet = new QLabel (this);
+    mKeychainCity = new QLabel (this);
 
-    mKeysImgPreview = new QPushButton ("Bild hinzufügen...");
+    QPushButton *keyCodeBtn = new QPushButton (this);
+    keyCodeBtn->setMinimumHeight(100);
+    keyCodeBtn->setMinimumWidth(100);
+    keyCodeBtn->setSizePolicy(QSizePolicy::Minimum, QSizePolicy::MinimumExpanding);
+
+    QSpacerItem *spacerItem = new QSpacerItem (1,1, QSizePolicy::MinimumExpanding, QSizePolicy::Minimum);
+
+    QGridLayout *keychainData = new QGridLayout();
+
+    keychainData->addWidget(keychainKeycode, 0, 0);
+    keychainData->addWidget(mKeychainKeycode, 0, 1);
+    keychainData->addWidget(keychainStatus, 1, 0);
+    keychainData->addWidget(mKeychainStatus, 1, 1);
+    keychainData->addWidget(keychainInternalLocation, 2, 0);
+    keychainData->addWidget(mKeychainInternalLocation, 2, 1);
+    keychainData->addWidget(customer, 3, 0);
+    keychainData->addWidget(mKeychainStreet, 3, 1);
+    keychainData->addWidget(mKeychainCity, 4, 1);
+    keychainData->addItem(spacerItem, 0, 3, 1, 1);
+    keychainData->addWidget(keyCodeBtn, 0, 4, 5, 1, Qt::AlignLeft);
+
+    layout()->addItem(keychainData);
+
+    //mKeychain = new QTableView (this);
+
+    //layout()->addWidget(mKeychain);
+
+    mKeysImgPreview = new QPushButton ("Bild hinzufügen...", this);
     mKeysImgPreview->setMinimumHeight(100);
     mKeysImgPreview->setMinimumWidth(100);
-    mKeysImgPreview->setSizePolicy(QSizePolicy::Policy::MinimumExpanding, QSizePolicy::Policy::MinimumExpanding);
+    mKeysImgPreview->setSizePolicy(QSizePolicy::MinimumExpanding, QSizePolicy::MinimumExpanding);
     layout()->addWidget(mKeysImgPreview);
 
-    QLabel *keysHeader = new QLabel ("Hinterlegte Schlüssel");
+    QLabel *keysHeader = new QLabel ("Hinterlegte Schlüssel", this);
     layout()->addWidget(keysHeader);
 
-    mKeys = new QTableView;
+    mKeys = new QTableView (this);
     layout()->addWidget(mKeys);
+
+    QLabel *historyHeader = new QLabel ("Historie", this);
+    layout()->addWidget(historyHeader);
+
+    mHistory = new QTableView (this);
+    layout()->addWidget(mHistory);
 
     QList<Gui::MenuButton> menuButtons;
     menuButtons.append(Gui::Back);
@@ -57,32 +96,46 @@ KeychainStatusView::KeychainStatusView(QWidget *parent)
     menuButtons.append(Gui::Next);
     setMenuButtons(menuButtons);
 
-    mKeychainModel = new QSqlRelationalTableModel ();
-    mFilteredKeychainModel = new QSortFilterProxyModel ();
-    mFilteredKeychainModel->setSourceModel(mKeychainModel);
-    mKeychain->setModel(mFilteredKeychainModel);
+    // mKeychainModel = new QSqlRelationalTableModel ();
+    // mFilteredKeychainModel = new QSortFilterProxyModel ();
+    // mFilteredKeychainModel->setSourceModel(mKeychainModel);
+    // mKeychain->setModel(mFilteredKeychainModel);
 
     mKeyModel = new QSqlRelationalTableModel ();
     mFilteredKeyModel= new QSortFilterProxyModel ();
     mFilteredKeyModel->setSourceModel(mKeyModel);
     mKeys->setModel(mFilteredKeyModel);
+
+    mHistoryModel = new QSqlRelationalTableModel ();
+    mFilteredHistoryModel = new QSortFilterProxyModel ();
+    mFilteredHistoryModel->setSourceModel(mHistoryModel);
+    mHistory->setModel(mFilteredHistoryModel);
+
+    connect (keyCodeBtn, SIGNAL(clicked()), this, SLOT (keyCodeBtnClicked()));
 }
 
 void KeychainStatusView::showEvent(QShowEvent *)
 {
     int barcode = dataInterface()->getScannedCode();
+    QString barcodeAsString = QString::number(barcode);
 
-    QString filterKeyTable = "keychainId = ";
-    filterKeyTable.append(QString::number(barcode));
-    ioInterface()->initKeyOverviewModel(mKeyModel, filterKeyTable);
+    QString filter = "keychainId = ";
+    filter.append(barcodeAsString);
+    ioInterface()->initKeyOverviewModel(mKeyModel, filter);
     setKeysModel(mKeyModel);
-    mKeychain->update();
+    //mKeychain->update();
 
-    QString filterKeychainTable = "barcode = ";
-    filterKeychainTable.append(QString::number(barcode));
-    ioInterface()->initKeychainModel(mKeychainModel, filterKeychainTable);
-    setKeychainModel(mKeychainModel);
-    mKeys->update ();
+    filter = "id = ";
+    filter.append(barcodeAsString);
+    // ioInterface()->initKeychainModel(mKeychainModel, filter);
+    // setKeychainModel(mKeychainModel);
+    // mKeys->update ();
+
+    filter = "keychainId = ";
+    filter.append(barcodeAsString);
+    ioInterface()->initKeychainHistoryModel(mHistoryModel, filter);
+    setKeychainHistoryModel(mHistoryModel);
+    mHistory->update ();
 
     // mFilteredKeychainModel->setFilterKeyColumn(0);
     // mFilteredKeychainModel->setFilterWildcard(QString::number(barcode));
@@ -105,6 +158,21 @@ void KeychainStatusView::showEvent(QShowEvent *)
     //set values for keychainstatus data from db
     ioInterface()->setKeychainData(dataInterface()->getDataKeychain(), keyCode);
 
+    mKeychainKeycode->setText(QString::number(dataInterface()->getScannedCode()));
+    mKeychainStatus->setText(ioInterface()->getKeychainStatusText(dataInterface()->getKeychainStatusId()));
+    mKeychainInternalLocation->setText(QString::number(dataInterface()->getInternalLocation()));
+
+    int addressId = dataInterface()->getKeychainAddressId();
+    QString txt = ioInterface()->getAddressStreet(addressId);
+    txt.append(" ");
+    txt.append(ioInterface()->getAddressStreetNumber(addressId));
+    mKeychainStreet->setText(txt);
+
+    txt = QString::number(ioInterface()->getAddressAreaCode(addressId));
+    txt.append (" ");
+    txt.append (ioInterface()->getAddressCity(addressId));
+    mKeychainCity->setText(txt);
+
     setNextBtnText ();
 }
 
@@ -123,52 +191,52 @@ void KeychainStatusView::setNextBtnText ()
     }
 }
 
-bool KeychainStatusView::setKeychainModel (QSqlRelationalTableModel* model)
-{
-    if (model)
-    {
-        model->setHeaderData(0, Qt::Horizontal, tr("Barcode"), Qt::DisplayRole);
-        model->setHeaderData(1, Qt::Horizontal, tr("Ausgabestatus"), Qt::DisplayRole);
-        model->setHeaderData(2, Qt::Horizontal, tr("Schlüsselhaken"), Qt::DisplayRole);
-        model->setHeaderData(3, Qt::Horizontal, tr("Straße"), Qt::DisplayRole);
-        model->setHeaderData(4, Qt::Horizontal, tr("Hausnummer"), Qt::DisplayRole);
-        model->setHeaderData(5, Qt::Horizontal, tr("PLZ"), Qt::DisplayRole);
-        model->setHeaderData(6, Qt::Horizontal, tr("Ort"), Qt::DisplayRole);
+// bool KeychainStatusView::setKeychainModel (QSqlRelationalTableModel* model)
+// {
+//     if (model)
+//     {
+//         model->setHeaderData(0, Qt::Horizontal, tr("Barcode"), Qt::DisplayRole);
+//         model->setHeaderData(1, Qt::Horizontal, tr("Ausgabestatus"), Qt::DisplayRole);
+//         model->setHeaderData(2, Qt::Horizontal, tr("Schlüsselhaken"), Qt::DisplayRole);
+//         model->setHeaderData(3, Qt::Horizontal, tr("Straße"), Qt::DisplayRole);
+//         model->setHeaderData(4, Qt::Horizontal, tr("Hausnummer"), Qt::DisplayRole);
+//         model->setHeaderData(5, Qt::Horizontal, tr("PLZ"), Qt::DisplayRole);
+//         model->setHeaderData(6, Qt::Horizontal, tr("Ort"), Qt::DisplayRole);
 
-        if (!mFilteredKeychainModel)
-            return false;
+//         if (!mFilteredKeychainModel)
+//             return false;
 
-        if (mKeychain)
-        {
-            mFilteredKeychainModel->setSourceModel(model);
-            mKeychain->hideColumn(7); // hide image column
-            mKeychain->setEditTriggers(QTableView::NoEditTriggers);
-            mKeychain->setSelectionMode(QTableView::NoSelection);
-            mKeychain->verticalHeader()->hide();
+//         if (mKeychain)
+//         {
+//             mFilteredKeychainModel->setSourceModel(model);
+//             mKeychain->hideColumn(7); // hide image column
+//             mKeychain->setEditTriggers(QTableView::NoEditTriggers);
+//             mKeychain->setSelectionMode(QTableView::NoSelection);
+//             mKeychain->verticalHeader()->hide();
 
-            mKeychain->show();
+//             mKeychain->show();
 
-            mKeychain->setSizeAdjustPolicy(QAbstractScrollArea::AdjustToContents);
-            mKeychain->setSizePolicy(QSizePolicy::Preferred, QSizePolicy::Maximum);
+//             mKeychain->setSizeAdjustPolicy(QAbstractScrollArea::AdjustToContents);
+//             mKeychain->setSizePolicy(QSizePolicy::Preferred, QSizePolicy::Maximum);
 
-            mKeychain->resizeColumnsToContents();
+//             mKeychain->resizeColumnsToContents();
 
-            //barcode must be unique
-            if (mKeychain->model()->rowCount() > 1)
-            {
-                QMessageBox::critical(0, "Datenbankfehler",
-                                      "Barcode nicht eindeutig, Tabelle enthält Duplikate. \n"
-                                      "Überprüfung der Datenbank notwendig. Fortfahren nicht möglich.", QMessageBox::Ok);
-                //prevent user to proceed to next step
-                return false;
-            }
+//             //barcode must be unique
+//             if (mKeychain->model()->rowCount() > 1)
+//             {
+//                 QMessageBox::critical(0, "Datenbankfehler",
+//                                       "Barcode nicht eindeutig, Tabelle enthält Duplikate. \n"
+//                                       "Überprüfung der Datenbank notwendig. Fortfahren nicht möglich.", QMessageBox::Ok);
+//                 //prevent user to proceed to next step
+//                 return false;
+//             }
 
-            return true;
-        }
-        return false;
-    }
-    return false;
-}
+//             return true;
+//         }
+//         return false;
+//     }
+//     return false;
+// }
 
 bool KeychainStatusView::setKeysModel (QSqlRelationalTableModel* model)
 {
@@ -204,6 +272,43 @@ bool KeychainStatusView::setKeysModel (QSqlRelationalTableModel* model)
     return false;
 }
 
+bool KeychainStatusView::setKeychainHistoryModel (QSqlRelationalTableModel* model)
+{
+    if (model)
+    {
+        // model->setHeaderData(2, Qt::Horizontal, tr("Kategorie"), Qt::DisplayRole);
+        // model->setHeaderData(3, Qt::Horizontal, tr("Zustand"), Qt::DisplayRole);
+        // model->setHeaderData(4, Qt::Horizontal, tr("Zusatzinformation"), Qt::DisplayRole);
+
+        if (mHistory)
+        {
+            mHistory->hideColumn(0); // hide table id
+            mHistory->hideColumn(1); // hide barcode id
+            mHistory->hideColumn(6); // hide address data
+            mHistory->hideColumn(7); // hide address data
+            mHistory->hideColumn(8); // hide address data
+            mHistory->hideColumn(9); // hide address data
+            mHistory->hideColumn(11); // hide signature
+
+            mFilteredHistoryModel->setSourceModel(model);
+            mHistory->setModel(model);
+            //mKeys->setItemDelegate(new QSqlRelationalDelegate(mKeys));
+            mHistory->setEditTriggers(QTableView::NoEditTriggers);
+            mHistory->setSelectionMode(QTableView::NoSelection);
+            mHistory->show();
+
+            mHistory->setSizeAdjustPolicy(QAbstractScrollArea::AdjustToContents);
+            mHistory->setSizePolicy(QSizePolicy::Preferred, QSizePolicy::Maximum);
+
+            mHistory->resizeColumnsToContents();
+
+            return true;
+        }
+        return false;
+    }
+    return false;
+}
+
 void KeychainStatusView::setKeychainImagePath (const QString& imgPath)
 {
     qDebug () << "KeychainStatusView::setKeychainImagePath: " << imgPath;
@@ -217,6 +322,13 @@ void KeychainStatusView::setKeychainImagePath (const QString& imgPath)
         mKeysImgPreview->setIcon(icon);
         mKeysImgPreview->resize(100,100);
     }
+}
+
+void KeychainStatusView::keyCodeBtnClicked()
+{
+    qDebug () << "KeychainStatusView::keyCodeBtnClicked()";
+    CodeGeneratorView *view = new CodeGeneratorView ();
+    view->show ();
 }
 
 KeychainStatusView::~KeychainStatusView ()
@@ -233,15 +345,15 @@ KeychainStatusView::~KeychainStatusView ()
         mFilteredKeyModel = 0;
     }
 
-    if (mFilteredKeychainModel)
-    {
-        delete mFilteredKeychainModel;
-        mFilteredKeychainModel = 0;
-    }
+    // if (mFilteredKeychainModel)
+    // {
+    //     delete mFilteredKeychainModel;
+    //     mFilteredKeychainModel = 0;
+    // }
 
-    if (mKeychainModel)
-    {
-        delete mKeychainModel;
-        mKeychainModel = 0;
-    }
+    // if (mKeychainModel)
+    // {
+    //     delete mKeychainModel;
+    //     mKeychainModel = 0;
+    // }
 }

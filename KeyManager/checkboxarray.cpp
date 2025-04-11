@@ -53,9 +53,11 @@ bool CheckBoxArray::init (const QString &tableName, const QString &valueColumn)
 
     for (int i = 1; i <= count; i++)
     {
-        QRadioButton *checkBox = new QRadioButton ();
+        QRadioButton *checkBox = new QRadioButton (this);
         checkBox->setText(mIoInterface->getValue(tableName, valueColumn, i).toString());
         checkBox->setChecked(false);
+
+        connect (checkBox, SIGNAL(clicked()), this, SLOT(onRadioBtnClicked()));
 
         QPair <int, QRadioButton*> itemPair;
         itemPair.first = i;
@@ -91,6 +93,13 @@ int CheckBoxArray::getCheckedButtonIndex ()
         }
     }
     return retVal;
+}
+
+void CheckBoxArray::onRadioBtnClicked()
+{
+    qDebug () << "CheckBoxArray::onRadioBtnClicked()";
+
+    update();
 }
 
 CheckBoxArray::~CheckBoxArray()

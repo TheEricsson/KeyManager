@@ -21,6 +21,8 @@ class CheckBoxArray : public QWidget
         IOInterface *mIoInterface;
         DataInterface *mDataInterface;
         QList <QPair <int,QRadioButton*>> mRadioButtonList;
+    private slots:
+        void onRadioBtnClicked();
 
 signals:
 };

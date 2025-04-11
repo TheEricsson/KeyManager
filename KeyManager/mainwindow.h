@@ -15,8 +15,6 @@ class KeychainStatusView;
 class RecipientView;
 class AddRecipientView;
 class HandoverView;
-//class ReturnDateView;
-//class HandoutSummaryView;
 class AnnotationView;
 class WinSubmenu;
 class ViewStackManager;
@@ -24,7 +22,7 @@ class DataInterface;
 class AddKeychainView;
 class EditKeyView;
 class IOInterfaceSQLITE;
-//class AddKeyView;
+class ToolsView;
 
 class ViewStack;
 
@@ -52,6 +50,7 @@ private:
     QStackedLayout *mViewStack;
     ViewStackManager *mViewStackManager;
 
+    // views for the key management
     HomeView *mHomeView;
     ScannerView *mScanView;
     TableView *mTableView;
@@ -62,7 +61,9 @@ private:
     AnnotationView *mAnnotationView;
     AddKeychainView *mAddKeychainView;
     EditKeyView *mEditKeyView;
-    //AddKeyView *mAddKeyView;
+
+    // views in the section settings+tools
+    ToolsView *mToolsView;
 
     DataInterface *mDataInterface;
     IOInterfaceSQLITE *mDbInterface;

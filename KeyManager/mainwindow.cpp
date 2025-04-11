@@ -24,7 +24,7 @@
 #include "addkeychainview.h"
 #include "editkeyview.h"
 #include "iointerfacesqlite.h"
-#include "addkeyview.h"
+#include "toolsview.h"
 
 #ifndef GMANDANTID
     #define GMANDANTID 1
@@ -33,8 +33,14 @@
 MainWindow::MainWindow(QWidget *parent)
     : QWidget(parent)
 {
-    setStyleSheet("QWidget {background-color: #FFFAFA; font: bold 14px;}");
-    setStyleSheet("QTableView {background-color: #FFFAFA; font: 14px;}");
+    //setStyleSheet("QWidget {background-color: #FFFAFA; font: 25px;}");
+    setStyleSheet   ("QTableView {background-color: #FFFAFA; font: 20px;}\
+                    QLabel {font: 17px;}\
+                    QCheckBox {font: 17px;}\
+                    QRadioButton {font: 17px;}\
+                    QRadioButton::indicator::unchecked {image: url(:/images/radiobutton_unchecked.png)};\
+                    QRadioButton::indicator::checked {image: url(:/images/radiobutton_checked.png)}\
+                    QRadioButton::indicator {width: 25px; height 25px;}");
 
     mScanView = 0;
     mHomeView = 0;
@@ -42,17 +48,14 @@ MainWindow::MainWindow(QWidget *parent)
     mKeychainStatusView = 0;
     mRecipientView = 0;
     mAddRecipientView = 0;
-    //mReturnDateView = 0;
     mAnnotationView = 0;
     mDataInterface = 0;
     mAddKeychainView = 0;
     mEditKeyView = 0;
-    //mAddKeyView = 0;
 
     mViewStack = 0;
 
     mDataInterface = new DataInterface();
-
     mDbInterface = new IOInterfaceSQLITE ();
 
     mViewStack = new QStackedLayout (this);
@@ -68,7 +71,7 @@ MainWindow::MainWindow(QWidget *parent)
     mAnnotationView = new AnnotationView (this);
     mAddKeychainView = new AddKeychainView (this);
     mEditKeyView = new EditKeyView (this);
-    //mAddKeyView = new AddKeyView (this);
+    mToolsView = new ToolsView (this);
 
     registerView (mHomeView);
     registerView (mScanView);
@@ -80,23 +83,28 @@ MainWindow::MainWindow(QWidget *parent)
     registerView (mAnnotationView);
     registerView (mAddKeychainView);
     registerView (mEditKeyView);
-    //registerView (mAddKeyView);
+    registerView (mToolsView);
 
     mViewStack->setCurrentWidget(mHomeView);
 
     //register possible menu navigation paths
     mViewStackManager = new ViewStackManager ();
 
+    //views in the section 'key handover management of known keychains'
     mViewStackManager->addNode(ViewStackManager::HandoverOut, mScanView);
     mViewStackManager->addNode(ViewStackManager::HandoverOut, mKeychainStatusView);
     mViewStackManager->addNode(ViewStackManager::HandoverOut, mRecipientView);
     mViewStackManager->addNode(ViewStackManager::HandoverOut, mAnnotationView);
     mViewStackManager->addNode(ViewStackManager::HandoverOut, mHandoverView);
-    mViewStackManager->setCurrentStackId(ViewStackManager::HandoverOut);
 
+    // views in the section 'adding unknown (new) keychains to db'
     mViewStackManager->addNode(ViewStackManager::NewCodeScanned, mAddKeychainView);
     mViewStackManager->addNode(ViewStackManager::NewCodeScanned, mEditKeyView);
 
+    // views in the section 'settings'
+    mViewStackManager->addNode(ViewStackManager::Settings, mToolsView);
+
+    mViewStackManager->setCurrentStackId(ViewStackManager::HandoverOut);
     mViewStack->setCurrentWidget(mHomeView);
 }
 
@@ -137,6 +145,10 @@ void MainWindow::onMenuBtnClicked (Gui::MenuButton btnType)
                 break;
             case (Gui::NewCodeScanned):
                 mViewStackManager->setCurrentStackId(ViewStackManager::NewCodeScanned);
+                nextWidget = mViewStackManager->begin();
+                break;
+            case (Gui::Settings):
+                mViewStackManager->setCurrentStackId(ViewStackManager::Settings);
                 nextWidget = mViewStackManager->begin();
                 break;
             default:

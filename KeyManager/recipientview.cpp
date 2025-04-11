@@ -158,7 +158,8 @@ void RecipientView::reset()
             hideSearchField(true);
             hideNameField(true);
             setTableFilter(2, "Mitarbeiter");
-            mReturnDateWidget->hide();
+            //mReturnDateWidget->hide();
+            //mReturnDateWidget->setDisabled(true);
             dataInterface()->setRecipientDeadlineDate("");
 
             update ();
@@ -169,7 +170,8 @@ void RecipientView::reset()
             hideNameField(false);
             setTableFilter("");
             update ();
-            mReturnDateWidget->show();
+            //mReturnDateWidget->show();
+            //mReturnDateWidget->setDisabled(false);
     }
 
     mRecipients->clearSelection();
@@ -205,10 +207,10 @@ void RecipientView::onMenuBtnClicked (Gui::MenuButton btnType)
         {
             mAddRecipientView = new AddRecipientView();
             mAddRecipientView->setDataInterface (dataInterface());
-            mAddRecipientView->setIOInterface (ioInterface());
-            mAddRecipientView->show();
             connect (mAddRecipientView, SIGNAL(menuButtonClicked(Gui::MenuButton)), this, SLOT(onAddRecipientButtonClicked(Gui::MenuButton)));
         }
+        mAddRecipientView->setIOInterface (ioInterface());
+        mAddRecipientView->show();
         break;
     default:
         break;
@@ -287,7 +289,7 @@ void RecipientView::onTableSelectionChanged (const QItemSelection &itemNew, cons
         mRowSelected = false;
     }
 
-    if ("Firma" == recipientType)
+    if ("Unternehmen" == recipientType)
     {
         mRecipientNameEdit->setEnabled(true);
     }
@@ -337,14 +339,6 @@ void RecipientView::onAddRecipientButtonClicked(Gui::MenuButton btn)
     switch (btn)
     {
         case Gui::Back:
-            if (mAddRecipientView)
-            {
-                mAddRecipientView->hide();
-                delete mAddRecipientView;
-                mAddRecipientView = 0;
-                setFocus();
-            }
-            break;
         case Gui::Ok:
             if (mAddRecipientView)
             {

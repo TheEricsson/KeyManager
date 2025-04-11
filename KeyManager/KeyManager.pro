@@ -1,4 +1,4 @@
-QT       += core gui multimediawidgets sql core-private
+QT       += core gui multimediawidgets sql core-private printsupport
 
 greaterThan(QT_MAJOR_VERSION, 4): QT += widgets
 
@@ -11,15 +11,18 @@ CONFIG += c++17
 include(../QZXing/QZXing.pri)
 
 SOURCES += \
+    addcustomerview.cpp \
     addkeychainview.cpp \
     addkeyview.cpp \
     addrecipientview.cpp \
     annotationview.cpp \
     camera.cpp \
     checkboxarray.cpp \
+    codegeneratorview.cpp \
     datainterface.cpp \
     dataobject.cpp \
     dataobjecthandover.cpp \
+    editcustomerview.cpp \
     editkeyview.cpp \
     handoverview.cpp \
     homeview.cpp \
@@ -29,12 +32,15 @@ SOURCES += \
     main.cpp \
     mainwindow.cpp \
     menubutton.cpp \
+    printerinterface.cpp \
+    printerinterfacepdf.cpp \
     recipientview.cpp \
     returndateview.cpp \
     scannerview.cpp \
     signaturepad.cpp \
     tableview.cpp \
     tests/qrencodertest.cpp \
+    toolsview.cpp \
     viewdataannotation.cpp \
     viewdatahandover.cpp \
     viewdatakeychain.cpp \
@@ -46,15 +52,18 @@ SOURCES += \
     winsubmenu.cpp
 
 HEADERS += \
+    addcustomerview.h \
     addkeychainview.h \
     addkeyview.h \
     addrecipientview.h \
     annotationview.h \
     camera.h \
     checkboxarray.h \
+    codegeneratorview.h \
     datainterface.h \
     dataobject.h \
     dataobjecthandover.h \
+    editcustomerview.h \
     editkeyview.h \
     globals.h \
     handoverview.h \
@@ -65,12 +74,15 @@ HEADERS += \
     keychainstatusview.h \
     mainwindow.h \
     menubutton.h \
+    printerinterface.h \
+    printerinterfacepdf.h \
     recipientview.h \
     returndateview.h \
     scannerview.h \
     signaturepad.h \
     tableview.h \
     tests/qrencodertest.h \
+    toolsview.h \
     viewdataannotation.h \
     viewdatahandover.h \
     viewdatakeychain.h \

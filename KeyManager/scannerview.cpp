@@ -32,7 +32,7 @@ ScannerView::ScannerView(QWidget *parent)
     mGrabTimer = 0;
     mScannerData = 0;
 
-    decoder.setDecoder(QZXing::DecoderFormat_CODE_128);
+    decoder.setDecoder(QZXing::DecoderFormat_QR_CODE);
     //optional settings
     decoder.setSourceFilterType(QZXing::SourceFilter_ImageNormal);
     decoder.setTryHarderBehaviour(QZXing::TryHarderBehaviour_ThoroughScanning | QZXing::TryHarderBehaviour_Rotate);
@@ -137,27 +137,27 @@ void ScannerView::decodeFromVideoFrame ()
 #ifdef Q_OS_WIN64
     // no cam on windows pc -> use test image with barcode
     //QImage testCode (":/images/barcode00010150.png");
-    QImage testCode (":/images/barcode00010151.png");
+    QImage testCode (":/images/qrcode_0001-0001.png");
     QString barcode = decoder.decodeImage(testCode);
 #else
     QString barcode = decoder.decodeImage(capture);
 #endif
 
-    QString barcodeAsNumber = barcode.mid (0, 5);
-    barcodeAsNumber.append(barcode.mid(6, 5));
+    QString barcodeAsNumber = barcode.mid (0, 4);
+    barcodeAsNumber.append(barcode.mid(5, 4));
     int barcodeAsInt = barcodeAsNumber.toInt();
 
     if ("" != barcode.toStdString())
     {
         qDebug () << "barcode:" << barcode;
         qDebug () << "barcodeAsNumber:" << barcodeAsNumber;
-        qDebug () << "barcodeAsId: = " << barcodeAsInt;
+        qDebug () << "barcodeAsInt: = " << barcodeAsInt;
     }
 
-    QString customerId = barcode.mid (0, 5);
-    QString keyId = barcode.mid (6, 5);
+    QString customerId = barcode.mid (0, 4);
+    QString keyId = barcode.mid (5, 4);
 
-    if (customerId == "00001" && 5 == keyId.length())
+    if (customerId == "0001" && 4 == keyId.length())
     {
         mGrabTimer->stop ();
         mCameraInstance->stopCamera();

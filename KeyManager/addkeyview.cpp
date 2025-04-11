@@ -19,15 +19,15 @@ AddKeyView::AddKeyView(QWidget *parent) : WinSubmenu {parent}
     mKeyCategories = new CheckBoxArray (this);
     mKeyStates = new CheckBoxArray (this);
 
-    QLabel *headerKeyCat = new QLabel ("Schlüsselkategorie");
+    QLabel *headerKeyCat = new QLabel ("Schlüsselkategorie", this);
     headerKeyCat->setAlignment(Qt::AlignHCenter);
     headerKeyCat->setContentsMargins(0,0,0,0);
     headerKeyCat->setSizePolicy(QSizePolicy::MinimumExpanding, QSizePolicy::MinimumExpanding);
-    QLabel *headerKeyStatus = new QLabel ("Schlüsselstatus");
+    QLabel *headerKeyStatus = new QLabel ("Schlüsselstatus", this);
     headerKeyStatus->setAlignment(Qt::AlignHCenter);
     headerKeyStatus->setContentsMargins(0,0,0,0);
     headerKeyStatus->setSizePolicy(QSizePolicy::MinimumExpanding, QSizePolicy::MinimumExpanding);
-    QLabel *headerDescription = new QLabel ("Zusätzliche Angaben");
+    QLabel *headerDescription = new QLabel ("Zusätzliche Angaben", this);
     headerKeyStatus->setAlignment(Qt::AlignHCenter);
     headerKeyStatus->setContentsMargins(0,0,0,0);
     headerKeyStatus->setSizePolicy(QSizePolicy::MinimumExpanding, QSizePolicy::MinimumExpanding);
@@ -94,6 +94,8 @@ void AddKeyView::reset ()
 
     mKeyStates->setData (ioInterface(), dataInterface());
     mKeyStates->init ("keyStates", "status");
+
+    update();
 }
 
 bool AddKeyView::checkSelections ()

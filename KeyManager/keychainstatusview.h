@@ -23,24 +23,32 @@ public:
     void setNextBtnText ();
     bool setKeychainModel (QSqlRelationalTableModel* model);
     bool setKeysModel (QSqlRelationalTableModel* model);
+    bool setKeychainHistoryModel (QSqlRelationalTableModel* model);
     void setKeychainImagePath (const QString& imgPath);
+
+private slots:
+    void keyCodeBtnClicked();
 
 private:
     virtual void showEvent(QShowEvent *);
     QSqlRelationalTableModel *mKeyModel;
-    QSqlRelationalTableModel *mKeychainModel;
-    QSortFilterProxyModel *mFilteredKeychainModel;
+    //QSqlRelationalTableModel *mKeychainModel;
+    QSqlRelationalTableModel *mHistoryModel;
+    //QSortFilterProxyModel *mFilteredKeychainModel;
     QSortFilterProxyModel *mFilteredKeyModel;
+    QSortFilterProxyModel *mFilteredHistoryModel;
 
     //QSqlQueryModel *mKeyOverview;
     QTableView *mKeys;
-    QTableView *mKeychain;
-    QLabel *mIdBarcode;
-    QLabel *mStreet;
-    QLabel *mStreetNr;
-    QLabel *mAreaCode;
-    QLabel *mCity;
-    QLabel *mQuantityKeys;
+    //QTableView *mKeychain;
+    QTableView *mHistory;
+    QLabel *mKeychainKeycode;
+    QLabel *mKeychainStatus;
+    QLabel *mKeychainInternalLocation;
+    QLabel *mKeychainStreet;
+    QLabel *mKeychainStreetNumber;
+    QLabel *mKeychainCity;
+
     QImage *mKeychainImage;
     QPushButton *mKeysImgPreview;
     ViewDataKeychain *mViewData;

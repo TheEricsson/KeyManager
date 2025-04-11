@@ -26,7 +26,7 @@ WinSubmenu::WinSubmenu(QWidget *parent)
     mHeaderLabel->setSizePolicy(QSizePolicy::Expanding, QSizePolicy::MinimumExpanding);
     mHeaderLabel->setStyleSheet("QLabel {background-color: #e0ffff; color: black; font: bold 30px; border-style: solid; border-width: 1px; border-radius: 5px; border-color: #A9A9A9; }");
 
-    setStyleSheet("QToolButton {background-color: #e0ffff; border-style: solid; border-width: 3px; border-radius: 10px; border-color: #A9A9A9; font: bold 14px; padding: 6px;}");
+    setStyleSheet("QToolButton {border-style: solid; border-width: 1px; border-radius: 10px; border-color: #A9A9A9; font: 12px; padding: 6px;}");
 }
 
 void WinSubmenu::setDataInterface (DataInterface *data)
@@ -134,6 +134,18 @@ void WinSubmenu::setMenuButtons (const QList<Gui::MenuButton> &buttons)
             case (Gui::MainMenu):
                 //menuBtn->setIcon(QIcon(":/images/TODO"));
                 menuBtn->setButtonText("Hauptmenü");
+                break;
+            case (Gui::AddCustomer):
+                //menuBtn->setIcon(QIcon(":/images/TODO"));
+                menuBtn->setButtonText("Kunde anlegen");
+                break;
+            case (Gui::Edit):
+                //menuBtn->setIcon(QIcon(":/images/TODO"));
+                menuBtn->setButtonText("Editieren");
+                break;
+            case (Gui::Print):
+                //menuBtn->setIcon(QIcon(":/images/TODO"));
+                menuBtn->setButtonText("Drucken");
                 break;
             default:
                 break;

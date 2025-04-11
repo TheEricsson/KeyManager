@@ -19,9 +19,9 @@ EditKeyView::EditKeyView(QWidget *parent) : WinSubmenu {parent}
     mKeychainCode = new QLabel (this);
 
     QLabel *headerTable = new QLabel ("Hinterlegte Schlüssel:");
-    mKeys = new QTableView;
+    mKeys = new QTableView (this);
 
-    //mKeyModel = new QSqlRelationalTableModel (this);
+    mKeyModel = new QSqlRelationalTableModel (this);
     mKeys->setModel(mKeyModel);
 
     layout()->addWidget(mKeychainCode);
@@ -40,6 +40,7 @@ EditKeyView::EditKeyView(QWidget *parent) : WinSubmenu {parent}
 void EditKeyView::showEvent(QShowEvent *)
 {
     reset ();
+    update ();
 }
 
 bool EditKeyView::setKeysModel (QSqlRelationalTableModel* model)
@@ -64,7 +65,7 @@ bool EditKeyView::setKeysModel (QSqlRelationalTableModel* model)
             mKeys->show();
 
             mKeys->setSizeAdjustPolicy(QAbstractScrollArea::AdjustToContents);
-            mKeys->setSizePolicy(QSizePolicy::Preferred, QSizePolicy::Maximum);
+            mKeys->setSizePolicy(QSizePolicy::Preferred, QSizePolicy::MinimumExpanding);
 
             mKeys->resizeColumnsToContents();
 
@@ -128,6 +129,9 @@ void EditKeyView::onAddKeyMenuButtonClicked (Gui::MenuButton btn)
             }
             reset ();
             setFocus();
+            mKeys->update();
+            mKeys->resizeRowsToContents();
+            update();
             break;
         default:
             break;
@@ -153,6 +157,7 @@ void EditKeyView::reset()
     {
         ioInterface()->initKeyOverviewModel(mKeyModel, filterKeyTable);
         setKeysModel(mKeyModel);
+        mKeys->resizeRowsToContents();
     }
     update ();
 }

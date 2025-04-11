@@ -47,11 +47,6 @@ ReturnDateView::ReturnDateView (QWidget *parent)
     onDateClicked(mCalendar->selectedDate());
     mDurationHandout = Database::KeychainStatus::TemporaryOut;
 
-    // QList<Gui::MenuButton> menuButtons;
-    // menuButtons.append(Gui::Back);
-    // menuButtons.append(Gui::Next);
-    // setMenuButtons(menuButtons);
-
     connect (mHandoverTemporary, SIGNAL (clicked (bool)), this, SLOT(onHandoverTemporaryClicked (bool)));
     connect (handoverPermanent, SIGNAL (clicked (bool)), this, SLOT(onHandoverPermanentClicked (bool)));
     connect (handoverEndOfService, SIGNAL (clicked (bool)), this, SLOT(onHandoverEndOfServiceClicked (bool)));
@@ -79,8 +74,8 @@ void ReturnDateView::onHandoverTemporaryClicked (bool aChecked)
         return;
 
     mCalendar->setDisabled(!aChecked);
-    mCalendar->setVisible(aChecked);
-    mReturnDateLabel->setVisible(true);
+    //mCalendar->setVisible(aChecked);
+    //mReturnDateLabel->setVisible(true);
     mDurationHandout = Database::KeychainStatus::TemporaryOut;
 
     update ();
@@ -93,8 +88,8 @@ void ReturnDateView::onHandoverPermanentClicked(bool aChecked)
         return;
 
     mCalendar->setDisabled(aChecked);
-    mCalendar->setVisible(!aChecked);
-    mReturnDateLabel->setVisible(false);
+    //mCalendar->setVisible(!aChecked);
+    //mReturnDateLabel->setVisible(false);
     mDurationHandout = Database::KeychainStatus::PermanentOut;
 
     update ();
@@ -107,8 +102,8 @@ void ReturnDateView::onHandoverEndOfServiceClicked(bool aChecked)
         return;
 
     mCalendar->setDisabled(aChecked);
-    mCalendar->setVisible(!aChecked);
-    mReturnDateLabel->setVisible(false);
+    //mCalendar->setVisible(!aChecked);
+    //mReturnDateLabel->setVisible(false);
     mDurationHandout = Database::KeychainStatus::AdministrationEnded;
 
     update ();

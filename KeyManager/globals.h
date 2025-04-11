@@ -8,9 +8,9 @@ const int _UNDEFINED = -999;
 namespace Gui
 {
     //button dimensions
-    const int buttonHeight = 90;
-    const int buttonWidth = 90;
-    const int buttonBorder = 3;
+    const int buttonHeight = 60;
+    const int buttonWidth = 60;
+    const int buttonBorder = 2;
 
     const int buttonImgHeight = buttonHeight - buttonBorder;
     const int buttonImgWidth = buttonWidth - buttonBorder;
@@ -37,7 +37,10 @@ namespace Gui
         Settings,
         Exit,
         NewCodeScanned,
-        AddKey
+        AddKey,
+        AddCustomer,
+        Edit,
+        Print
     };
 }
 

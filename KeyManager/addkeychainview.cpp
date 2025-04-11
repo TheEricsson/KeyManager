@@ -24,14 +24,15 @@
 #include "datainterface.h"
 #include "iointerface.h"
 #include "returndateview.h"
-//#include "viewdatakeychain.h"
+#include "addcustomerview.h"
 
 AddKeychainView::AddKeychainView(QWidget *parent) : WinSubmenu {parent}
 {
-    mBuildings = 0;
+    mCustomersView = 0;
     mFilteredModel = 0;
-    mBuildingsModel = 0;
+    mCustomersModel = 0;
     mRowSelected = false;
+    mAddCustomerView = 0;
     //mViewDataKeychain = 0;
 
     mFilteredModel = new QSortFilterProxyModel (this);
@@ -47,13 +48,13 @@ AddKeychainView::AddKeychainView(QWidget *parent) : WinSubmenu {parent}
     searchLayout->addWidget(mSearchField);
     layout()->addItem(searchLayout);
 
-    mBuildings = new QTableView (this);
-    mBuildings->setModel(mFilteredModel);
-    layout()->addWidget(mBuildings);
+    mCustomersView = new QTableView (this);
+    mCustomersView->setModel(mFilteredModel);
+    layout()->addWidget(mCustomersView);
 
-    //mBuildings->clearSelection();
-    mBuildings->update();
-    mBuildings->setFocus();
+    //mCustomersView->clearSelection();
+    mCustomersView->update();
+    mCustomersView->setFocus();
 
     QLabel *internalLocLabel = new QLabel ("Schlüsselhaken zuweisen:", this);
     mInternalLocation = new QLineEdit (this);
@@ -70,7 +71,7 @@ AddKeychainView::AddKeychainView(QWidget *parent) : WinSubmenu {parent}
 
     QList<Gui::MenuButton> menuButtons;
     menuButtons.append(Gui::Back);
-    menuButtons.append(Gui::AddKey);
+    menuButtons.append(Gui::AddCustomer);
     menuButtons.append(Gui::Next);
     setMenuButtons(menuButtons);
     setButtonText(2, "Schlüssel hinzufügen");
@@ -78,7 +79,7 @@ AddKeychainView::AddKeychainView(QWidget *parent) : WinSubmenu {parent}
     //setMenuButtons(Gui::Back, Gui::AddRecipient, Gui::Next);
     //disableButton(2, true);
 
-    connect (mBuildings->selectionModel(), SIGNAL(selectionChanged(const QItemSelection &, const QItemSelection &)), this, SLOT(onTableSelectionChanged(const QItemSelection &, const QItemSelection &)));
+    connect (mCustomersView->selectionModel(), SIGNAL(selectionChanged(const QItemSelection &, const QItemSelection &)), this, SLOT(onTableSelectionChanged(const QItemSelection &, const QItemSelection &)));
     connect (mSearchField, SIGNAL(textChanged(const QString &)), this, SLOT(setTableFilter(const QString &)));
     connect (btnLocProposal, SIGNAL(clicked ()), this, SLOT(onButtonProposeLocationClicked ()));
 }
@@ -88,7 +89,7 @@ bool AddKeychainView::setModel (QSqlRelationalTableModel* model)
     if (!model)
         return false;
 
-    if (!mBuildings)
+    if (!mCustomersView)
         return false;
 
     if (!mFilteredModel)
@@ -103,20 +104,20 @@ bool AddKeychainView::setModel (QSqlRelationalTableModel* model)
     mFilteredModel->setSourceModel(model);
     mFilteredModel->setFilterCaseSensitivity(Qt::CaseInsensitive); // ignore capital letters
 
-    mBuildings->hideColumn(0); //don't show table index
+    mCustomersView->hideColumn(0); //don't show table index
 
-    mBuildings->setSortingEnabled(true);
-    mBuildings->sortByColumn(1, Qt::AscendingOrder);
-    mBuildings->setEditTriggers(QTableView::NoEditTriggers);
-    mBuildings->setSelectionMode(QTableView::SingleSelection);
-    mBuildings->setSelectionBehavior(QTableView::SelectRows);
+    mCustomersView->setSortingEnabled(true);
+    mCustomersView->sortByColumn(1, Qt::AscendingOrder);
+    mCustomersView->setEditTriggers(QTableView::NoEditTriggers);
+    mCustomersView->setSelectionMode(QTableView::SingleSelection);
+    mCustomersView->setSelectionBehavior(QTableView::SelectRows);
 
-    mBuildings->show();
+    mCustomersView->show();
 
-    mBuildings->setSizeAdjustPolicy(QAbstractScrollArea::AdjustToContents);
-    mBuildings->setSizePolicy(QSizePolicy::Preferred, QSizePolicy::Maximum);
+    mCustomersView->setSizeAdjustPolicy(QAbstractScrollArea::AdjustToContents);
+    mCustomersView->setSizePolicy(QSizePolicy::Preferred, QSizePolicy::Maximum);
 
-    mBuildings->resizeColumnsToContents();
+    mCustomersView->resizeColumnsToContents();
 
     update ();
 
@@ -128,16 +129,18 @@ void AddKeychainView::reset()
     dataInterface()->resetKeychainData();
 
     //init model/view at first show event
-    if (!mBuildingsModel)
+    if (!mCustomersModel)
+        mCustomersModel = new QSqlRelationalTableModel (this);
+
+    if (mCustomersModel)
     {
-        mBuildingsModel = new QSqlRelationalTableModel ();
-        ioInterface()->initBuildingModel(mBuildingsModel);
-        setModel(mBuildingsModel);
+        ioInterface()->initCustomerModel(mCustomersModel);
+        setModel(mCustomersModel);
     }
 
-    mBuildings->clearSelection();
-    mBuildings->setFocus();
-    mBuildings->update();
+    mCustomersView->clearSelection();
+    mCustomersView->setFocus();
+    mCustomersView->update();
     mRowSelected = false;
     mInternalLocation->clear();
 }
@@ -150,11 +153,21 @@ void AddKeychainView::showEvent(QShowEvent *)
 void AddKeychainView::onMenuBtnClicked (Gui::MenuButton btnType)
 {
     QMessageBox msgBox;
-    int retVal = ioInterface()->getKeycodeFromInternalLocation(mInternalLocation->text().toInt());
+    bool foundKeyCode = ioInterface()->findKeyCode(dataInterface()->getScannedCode());
 
     switch (btnType)
     {
         case (Gui::Next):
+            if (true == foundKeyCode)
+            {
+                msgBox.setStandardButtons(QMessageBox::Abort);
+                msgBox.setDefaultButton(QMessageBox::Abort);
+                msgBox.setText ("Fehler!");
+                msgBox.setInformativeText("AddKeychainView::onMenuBtnClicked - keycode duplicate!");
+                msgBox.exec();
+
+                return;
+            }
 
             if ("" == mInternalLocation->text())
             {
@@ -176,20 +189,9 @@ void AddKeychainView::onMenuBtnClicked (Gui::MenuButton btnType)
                 return;
             }
 
-            if (_UNDEFINED == retVal)
+            if (0 != ioInterface()->getKeychainInternalLocation(dataInterface()->getScannedCode()))
             {
-                msgBox.setStandardButtons(QMessageBox::Abort);
-                msgBox.setDefaultButton(QMessageBox::Abort);
-                msgBox.setText ("Fehler!");
-                msgBox.setInformativeText("AddKeychainView::onMenuBtnClicked - getKeycodeFromInternalLocation () - SQLQuery failed!");
-                msgBox.exec();
-                break;
-            }
-            else if (0 != retVal)
-            {
-                QString text = "Schlüsselhaken ist bereits belegt mit folgendem Schlüsselbund:\n";
-                text.append ("Barcode: ");
-                text.append (QString::number(retVal));
+                QString text = "Schlüsselhaken ist bereits belegt!\n";
                 msgBox.setStandardButtons(QMessageBox::Abort);
                 msgBox.setDefaultButton(QMessageBox::Abort);
                 msgBox.setText ("Fehler!");
@@ -222,6 +224,16 @@ void AddKeychainView::onMenuBtnClicked (Gui::MenuButton btnType)
                 else
                     return;
             }
+            break;
+        case Gui::AddCustomer:
+            if (!mAddCustomerView)
+            {
+                mAddCustomerView = new AddCustomerView();
+                mAddCustomerView->setIOInterface(ioInterface());
+                connect (mAddCustomerView, SIGNAL(menuButtonClicked(Gui::MenuButton)), this, SLOT(onAddCustomerButtonClicked(Gui::MenuButton)));
+            }
+            mAddCustomerView->show();
+            break;
         default:
             break;
     }
@@ -231,18 +243,18 @@ void AddKeychainView::onMenuBtnClicked (Gui::MenuButton btnType)
 
 void AddKeychainView::setTableFilter(const QString &text)
 {
-    if (!mBuildings)
+    if (!mCustomersView)
         return;
 
     mFilteredModel->setFilterKeyColumn(-1); //set filter to search in all columns
     mFilteredModel->setFilterWildcard(text);
-    mBuildings->update();
+    mCustomersView->update();
     update ();
 }
 
 void AddKeychainView::setTableFilter(const int column, const QString &searchString)
 {
-    if (!mBuildings)
+    if (!mCustomersView)
         return;
 
     mFilteredModel->setFilterKeyColumn(column);
@@ -252,7 +264,7 @@ void AddKeychainView::setTableFilter(const int column, const QString &searchStri
     qDebug () << "column: " << column;
     qDebug () << "searchString: " << searchString;
 
-    mBuildings->update();
+    mCustomersView->update();
     update();
 }
 
@@ -289,35 +301,62 @@ void AddKeychainView::onTableSelectionChanged (const QItemSelection &itemNew, co
     // if (!mViewDataKeychain)
     //     return;
 
-    if (!mBuildings)
+    if (!mCustomersView)
         return;
 
-    int row = mBuildings->selectionModel()->currentIndex().row();
+    int row = mCustomersView->selectionModel()->currentIndex().row();
     mRowSelected = true;
 
-    dataInterface()->setKeychainAddressId(mBuildings->model()->index(row, 0).data().toInt ());
-    //mViewDataKeychain->setAddressId(mBuildings->model()->index(row, 0).data().toInt ());
+    dataInterface()->setKeychainAddressId(mCustomersView->model()->index(row, 0).data().toInt ());
+    //mViewDataKeychain->setAddressId(mCustomersView->model()->index(row, 0).data().toInt ());
 
     qDebug () << "dataInterface()->getScannedCode(): " <<  dataInterface()->getScannedCode();
 
     //mViewDataKeychain->setAddressId()
-    // mViewDataKeychain->setRecipientName(mBuildings->model()->index(row, 1).data().toString ());
-    // QString recipientType = mBuildings->model()->index(row, 2).data().toString ();
+    // mViewDataKeychain->setRecipientName(mCustomersView->model()->index(row, 1).data().toString ());
+    // QString recipientType = mCustomersView->model()->index(row, 2).data().toString ();
     // mViewDataKeychain->setRecipientType(recipientType);
-    // mViewDataKeychain->setRecipientStreet(mBuildings->model()->index(row, 3).data().toString ());
-    // mViewDataKeychain->setRecipientStreetNumber(mBuildings->model()->index(row, 4).data().toInt ());
-    // mViewDataKeychain->setRecipientAreaCode(mBuildings->model()->index(row, 5).data().toInt ());
-    // mViewDataKeychain->setRecipientCity(mBuildings->model()->index(row, 6).data().toString());
+    // mViewDataKeychain->setRecipientStreet(mCustomersView->model()->index(row, 3).data().toString ());
+    // mViewDataKeychain->setRecipientStreetNumber(mCustomersView->model()->index(row, 4).data().toInt ());
+    // mViewDataKeychain->setRecipientAreaCode(mCustomersView->model()->index(row, 5).data().toInt ());
+    // mViewDataKeychain->setRecipientCity(mCustomersView->model()->index(row, 6).data().toString());
 
     update();
 }
 
 void AddKeychainView::onButtonProposeLocationClicked ()
 {
-    mInternalLocation->setText (QString::number(ioInterface()->getFreeInternalLocation ()));
+    mInternalLocation->setText (QString::number(ioInterface()->getFreeInternalLocation (1)));
     mInternalLocation->update();
+}
+
+void AddKeychainView::onAddCustomerButtonClicked(Gui::MenuButton btn)
+{
+    switch (btn)
+    {
+    case Gui::Back:
+    case Gui::Ok:
+        if (mAddCustomerView)
+        {
+            mAddCustomerView->hide();
+            delete mAddCustomerView;
+            mAddCustomerView = 0;
+            reset();
+            setFocus();
+            mCustomersView->update();
+            update();
+        }
+        break;
+    default:
+        break;
+    }
 }
 
 AddKeychainView::~AddKeychainView()
 {
+    if (mAddCustomerView)
+    {
+        delete mAddCustomerView;
+        mAddCustomerView = 0;
+    }
 }
