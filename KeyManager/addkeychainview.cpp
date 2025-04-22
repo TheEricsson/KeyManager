@@ -69,15 +69,16 @@ AddKeychainView::AddKeychainView(QWidget *parent) : WinSubmenu {parent}
 
     layout()->addItem(btnLayoutLoc);
 
+    QSpacerItem *spacer = new QSpacerItem (0, 0, QSizePolicy::Expanding, QSizePolicy::Expanding);
+    layout()->addItem(spacer);
+
     QList<Gui::MenuButton> menuButtons;
     menuButtons.append(Gui::Back);
     menuButtons.append(Gui::AddCustomer);
     menuButtons.append(Gui::Next);
+
     setMenuButtons(menuButtons);
     setButtonText(2, "Schlüssel hinzufügen");
-
-    //setMenuButtons(Gui::Back, Gui::AddRecipient, Gui::Next);
-    //disableButton(2, true);
 
     connect (mCustomersView->selectionModel(), SIGNAL(selectionChanged(const QItemSelection &, const QItemSelection &)), this, SLOT(onTableSelectionChanged(const QItemSelection &, const QItemSelection &)));
     connect (mSearchField, SIGNAL(textChanged(const QString &)), this, SLOT(setTableFilter(const QString &)));

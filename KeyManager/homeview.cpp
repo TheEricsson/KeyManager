@@ -14,15 +14,19 @@ HomeView::HomeView(QWidget *parent)
     setHeader("KEYMANAGER");
 
     QPixmap logo (":/images/logo.png");
+    QPixmap logo_scaled = logo.scaledToWidth(Gui::logoWidth, Qt::SmoothTransformation);
     QLabel *label = new QLabel(this);
     label->setScaledContents(true);
     label->setMaximumHeight(Gui::logoHeight);
     label->setMaximumWidth(Gui::logoWidth);
     label->setContentsMargins(0,0,0,0);
-    label->setPixmap(logo);
+    label->setPixmap(logo_scaled);
     label->setAlignment(Qt::AlignHCenter);
     label->setSizePolicy(QSizePolicy::MinimumExpanding, QSizePolicy::MinimumExpanding);
     layout()->addWidget(label);
+
+    QSpacerItem *spacer = new QSpacerItem (0, 0, QSizePolicy::Expanding, QSizePolicy::Expanding);
+    layout()->addItem(spacer);
 
     QList <Gui::MenuButton> menuButtons;
     menuButtons.append(Gui::MenuButton::Scanner);

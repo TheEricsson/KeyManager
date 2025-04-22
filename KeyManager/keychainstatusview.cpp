@@ -46,10 +46,10 @@ KeychainStatusView::KeychainStatusView(QWidget *parent)
     mKeychainStreet = new QLabel (this);
     mKeychainCity = new QLabel (this);
 
-    QPushButton *keyCodeBtn = new QPushButton (this);
-    keyCodeBtn->setMinimumHeight(100);
-    keyCodeBtn->setMinimumWidth(100);
-    keyCodeBtn->setSizePolicy(QSizePolicy::Minimum, QSizePolicy::MinimumExpanding);
+    mKeysImgPreview = new QPushButton ("Bild hinzufügen", this);
+    mKeysImgPreview->setMinimumHeight(100);
+    mKeysImgPreview->setMinimumWidth(100);
+    mKeysImgPreview->setSizePolicy(QSizePolicy::Minimum, QSizePolicy::Minimum);
 
     QSpacerItem *spacerItem = new QSpacerItem (1,1, QSizePolicy::MinimumExpanding, QSizePolicy::Minimum);
 
@@ -65,7 +65,7 @@ KeychainStatusView::KeychainStatusView(QWidget *parent)
     keychainData->addWidget(mKeychainStreet, 3, 1);
     keychainData->addWidget(mKeychainCity, 4, 1);
     keychainData->addItem(spacerItem, 0, 3, 1, 1);
-    keychainData->addWidget(keyCodeBtn, 0, 4, 5, 1, Qt::AlignLeft);
+    keychainData->addWidget(mKeysImgPreview, 0, 4, 5, 1, Qt::AlignLeft);
 
     layout()->addItem(keychainData);
 
@@ -73,11 +73,11 @@ KeychainStatusView::KeychainStatusView(QWidget *parent)
 
     //layout()->addWidget(mKeychain);
 
-    mKeysImgPreview = new QPushButton ("Bild hinzufügen...", this);
-    mKeysImgPreview->setMinimumHeight(100);
-    mKeysImgPreview->setMinimumWidth(100);
-    mKeysImgPreview->setSizePolicy(QSizePolicy::MinimumExpanding, QSizePolicy::MinimumExpanding);
-    layout()->addWidget(mKeysImgPreview);
+    // mKeysImgPreview = new QPushButton ("Bild hinzufügen...", this);
+    // mKeysImgPreview->setMinimumHeight(100);
+    // mKeysImgPreview->setMinimumWidth(100);
+    // mKeysImgPreview->setSizePolicy(QSizePolicy::MinimumExpanding, QSizePolicy::MinimumExpanding);
+    // layout()->addWidget(mKeysImgPreview);
 
     QLabel *keysHeader = new QLabel ("Hinterlegte Schlüssel", this);
     layout()->addWidget(keysHeader);
@@ -90,6 +90,9 @@ KeychainStatusView::KeychainStatusView(QWidget *parent)
 
     mHistory = new QTableView (this);
     layout()->addWidget(mHistory);
+
+    QSpacerItem *spacer = new QSpacerItem (0, 0, QSizePolicy::Expanding, QSizePolicy::Expanding);
+    layout()->addItem(spacer);
 
     QList<Gui::MenuButton> menuButtons;
     menuButtons.append(Gui::Back);
@@ -112,7 +115,7 @@ KeychainStatusView::KeychainStatusView(QWidget *parent)
     mFilteredHistoryModel->setSourceModel(mHistoryModel);
     mHistory->setModel(mFilteredHistoryModel);
 
-    connect (keyCodeBtn, SIGNAL(clicked()), this, SLOT (keyCodeBtnClicked()));
+    //connect (keyCodeBtn, SIGNAL(clicked()), this, SLOT (keyCodeBtnClicked()));
     connect (mKeysImgPreview, SIGNAL(clicked()), this, SLOT (keyImgBtnClicked()));
 }
 

@@ -30,9 +30,9 @@ AddRecipientView::AddRecipientView (QWidget *parent)
     QRadioButton *isPrivatePerson = new QRadioButton ("Privatperson", this);
     QRadioButton *isEmployee = new QRadioButton ("Mitarbeiter", this);
 
-    isPrivatePerson->setStyleSheet("QRadioButton::indicator {width: 25px; height 25px;}");
-    isEmployee->setStyleSheet("QRadioButton::indicator {width: 25px; height 25px;}");
-    mIsCompany->setStyleSheet("QRadioButton::indicator {width: 25px; height 25px;}");
+    // isPrivatePerson->setStyleSheet("QRadioButton::indicator {width: 25px; height 25px;}");
+    // isEmployee->setStyleSheet("QRadioButton::indicator {width: 25px; height 25px;}");
+    // mIsCompany->setStyleSheet("QRadioButton::indicator {width: 25px; height 25px;}");
 
     QHBoxLayout *recipientTypeBtnBox = new QHBoxLayout ();
     recipientTypeBtnBox->addWidget(mIsCompany);
@@ -82,6 +82,9 @@ AddRecipientView::AddRecipientView (QWidget *parent)
     gridLayout->addWidget(mCityEdit, 6, 1, 1, 1);
 
     layout()->addItem(gridLayout);
+
+    QSpacerItem *spacer = new QSpacerItem (0, 0, QSizePolicy::Expanding, QSizePolicy::Expanding);
+    layout()->addItem(spacer);
 
     QList<Gui::MenuButton> menuButtons;
     menuButtons.append(Gui::Back);

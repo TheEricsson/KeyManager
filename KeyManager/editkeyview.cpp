@@ -28,6 +28,9 @@ EditKeyView::EditKeyView(QWidget *parent) : WinSubmenu {parent}
     layout()->addWidget(headerTable);
     layout()->addWidget(mKeys);
 
+    QSpacerItem *spacer = new QSpacerItem (0, 0, QSizePolicy::Expanding, QSizePolicy::Expanding);
+    layout()->addItem(spacer);
+
     QList<Gui::MenuButton> menuButtons;
     menuButtons.append(Gui::Back);
     menuButtons.append(Gui::AddKey);

@@ -24,9 +24,9 @@ WinSubmenu::WinSubmenu(QWidget *parent)
     mLayout->addWidget(mHeaderLabel,0,Qt::AlignCenter);
 
     mHeaderLabel->setSizePolicy(QSizePolicy::Expanding, QSizePolicy::MinimumExpanding);
-    mHeaderLabel->setStyleSheet("QLabel {background-color: #e0ffff; color: black; font: bold 30px; border-style: solid; border-width: 1px; border-radius: 5px; border-color: #A9A9A9; }");
+    //mHeaderLabel->setStyleSheet("QLabel {background-color: #e0ffff; color: black; font: bold 30px; border-style: solid; border-width: 1px; border-radius: 5px; border-color: #A9A9A9; }");
 
-    setStyleSheet("QToolButton {border-style: solid; border-width: 1px; border-radius: 10px; border-color: #A9A9A9; font: 12px; padding: 6px;}");
+    //setStyleSheet("QToolButton {border-style: solid; border-width: 1px; border-radius: 10px; border-color: #A9A9A9; font: 12px; padding: 6px;}");
 }
 
 void WinSubmenu::setDataInterface (DataInterface *data)
@@ -156,8 +156,8 @@ void WinSubmenu::setMenuButtons (const QList<Gui::MenuButton> &buttons)
 
     if (mButtonLayout)
     {
-        QSpacerItem *spacer = new QSpacerItem (0, 0, QSizePolicy::Expanding,QSizePolicy::Expanding);
-        mLayout->addSpacerItem(spacer);
+        // QSpacerItem *spacer = new QSpacerItem (0, 0, QSizePolicy::Expanding,QSizePolicy::Expanding);
+        // mLayout->addSpacerItem(spacer);
         mLayout->addLayout(mButtonLayout);
     }
 

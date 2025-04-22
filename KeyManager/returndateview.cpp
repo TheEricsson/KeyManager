@@ -30,7 +30,7 @@ ReturnDateView::ReturnDateView (QWidget *parent)
     btnGroup->addButton(handoverEndOfService);
 
     mReturnDateLabel = new QLabel (this);
-    mReturnDateLabel->setStyleSheet("{font: bold 25px; color: #EE2C2C}");
+    //mReturnDateLabel->setStyleSheet("{font: bold 25px; color: #EE2C2C}");
 
     QVBoxLayout *layout = new QVBoxLayout ();
 

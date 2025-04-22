@@ -266,7 +266,7 @@ void RecipientView::onTableSelectionChanged (const QItemSelection &itemNew, cons
     Q_UNUSED(itemOld);
     Q_UNUSED(itemNew);
 
-    mRecipientNameEdit->setStyleSheet ("");
+    //mRecipientNameEdit->setStyleSheet ("");
     mRecipientNameEdit->setText("");
 
     int row = mRecipients->selectionModel()->currentIndex().row();

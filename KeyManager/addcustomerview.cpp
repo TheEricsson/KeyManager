@@ -24,22 +24,9 @@ AddCustomerView::AddCustomerView(QWidget *parent) : WinSubmenu {parent}
     connect (mCity, SIGNAL(textChanged(QString)), this, SLOT(onValueChanged(QString)));
 
     QLabel *headerStreet = new QLabel ("Straße:", this);
-    headerStreet->setAlignment(Qt::AlignHCenter);
-    headerStreet->setContentsMargins(0,0,0,0);
-    headerStreet->setSizePolicy(QSizePolicy::MinimumExpanding, QSizePolicy::MinimumExpanding);
     QLabel *headerStreetNr = new QLabel ("Hausnummer", this);
-    headerStreetNr->setAlignment(Qt::AlignHCenter);
-    headerStreetNr->setContentsMargins(0,0,0,0);
-    headerStreetNr->setSizePolicy(QSizePolicy::MinimumExpanding, QSizePolicy::MinimumExpanding);
     QLabel *headerAreaCode = new QLabel ("Postleitzahl", this);
-    headerAreaCode->setAlignment(Qt::AlignHCenter);
-    headerAreaCode->setContentsMargins(0,0,0,0);
-    headerAreaCode->setSizePolicy(QSizePolicy::MinimumExpanding, QSizePolicy::MinimumExpanding);
     QLabel *headerCity = new QLabel ("Stadt", this);
-    headerCity->setAlignment(Qt::AlignHCenter);
-    headerCity->setContentsMargins(0,0,0,0);
-    headerCity->setSizePolicy(QSizePolicy::MinimumExpanding, QSizePolicy::MinimumExpanding);
-    QSpacerItem *spacer = new QSpacerItem (1, 1, QSizePolicy::MinimumExpanding,QSizePolicy::Minimum);
 
     QGridLayout *gridLayout = new QGridLayout ();
     gridLayout->addWidget(headerStreet, 0, 0, Qt::AlignLeft);
@@ -54,9 +41,10 @@ AddCustomerView::AddCustomerView(QWidget *parent) : WinSubmenu {parent}
     gridLayout->addWidget(headerCity, 3, 0, Qt::AlignLeft);
     gridLayout->addWidget(mCity, 3, 1, Qt::AlignLeft);
 
-    gridLayout->addItem(spacer, 0, 2);
-
     layout()->addItem(gridLayout);
+
+    QSpacerItem *spacer = new QSpacerItem (0, 0, QSizePolicy::Expanding, QSizePolicy::Expanding);
+    layout()->addItem(spacer);
 
     QList<Gui::MenuButton> menuButtons;
     menuButtons.append(Gui::Back);

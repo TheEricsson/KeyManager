@@ -34,13 +34,13 @@ MainWindow::MainWindow(QWidget *parent)
     : QWidget(parent)
 {
     //setStyleSheet("QWidget {background-color: #FFFAFA; font: 25px;}");
-    setStyleSheet   ("QTableView {background-color: #FFFAFA; font: 20px;}\
-                    QLabel {font: 17px;}\
-                    QCheckBox {font: 17px;}\
-                    QRadioButton {font: 17px;}\
-                    QRadioButton::indicator::unchecked {image: url(:/images/radiobutton_unchecked.png)};\
-                    QRadioButton::indicator::checked {image: url(:/images/radiobutton_checked.png)}\
-                    QRadioButton::indicator {width: 25px; height 25px;}");
+    // setStyleSheet   ("QTableView {background-color: #FFFAFA; font: 20px;}\
+    //                 QLabel {font: 17px;}\
+    //                 QCheckBox {font: 17px;}\
+    //                 QRadioButton {font: 17px;}\
+    //                 QRadioButton::indicator::unchecked {image: url(:/images/radiobutton_unchecked.png)};\
+    //                 QRadioButton::indicator::checked {image: url(:/images/radiobutton_checked.png)}\
+    //                 QRadioButton::indicator {width: 25px; height 25px;}");
 
     mScanView = 0;
     mHomeView = 0;

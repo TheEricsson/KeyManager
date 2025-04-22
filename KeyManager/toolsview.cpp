@@ -1,6 +1,7 @@
 #include "toolsview.h"
 #include "winsubmenu.h"
 #include "codegeneratorview.h"
+#include "globals.h"
 #include <QGridLayout>
 #include <QPushButton>
 
@@ -13,9 +14,13 @@ ToolsView::ToolsView(QWidget *parent)
 
     QGridLayout *gridLayout = new QGridLayout();
     QPushButton *encoderBtn = new QPushButton("Codegenerator", this);
+    encoderBtn->setMinimumSize(QSize(Gui::buttonHeight,Gui::buttonWidth));
 
     gridLayout->addWidget(encoderBtn, 0, 0);
     layout()->addItem(gridLayout);
+
+    QSpacerItem *spacer = new QSpacerItem (0, 0, QSizePolicy::Expanding, QSizePolicy::Expanding);
+    layout()->addItem(spacer);
 
     QList<Gui::MenuButton> menuButtons;
     menuButtons.append(Gui::Back);

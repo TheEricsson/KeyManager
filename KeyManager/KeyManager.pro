@@ -109,7 +109,8 @@ else: unix:!android: target.path = /opt/$${TARGET}/bin
 # DEFINES += NOCAM_ENCODE
 
 RESOURCES += \
-    res/resources.qrc
+    res/resources.qrc \
+    qdarkstyle/light/lightstyle.qrc
 
 DISTFILES += \
     android/AndroidManifest.xml \

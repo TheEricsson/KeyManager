@@ -5,6 +5,7 @@
 
 #include <QTableView>
 #include <QSqlRelationalTableModel>
+#include <QLayout>
 
 EditCustomerView::EditCustomerView(QWidget *parent) : WinSubmenu {parent}
 {
@@ -17,6 +18,9 @@ EditCustomerView::EditCustomerView(QWidget *parent) : WinSubmenu {parent}
     mCustomerModel = new QSqlRelationalTableModel (this);
 
     setCustomersModel(mCustomerModel);
+
+    QSpacerItem *spacer = new QSpacerItem (0, 0, QSizePolicy::Expanding, QSizePolicy::Expanding);
+    layout()->addItem(spacer);
 
     QList<Gui::MenuButton> menuButtons;
     menuButtons.append(Gui::Back);
