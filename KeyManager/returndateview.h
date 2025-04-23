@@ -9,7 +9,7 @@ class QCalendarWidget;
 class QLabel;
 class QCheckBox;
 
-class ReturnDateView : public QWidget
+class ReturnDateView : public WinSubmenu
 {
     Q_OBJECT
     public:
@@ -27,8 +27,6 @@ class ReturnDateView : public QWidget
         QCalendarWidget *mCalendar;
         QLabel *mReturnDateLabel;
         QCheckBox* mHandoverTemporary;
-
-        Database::KeychainStatus mDurationHandout;
 };
 
 #endif // RETURNDATEVIEW_H

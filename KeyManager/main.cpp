@@ -5,11 +5,14 @@
 #include <QFile>
 #include <QFileInfo>
 #include "mainwindow.h"
+#include "datainterface.h"
+#include "iointerfacesqlite.h"
 
 int main(int argc, char *argv[])
 {
     QApplication a(argc, argv);
 
+    //set translator
     QTranslator translator;
     const QStringList uiLanguages = QLocale::system().uiLanguages();
     for (const QString &locale : uiLanguages) {
@@ -20,8 +23,8 @@ int main(int argc, char *argv[])
         }
     }
 
-    QFile f(":qdarkstyle/light/lightstyle.qss");
-
+    //set css styles
+    QFile f(":qdarkstyle/light/lightstyle_.qss");
     if (!f.exists())
     {
         qDebug () << "Unable to set stylesheet, file not found:";
@@ -32,8 +35,17 @@ int main(int argc, char *argv[])
         qApp->setStyleSheet(ts.readAll());
     }
 
-    //the app window
+    //start the app window
     MainWindow w;
+
+    //set interfaces
+    IOInterfaceSQLITE dbInterface;
+    DataInterface dataInterface;
+
+    w.setIOInterface(&dbInterface);
+    w.setDataInterface(&dataInterface);
+
+    w.init();
     w.show();
 
     return a.exec();

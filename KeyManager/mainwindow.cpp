@@ -8,6 +8,7 @@
 #include <QMediaPlayer>
 #include <QStringList>
 #include <QFile>
+#include <QMessageBox>
 
 #include "homeview.h"
 #include "tableview.h"
@@ -25,6 +26,7 @@
 #include "editkeyview.h"
 #include "iointerfacesqlite.h"
 #include "toolsview.h"
+#include "returndateview.h"
 
 #ifndef GMANDANTID
     #define GMANDANTID 1
@@ -52,12 +54,21 @@ MainWindow::MainWindow(QWidget *parent)
     mDataInterface = 0;
     mAddKeychainView = 0;
     mEditKeyView = 0;
-
     mViewStack = 0;
+}
 
-    mDataInterface = new DataInterface();
-    mDbInterface = new IOInterfaceSQLITE ();
+void MainWindow::setDataInterface (DataInterface *dataInterface)
+{
+    mDataInterface = dataInterface;
+}
 
+void MainWindow::setIOInterface (IOInterface *ioInterface)
+{
+    mDbInterface = ioInterface;
+}
+
+void MainWindow::init()
+{
     mViewStack = new QStackedLayout (this);
     setLayout(mViewStack);
 
@@ -72,6 +83,7 @@ MainWindow::MainWindow(QWidget *parent)
     mAddKeychainView = new AddKeychainView (this);
     mEditKeyView = new EditKeyView (this);
     mToolsView = new ToolsView (this);
+    mReturnDateView = new ReturnDateView (this);
 
     registerView (mHomeView);
     registerView (mScanView);
@@ -84,6 +96,7 @@ MainWindow::MainWindow(QWidget *parent)
     registerView (mAddKeychainView);
     registerView (mEditKeyView);
     registerView (mToolsView);
+    registerView (mReturnDateView);
 
     mViewStack->setCurrentWidget(mHomeView);
 
@@ -94,6 +107,7 @@ MainWindow::MainWindow(QWidget *parent)
     mViewStackManager->addNode(ViewStackManager::HandoverOut, mScanView);
     mViewStackManager->addNode(ViewStackManager::HandoverOut, mKeychainStatusView);
     mViewStackManager->addNode(ViewStackManager::HandoverOut, mRecipientView);
+    mViewStackManager->addNode(ViewStackManager::HandoverOut, mReturnDateView);
     mViewStackManager->addNode(ViewStackManager::HandoverOut, mAnnotationView);
     mViewStackManager->addNode(ViewStackManager::HandoverOut, mHandoverView);
 
@@ -106,6 +120,23 @@ MainWindow::MainWindow(QWidget *parent)
 
     mViewStackManager->setCurrentStackId(ViewStackManager::HandoverOut);
     mViewStack->setCurrentWidget(mHomeView);
+
+    // init db
+    if (0 == mDbInterface->countDbTables())
+    {
+        QMessageBox::information(0, "MainWindow::init()",
+                                 "No database found!\n"
+                                 "Creating database tables and default values!", QMessageBox::Ok);
+
+        qDebug() << "First start, creating database";
+
+        if (!mDbInterface->initFirstStart())
+        {
+            QMessageBox::critical(0, "MainWindow::firstStart()",
+                                  "Database initialisation failed!",
+                                  QMessageBox::Cancel);
+        }
+    }
 }
 
 void MainWindow::registerView (WinSubmenu *view)
@@ -184,8 +215,8 @@ void MainWindow::setView (QWidget* view)
 
 MainWindow::~MainWindow()
 {
-    if (mDataInterface)
-        delete mDataInterface;
+    // if (mDataInterface)
+    //     delete mDataInterface;
 
     if (mViewStackManager)
         delete mViewStackManager;

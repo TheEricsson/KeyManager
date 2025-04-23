@@ -24,6 +24,8 @@ class ViewStackManager
             NewCodeScanned = 1,
             Search = 2,
             Settings = 3,
+            Scan = 4,
+            HandoverIn = 5
         };
 
     private:

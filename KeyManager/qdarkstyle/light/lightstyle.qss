@@ -1061,7 +1061,6 @@ QPushButton::menu-indicator {
 }
 
 QDialogButtonBox QPushButton {
-  /* Issue #194 #248 - Special case of QPushButton inside dialogs, for better UI */
   min-width: 80px;
 }
 

@@ -53,7 +53,7 @@ IOInterfaceSQLITE::IOInterfaceSQLITE()
 
     mKeychainStatusId = Database::Undefined;
 
-    QSqlDatabase mDb = QSqlDatabase::addDatabase("QSQLITE");
+    mDb = QSqlDatabase::addDatabase("QSQLITE");
 
     // todo: location is hardcoded by now..
 #ifdef Q_OS_ANDROID
@@ -80,10 +80,8 @@ IOInterfaceSQLITE::IOInterfaceSQLITE()
     if(!ok)
     {
         QMessageBox::critical(0, "Cannot open database",
-                              "Unable to establish a database connection.\n"
-                                 "This example needs SQLite support. Please read "
-                                 "the Qt SQL driver documentation for information how "
-                                 "to build it.", QMessageBox::Cancel);
+                              "Unable to establish a database connection.",
+                              QMessageBox::Cancel);
 
         qDebug () << "AppDataLocation + filename = " << dbLocation;
         qDebug () << "db.open () returned: " << ok;
@@ -103,13 +101,13 @@ IOInterfaceSQLITE::IOInterfaceSQLITE()
         qDebug () << "table: " << tables [i];
     }
 
-    // database is empty -> create
-    if (0 == tables.count())
-    {
-        qDebug () <<  "FIRST START";
+    // // database is empty -> create
+    // if (0 == tables.count())
+    // {
+    //     qDebug () <<  "FIRST START";
 
-        firstStart ();
-    }
+    //     firstStart ();
+    // }
 }
 
 #ifdef Q_OS_ANDROID
@@ -147,21 +145,40 @@ bool IOInterfaceSQLITE::checkPermission()
 }
 #endif
 
-bool IOInterfaceSQLITE::firstStart ()
+int IOInterfaceSQLITE::countDbTables()
 {
-    qDebug () << "initTables";
-    initTables();
-    qDebug () << "initDefaultValues";
-    initDefaultValues();
+    if (!mDb.isValid())
+        qDebug () << "db invalid";
+
+    if (!mDb.isOpen())
+        qDebug () << "db not opened";
+
+    QStringList tables = mDb.tables();
+
+    qDebug () << "number of tables: " << tables.count();
+
+    for (int i=0;i<tables.count();i++)
+    {
+        qDebug () << "table: " << tables [i];
+    }
+
+    return tables.count();
+}
+
+bool IOInterfaceSQLITE::initFirstStart ()
+{
+    if (!initTables())
+        return false;
+    if (!initDefaultValues())
+        return false;
 
     return true;
 }
 
 bool IOInterfaceSQLITE::initTables()
 {
-    QSqlQuery query;
-
-    // TODO add all tables for first start and fill some data
+    // add all tables for first start and fill with default data
+    QSqlQuery query;  
 
     bool retVal = false;
 
@@ -447,8 +464,6 @@ bool IOInterfaceSQLITE::findKeyCode(unsigned int code)
 //keychain data
 Database::KeychainStatus IOInterfaceSQLITE::getKeychainStatusId (const int& keyCode)
 {
-
-
     QSqlQuery query;
     query.prepare("SELECT keychainStatusId FROM keychains WHERE id = ?");
     query.bindValue(0, keyCode);
@@ -464,8 +479,6 @@ Database::KeychainStatus IOInterfaceSQLITE::getKeychainStatusId (const int& keyC
 
 const QString IOInterfaceSQLITE::getKeychainStatusText (int statusId)
 {
-
-
     QSqlQuery query;
     query.prepare("SELECT status FROM keychainStates WHERE id = ?");
     query.bindValue(0, statusId);
@@ -496,8 +509,6 @@ int IOInterfaceSQLITE::getKeychainInternalLocation (const int& keyCode)
 
 int IOInterfaceSQLITE::getKeychainAddressId (const int& keyCode)
 {
-
-
     QSqlQuery query;
     query.prepare("SELECT addressId FROM keychains WHERE id = ?");
     query.bindValue(0, keyCode);
@@ -513,8 +524,6 @@ int IOInterfaceSQLITE::getKeychainAddressId (const int& keyCode)
 
 const QString IOInterfaceSQLITE::getAddressStreet (const int& addressId)
 {
-
-
     QSqlQuery query;
     query.prepare("SELECT street FROM keyAddresses WHERE id = ?");
     query.bindValue(0, addressId);
@@ -530,8 +539,6 @@ const QString IOInterfaceSQLITE::getAddressStreet (const int& addressId)
 
 const QString IOInterfaceSQLITE::getAddressStreetNumber (const int& addressId)
 {
-
-
     QSqlQuery query;
     query.prepare("SELECT streetNumber FROM keyAddresses WHERE id = ?");
     query.bindValue(0, addressId);
@@ -547,8 +554,6 @@ const QString IOInterfaceSQLITE::getAddressStreetNumber (const int& addressId)
 
 int IOInterfaceSQLITE::getAddressAreaCode (const int& addressId)
 {
-
-
     QSqlQuery query;
     query.prepare("SELECT areaCode FROM keyAddresses WHERE id = ?");
     query.bindValue(0, addressId);
@@ -564,8 +569,6 @@ int IOInterfaceSQLITE::getAddressAreaCode (const int& addressId)
 
 const QString IOInterfaceSQLITE::getAddressCity (const int& addressId)
 {
-
-
     QSqlQuery query;
     query.prepare("SELECT city FROM keyAddresses WHERE id = ?");
     query.bindValue(0, addressId);

@@ -5,9 +5,9 @@
 #include <QCalendarWidget>
 #include <QLabel>
 #include <QDate>
-#include "dataobjecthandover.h"
+#include "datainterface.h"
 
-ReturnDateView::ReturnDateView (QWidget *parent)
+ReturnDateView::ReturnDateView (QWidget *parent) : WinSubmenu {parent}
 {
     mCalendar = 0;
 
@@ -32,20 +32,24 @@ ReturnDateView::ReturnDateView (QWidget *parent)
     mReturnDateLabel = new QLabel (this);
     //mReturnDateLabel->setStyleSheet("{font: bold 25px; color: #EE2C2C}");
 
-    QVBoxLayout *layout = new QVBoxLayout ();
+    //QVBoxLayout *layout = new QVBoxLayout ();
 
-    layout->addWidget(mHandoverTemporary);
-    layout->addWidget(handoverPermanent);
-    layout->addWidget(handoverEndOfService);
-    layout->addWidget(mCalendar);
-    layout->addWidget(mReturnDateLabel);
+    layout()->addWidget(mHandoverTemporary);
+    layout()->addWidget(handoverPermanent);
+    layout()->addWidget(handoverEndOfService);
+    layout()->addWidget(mCalendar);
+    layout()->addWidget(mReturnDateLabel);
 
-    setLayout(layout);
+    QSpacerItem *spacer = new QSpacerItem (0, 0, QSizePolicy::Expanding, QSizePolicy::Expanding);
+    layout()->addItem(spacer);
+
+    QList<Gui::MenuButton> menuButtons;
+    menuButtons.append(Gui::Back);
+    menuButtons.append(Gui::Next);
+    setMenuButtons(menuButtons);
 
     mCalendar->setMinimumDate(QDate::currentDate());
     mCalendar->setSelectedDate(QDate::currentDate().addDays(14));
-    onDateClicked(mCalendar->selectedDate());
-    mDurationHandout = Database::KeychainStatus::TemporaryOut;
 
     connect (mHandoverTemporary, SIGNAL (clicked (bool)), this, SLOT(onHandoverTemporaryClicked (bool)));
     connect (handoverPermanent, SIGNAL (clicked (bool)), this, SLOT(onHandoverPermanentClicked (bool)));
@@ -58,13 +62,11 @@ void ReturnDateView::showEvent(QShowEvent *)
     mHandoverTemporary->setChecked (true);
     mCalendar->setMinimumDate(QDate::currentDate());
     mCalendar->setSelectedDate(QDate::currentDate().addDays(14));
-    mDurationHandout = Database::KeychainStatus::TemporaryOut;
+    dataInterface()->setNewKeychainStatusId(Database::KeychainStatus::TemporaryOut);
+    onDateClicked(mCalendar->selectedDate());
     mReturnDateLabel->setVisible(true);
 
     update ();
-
-    emit keychainStatusChanged (mDurationHandout);
-    emit dateSelectionChanged (mCalendar->selectedDate());
 }
 
 
@@ -76,10 +78,8 @@ void ReturnDateView::onHandoverTemporaryClicked (bool aChecked)
     mCalendar->setDisabled(!aChecked);
     //mCalendar->setVisible(aChecked);
     //mReturnDateLabel->setVisible(true);
-    mDurationHandout = Database::KeychainStatus::TemporaryOut;
-
+    dataInterface()->setNewKeychainStatusId(Database::KeychainStatus::TemporaryOut);
     update ();
-    emit keychainStatusChanged (mDurationHandout);
 }
 
 void ReturnDateView::onHandoverPermanentClicked(bool aChecked)
@@ -90,10 +90,9 @@ void ReturnDateView::onHandoverPermanentClicked(bool aChecked)
     mCalendar->setDisabled(aChecked);
     //mCalendar->setVisible(!aChecked);
     //mReturnDateLabel->setVisible(false);
-    mDurationHandout = Database::KeychainStatus::PermanentOut;
 
+    dataInterface()->setNewKeychainStatusId(Database::KeychainStatus::PermanentOut);
     update ();
-    emit keychainStatusChanged (mDurationHandout);
 }
 
 void ReturnDateView::onHandoverEndOfServiceClicked(bool aChecked)
@@ -104,10 +103,9 @@ void ReturnDateView::onHandoverEndOfServiceClicked(bool aChecked)
     mCalendar->setDisabled(aChecked);
     //mCalendar->setVisible(!aChecked);
     //mReturnDateLabel->setVisible(false);
-    mDurationHandout = Database::KeychainStatus::AdministrationEnded;
 
+    dataInterface()->setNewKeychainStatusId(Database::KeychainStatus::AdministrationEnded);
     update ();
-    emit keychainStatusChanged (mDurationHandout);
 }
 
 void ReturnDateView::onDateClicked (QDate date)
@@ -131,7 +129,7 @@ void ReturnDateView::onDateClicked (QDate date)
 
     mReturnDateLabel->setText(dateLabel);
 
-    update ();
+    dataInterface()->setRecipientDeadlineDate(dateDeadline);
 
-    emit dateSelectionChanged (date);
+    update ();
 }

@@ -22,7 +22,9 @@ class DataInterface;
 class AddKeychainView;
 class EditKeyView;
 class IOInterfaceSQLITE;
+class IOInterface;
 class ToolsView;
+class ReturnDateView;
 
 class ViewStack;
 
@@ -32,7 +34,9 @@ class MainWindow : public QWidget
 
 public:
     explicit MainWindow(QWidget *parent = nullptr);
-    void initDatabase ();
+    void setDataInterface (DataInterface *dataInterface);
+    void setIOInterface (IOInterface *ioInterface);
+    void init();
     ~MainWindow();
 
 private slots:
@@ -61,11 +65,12 @@ private:
     AnnotationView *mAnnotationView;
     AddKeychainView *mAddKeychainView;
     EditKeyView *mEditKeyView;
+    ReturnDateView *mReturnDateView;
 
     // views in the section settings+tools
     ToolsView *mToolsView;
 
     DataInterface *mDataInterface;
-    IOInterfaceSQLITE *mDbInterface;
+    IOInterface *mDbInterface;
 };
 #endif // MAINWINDOW_H

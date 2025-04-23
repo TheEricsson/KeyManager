@@ -14,6 +14,8 @@ class IOInterfaceSQLITE : public IOInterface
 
         IOInterfaceSQLITE();
         ~IOInterfaceSQLITE();
+        int countDbTables();
+        bool initFirstStart();
         bool addKey (const IOInterface::keyData *data);
         bool findKeyCode(unsigned int code);
         Database::KeychainStatus getKeychainStatusId (const int& keyCode);
@@ -49,7 +51,6 @@ class IOInterfaceSQLITE : public IOInterface
 #ifdef Q_OS_ANDROID
         bool checkPermission ();
 #endif
-        bool firstStart ();
         bool initTables ();
         bool initDefaultValues();
         QByteArray imageToByteArray (QImage img);

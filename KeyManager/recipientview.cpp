@@ -57,8 +57,15 @@ RecipientView::RecipientView(QWidget *parent) : WinSubmenu {parent}
     recipientNameLayout->addWidget(mRecipientNameEdit);
     layout()->addItem(recipientNameLayout);
 
-    mReturnDateWidget = new ReturnDateView ();
-    layout()->addWidget(mReturnDateWidget);
+    // QCalendarWidget *calendar = new QCalendarWidget (this);
+    // layout()->addWidget(calendar);
+
+    //mReturnDateWidget = new ReturnDateView (this);
+    //mReturnDateWidget->resize(this->size())
+    //layout()->addWidget(mReturnDateWidget);
+
+    QSpacerItem *spacer = new QSpacerItem (0, 0, QSizePolicy::Expanding, QSizePolicy::Expanding);
+    layout()->addItem(spacer);
 
     QList<Gui::MenuButton> menuButtons;
     menuButtons.append(Gui::Back);
@@ -69,8 +76,8 @@ RecipientView::RecipientView(QWidget *parent) : WinSubmenu {parent}
 
     connect (mRecipients->selectionModel(), SIGNAL(selectionChanged(const QItemSelection &, const QItemSelection &)), this, SLOT(onTableSelectionChanged(const QItemSelection &, const QItemSelection &)));
     connect (mSearchField, SIGNAL(textChanged(const QString &)), this, SLOT(setTableFilter(const QString &)));
-    connect (mReturnDateWidget, SIGNAL(dateSelectionChanged(QDate)), this, SLOT(onSelectedDateChanged (QDate)));
-    connect (mReturnDateWidget, SIGNAL(keychainStatusChanged(Database::KeychainStatus)), this, SLOT(onKeychainStatusChanged (Database::KeychainStatus)));
+    //connect (mReturnDateWidget, SIGNAL(dateSelectionChanged(QDate)), this, SLOT(onSelectedDateChanged (QDate)));
+    //connect (mReturnDateWidget, SIGNAL(keychainStatusChanged(Database::KeychainStatus)), this, SLOT(onKeychainStatusChanged (Database::KeychainStatus)));
     connect (mRecipientNameEdit, SIGNAL(textChanged(const QString &)), this, SLOT(onRecipientNameTextChanged(const QString &)));
 }
 

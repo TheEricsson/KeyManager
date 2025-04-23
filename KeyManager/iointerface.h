@@ -41,6 +41,8 @@ public:
 
     IOInterface();
     virtual ~IOInterface();
+    virtual int countDbTables()                                                                 {return _UNDEFINED;};
+    virtual bool initFirstStart()                                                               {return false;};
     virtual bool addKey (const IOInterface::keyData *data)                                      {Q_UNUSED(data); return false;};
     virtual bool findKeyCode(unsigned int keyCode)                                              {Q_UNUSED(keyCode); return false;};
     virtual unsigned int getLockerIdByKeycode (unsigned int keyCode)                            {Q_UNUSED(keyCode); return 0;};
@@ -74,8 +76,6 @@ public:
     virtual unsigned int getFreeInternalLocation (const unsigned int lockerId)                  {return _UNDEFINED;};
     virtual unsigned int getKeycodeFromInternalLocation (const unsigned int lockerId, const unsigned int internalLoc) {Q_UNUSED(internalLoc); return _UNDEFINED;};
     virtual void byteArrayToImage (QByteArray imgBa, QImage& img)                               {Q_UNUSED(imgBa); Q_UNUSED(img);}
-private:
-    virtual bool firstStart ()                                                                  {return false;};
 #ifdef Q_OS_ANDROID
     virtual bool checkPermission(){};
 #endif
