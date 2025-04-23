@@ -60,12 +60,12 @@ namespace Database
 
     enum RecipientType
     {
-        Company = 0,
-        PrivatePerson = 1,
-        Employee = 2
+        Company = 1,
+        Employee = 2,
+        PrivatePerson = 3
     };
 
-    const int maxHandoverEntries = 10;
+    const int maxHandoverEntries = 50;
 }
 
 #endif // GLOBALS_H
