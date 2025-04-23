@@ -31,6 +31,7 @@ KeychainStatusView::KeychainStatusView(QWidget *parent)
     mFilteredKeyModel = 0;
     //mFilteredKeychainModel = 0;
     mViewData = 0;
+    mCameraView = 0;
 
     setHeader("Informationen zum Schlüsselbund");
 
@@ -342,9 +343,14 @@ void KeychainStatusView::keyCodeBtnClicked()
 void KeychainStatusView::keyImgBtnClicked()
 {
     qDebug () << "KeychainStatusView::keyImgBtnClicked()";
-    mCameraView = new CameraView();
+
+    if (!mCameraView)
+    {
+        mCameraView = new CameraView();
+        connect (mCameraView, SIGNAL(menuButtonClicked(Gui::MenuButton)), this, SLOT(onCameraViewButtonClicked(Gui::MenuButton)));
+    }
+
     mCameraView->show();
-    connect (mCameraView, SIGNAL(menuButtonClicked(Gui::MenuButton)), this, SLOT(onCameraViewButtonClicked(Gui::MenuButton)));
 }
 
 void KeychainStatusView::onCameraViewButtonClicked(Gui::MenuButton btn)
@@ -380,6 +386,12 @@ void KeychainStatusView::onCameraViewButtonClicked(Gui::MenuButton btn)
 
 KeychainStatusView::~KeychainStatusView ()
 {
+    if (mCameraView)
+    {
+        delete mCameraView;
+        mCameraView = 0;
+    }
+
     // if (mKeyOverview)
     // {
     //     delete mKeyOverview;
