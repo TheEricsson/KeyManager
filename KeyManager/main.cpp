@@ -12,6 +12,10 @@ int main(int argc, char *argv[])
 {
     QApplication a(argc, argv);
 
+    QFont font("Roboto");
+    font.setStyleHint(QFont::SansSerif);
+    QApplication::setFont(font);
+
     //set translator
     QTranslator translator;
     const QStringList uiLanguages = QLocale::system().uiLanguages();
@@ -24,7 +28,7 @@ int main(int argc, char *argv[])
     }
 
     //set css styles
-    QFile f(":qdarkstyle/light/lightstyle_.qss");
+    QFile f(":qdarkstyle/light/lightstyle.qss");
     if (!f.exists())
     {
         qDebug () << "Unable to set stylesheet, file not found:";
