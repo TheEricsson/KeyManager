@@ -1,6 +1,7 @@
 #include "printerinterfacepdf.h"
 #include <QFileDialog>
 #include <QPainterPath>
+#include <QDesktopServices>
 
 PrinterInterfacePdf::PrinterInterfacePdf()
 {
@@ -15,11 +16,11 @@ PrinterInterfacePdf::PrinterInterfacePdf()
 
 void PrinterInterfacePdf::saveAsFile()
 {
-    //this->finish ();
-
     QString fileName = QFileDialog::getSaveFileName((QWidget* )0, "Export PDF", QString(), "*.pdf");
     if (QFileInfo(fileName).suffix().isEmpty()) { fileName.append(".pdf"); }
     mPrinter.setOutputFileName(fileName);
+
+    QDesktopServices::openUrl(QFileInfo(fileName).path());
 }
 
 void PrinterInterfacePdf::add (const QImage& img, QRect size, QRect margin, bool foldable, PrinterInterface::BorderStyle borderstyle)
