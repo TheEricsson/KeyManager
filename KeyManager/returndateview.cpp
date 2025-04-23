@@ -51,21 +51,37 @@ ReturnDateView::ReturnDateView (QWidget *parent) : WinSubmenu {parent}
     mCalendar->setMinimumDate(QDate::currentDate());
     mCalendar->setSelectedDate(QDate::currentDate().addDays(14));
 
-    connect (mHandoverTemporary, SIGNAL (clicked (bool)), this, SLOT(onHandoverTemporaryClicked (bool)));
-    connect (handoverPermanent, SIGNAL (clicked (bool)), this, SLOT(onHandoverPermanentClicked (bool)));
-    connect (handoverEndOfService, SIGNAL (clicked (bool)), this, SLOT(onHandoverEndOfServiceClicked (bool)));
+    connect (mHandoverTemporary, SIGNAL (clicked(bool)), this, SLOT(onHandoverTemporaryClicked(bool)));
+    connect (handoverPermanent, SIGNAL (clicked(bool)), this, SLOT(onHandoverPermanentClicked(bool)));
+    connect (handoverEndOfService, SIGNAL (clicked(bool)), this, SLOT(onHandoverEndOfServiceClicked(bool)));
     connect (mCalendar, SIGNAL(clicked(QDate)), this, SLOT(onDateClicked(QDate)));
 }
 
 void ReturnDateView::showEvent(QShowEvent *)
 {
-    mHandoverTemporary->setChecked (true);
-    mCalendar->setMinimumDate(QDate::currentDate());
-    mCalendar->setSelectedDate(QDate::currentDate().addDays(14));
-    dataInterface()->setNewKeychainStatusId(Database::KeychainStatus::TemporaryOut);
-    onDateClicked(mCalendar->selectedDate());
-    mReturnDateLabel->setVisible(true);
-
+    switch (dataInterface()->getKeychainStatusId())
+    {
+        case Database::KeychainStatus::AdministrationEnded:
+        case Database::KeychainStatus::Lost:
+        case Database::KeychainStatus::PermanentOut:
+        case Database::KeychainStatus::TemporaryOut:
+        case Database::KeychainStatus::Undefined:
+            onHandoverPermanentClicked (true);
+            mReturnDateLabel->setVisible(false);
+            dataInterface()->setNewKeychainStatusId(Database::KeychainStatus::Available);
+            emit menuButtonClicked(Gui::Next);
+            break;
+        case Database::KeychainStatus::Available:
+        default:
+            mHandoverTemporary->setChecked(true);
+            onHandoverTemporaryClicked (true);
+            mCalendar->setMinimumDate(QDate::currentDate());
+            mCalendar->setSelectedDate(QDate::currentDate().addDays(14));
+            dataInterface()->setNewKeychainStatusId(Database::KeychainStatus::TemporaryOut);
+            onDateClicked(mCalendar->selectedDate());
+            mReturnDateLabel->setVisible(true);
+            break;
+    }
     update ();
 }
 
@@ -76,9 +92,11 @@ void ReturnDateView::onHandoverTemporaryClicked (bool aChecked)
         return;
 
     mCalendar->setDisabled(!aChecked);
+    mReturnDateLabel->setVisible(true);
     //mCalendar->setVisible(aChecked);
     //mReturnDateLabel->setVisible(true);
     dataInterface()->setNewKeychainStatusId(Database::KeychainStatus::TemporaryOut);
+    onDateClicked(mCalendar->selectedDate());
     update ();
 }
 
@@ -92,6 +110,8 @@ void ReturnDateView::onHandoverPermanentClicked(bool aChecked)
     //mReturnDateLabel->setVisible(false);
 
     dataInterface()->setNewKeychainStatusId(Database::KeychainStatus::PermanentOut);
+    dataInterface()->setRecipientDeadlineDate ("");
+    mReturnDateLabel->setVisible(false);
     update ();
 }
 
@@ -105,6 +125,8 @@ void ReturnDateView::onHandoverEndOfServiceClicked(bool aChecked)
     //mReturnDateLabel->setVisible(false);
 
     dataInterface()->setNewKeychainStatusId(Database::KeychainStatus::AdministrationEnded);
+    dataInterface()->setRecipientDeadlineDate ("");
+    mReturnDateLabel->setVisible(false);
     update ();
 }
 
