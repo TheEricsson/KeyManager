@@ -202,7 +202,7 @@ void MainWindow::onMenuBtnClicked (Gui::MenuButton btnType)
 //     QUrl filelocation ("qrc:/sounds/scanner_beep.mp3");
 //     player.setSource(filelocation);
 //     audioOut.setVolume(100);
-//     player.play();
+//     player.play();♥
 // }
 
 void MainWindow::setView (QWidget* view)

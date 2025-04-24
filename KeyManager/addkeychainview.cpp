@@ -162,7 +162,7 @@ void AddKeychainView::onMenuBtnClicked (Gui::MenuButton btnType)
             if (true == foundKeyCode)
             {
                 msgBox.setStandardButtons(QMessageBox::Abort);
-                msgBox.setDefaultButton(QMessageBox::Abort);
+                //msgBox.setDefaultButton(QMessageBox::Abort);
                 msgBox.setText ("Fehler!");
                 msgBox.setInformativeText("AddKeychainView::onMenuBtnClicked - keycode duplicate!");
                 msgBox.exec();
@@ -173,7 +173,7 @@ void AddKeychainView::onMenuBtnClicked (Gui::MenuButton btnType)
             if ("" == mInternalLocation->text())
             {
                 msgBox.setStandardButtons(QMessageBox::Abort);
-                msgBox.setDefaultButton(QMessageBox::Abort);
+                //msgBox.setDefaultButton(QMessageBox::Abort);
                 msgBox.setText ("Fehler!");
                 msgBox.setInformativeText("Schlüsselhaken nicht gesetzt!");
                 msgBox.exec();
@@ -183,7 +183,7 @@ void AddKeychainView::onMenuBtnClicked (Gui::MenuButton btnType)
             if (!mRowSelected)
             {
                 msgBox.setStandardButtons(QMessageBox::Abort);
-                msgBox.setDefaultButton(QMessageBox::Abort);
+                //msgBox.setDefaultButton(QMessageBox::Abort);
                 msgBox.setText ("Fehler!");
                 msgBox.setInformativeText("Es wurde keine Liegenschaft ausgewählt!");
                 msgBox.exec();
@@ -193,7 +193,7 @@ void AddKeychainView::onMenuBtnClicked (Gui::MenuButton btnType)
             if (0 != ioInterface()->getKeychainInternalLocation(dataInterface()->getScannedCode()))
             {
                 QString text = "Schlüsselhaken ist bereits belegt!\n";
-                msgBox.setStandardButtons(QMessageBox::Abort);
+                //msgBox.setStandardButtons(QMessageBox::Abort);
                 msgBox.setDefaultButton(QMessageBox::Abort);
                 msgBox.setText ("Fehler!");
                 msgBox.setInformativeText(text);
@@ -215,7 +215,7 @@ void AddKeychainView::onMenuBtnClicked (Gui::MenuButton btnType)
                     {
                         QString text = "Fehler!";
                         msgBox.setStandardButtons(QMessageBox::Abort);
-                        msgBox.setDefaultButton(QMessageBox::Abort);
+                        //msgBox.setDefaultButton(QMessageBox::Abort);
                         msgBox.setText ("AddKeychainView::onMenuBtnClicked -> submitNewKeychain () - SQL Fehler!");
                         msgBox.setInformativeText(text);
                         msgBox.exec();

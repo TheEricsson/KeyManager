@@ -27,6 +27,9 @@ int main(int argc, char *argv[])
         }
     }
 
+    //start the app window
+    MainWindow w;
+
     //set css styles
     QFile f(":qdarkstyle/light/lightstyle.qss");
     if (!f.exists())
@@ -36,11 +39,9 @@ int main(int argc, char *argv[])
     else   {
         f.open(QFile::ReadOnly | QFile::Text);
         QTextStream ts(&f);
-        qApp->setStyleSheet(ts.readAll());
+        //qApp->setStyleSheet(ts.readAll());
+        w.setStyleSheet(ts.readAll());
     }
-
-    //start the app window
-    MainWindow w;
 
     //set interfaces
     IOInterfaceSQLITE dbInterface;
