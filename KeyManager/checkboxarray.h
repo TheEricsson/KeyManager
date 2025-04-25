@@ -16,6 +16,8 @@ class CheckBoxArray : public QWidget
         bool init (const QString &tableName, const QString &filter);
         int getCheckedButtonIndex ();
         ~CheckBoxArray();
+    signals:
+        void radioBtnToggled();
 
     private:
         IOInterface *mIoInterface;

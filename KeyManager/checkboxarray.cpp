@@ -98,7 +98,7 @@ int CheckBoxArray::getCheckedButtonIndex ()
 void CheckBoxArray::onRadioBtnClicked()
 {
     qDebug () << "CheckBoxArray::onRadioBtnClicked()";
-
+    emit radioBtnToggled();
     update();
 }
 
