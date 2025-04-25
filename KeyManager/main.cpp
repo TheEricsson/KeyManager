@@ -14,7 +14,8 @@ int main(int argc, char *argv[])
 
     QFont font("Roboto");
     font.setStyleHint(QFont::SansSerif);
-    QApplication::setFont(font);
+    font.setPixelSize(15);
+    qApp->setFont(font);
 
     //set translator
     QTranslator translator;
@@ -30,19 +31,6 @@ int main(int argc, char *argv[])
     //start the app window
     MainWindow w;
 
-    //set css styles
-    QFile f(":qdarkstyle/light/lightstyle.qss");
-    if (!f.exists())
-    {
-        qDebug () << "Unable to set stylesheet, file not found:";
-    }
-    else   {
-        f.open(QFile::ReadOnly | QFile::Text);
-        QTextStream ts(&f);
-        //qApp->setStyleSheet(ts.readAll());
-        w.setStyleSheet(ts.readAll());
-    }
-
     //set interfaces
     IOInterfaceSQLITE dbInterface;
     DataInterface dataInterface;
@@ -51,6 +39,7 @@ int main(int argc, char *argv[])
     w.setDataInterface(&dataInterface);
 
     w.init();
+
     w.show();
 
     return a.exec();

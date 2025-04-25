@@ -9,6 +9,7 @@
 #include <QStringList>
 #include <QFile>
 #include <QMessageBox>
+#include <QKeyEvent>
 
 #include "homeview.h"
 #include "tableview.h"
@@ -35,15 +36,6 @@
 MainWindow::MainWindow(QWidget *parent)
     : QWidget(parent)
 {
-    //setStyleSheet("QWidget {background-color: #FFFAFA; font: 25px;}");
-    // setStyleSheet   ("QTableView {background-color: #FFFAFA; font: 20px;}\
-    //                 QLabel {font: 17px;}\
-    //                 QCheckBox {font: 17px;}\
-    //                 QRadioButton {font: 17px;}\
-    //                 QRadioButton::indicator::unchecked {image: url(:/images/radiobutton_unchecked.png)};\
-    //                 QRadioButton::indicator::checked {image: url(:/images/radiobutton_checked.png)}\
-    //                 QRadioButton::indicator {width: 25px; height 25px;}");
-
     mScanView = 0;
     mHomeView = 0;
     mTableView = 0;
@@ -55,6 +47,18 @@ MainWindow::MainWindow(QWidget *parent)
     mAddKeychainView = 0;
     mEditKeyView = 0;
     mViewStack = 0;
+
+    //set css styles
+    QFile f(":qdarkstyle/light/lightstyle.qss");
+    if (!f.exists())
+    {
+        qDebug () << "Unable to set stylesheet, file not found:";
+    }
+    else   {
+        f.open(QFile::ReadOnly | QFile::Text);
+        QTextStream ts(&f);
+        setStyleSheet(ts.readAll());
+    }
 }
 
 void MainWindow::setDataInterface (DataInterface *dataInterface)
@@ -124,17 +128,20 @@ void MainWindow::init()
     // init db
     if (0 == mDbInterface->countDbTables())
     {
-        QMessageBox::information(0, "MainWindow::init()",
-                                 "No database found!\n"
-                                 "Creating database tables and default values!", QMessageBox::Ok);
-
-        qDebug() << "First start, creating database";
+        QMessageBox msgBox;
+        msgBox.setStandardButtons(QMessageBox::Abort);
+        msgBox.setText ("Erster Start");
+        msgBox.setInformativeText("Eine neue Datenbank wird erstellt.");
+        msgBox.exec();
 
         if (!mDbInterface->initFirstStart())
         {
-            QMessageBox::critical(0, "MainWindow::firstStart()",
-                                  "Database initialisation failed!",
-                                  QMessageBox::Cancel);
+            QMessageBox msgBox;
+            msgBox.setStandardButtons(QMessageBox::Abort);
+            msgBox.setText ("Fehler!");
+            msgBox.setInformativeText("Datenbank konnte nicht geöffnet werden.");
+            msgBox.setDetailedText(mDbInterface->dbGetLastError());
+            msgBox.exec();
         }
     }
 }
@@ -149,13 +156,13 @@ void MainWindow::registerView (WinSubmenu *view)
 
 void MainWindow::onMenuBtnClicked (Gui::MenuButton btnType)
 {
-    WinSubmenu *sender = dynamic_cast <WinSubmenu*> (QObject::sender());
+    //WinSubmenu *sender = dynamic_cast <WinSubmenu*> (QObject::sender());
 
-    qDebug () << "MainWindow::menuBtnClicked";
-    qDebug () << "btnType: " << btnType;
+    // qDebug () << "MainWindow::menuBtnClicked";
+    // qDebug () << "btnType: " << btnType;
 
-    if (sender)
-    {
+    // if (sender)
+    // {
         QWidget *nextWidget = nullptr;
 
         switch (btnType)
@@ -182,16 +189,25 @@ void MainWindow::onMenuBtnClicked (Gui::MenuButton btnType)
                 mViewStackManager->setCurrentStackId(ViewStackManager::Settings);
                 nextWidget = mViewStackManager->begin();
                 break;
+            case (Gui::Exit):
+                if (reallyQuit())
+                    qApp->quit();
+                break;
             default:
                 qDebug () << "MainWindow::onMenuBtnClicked. Button not catched: " << btnType;
                 return;
         }
 
         if (nextWidget)
+        {
             mViewStack->setCurrentWidget(nextWidget);
+        }
         else
+        {
             mViewStack->setCurrentWidget(mHomeView);
-    }
+        }
+        mViewStack->currentWidget()->setFocus();
+    //}
 }
 
 // void MainWindow::playSound ()
@@ -202,7 +218,7 @@ void MainWindow::onMenuBtnClicked (Gui::MenuButton btnType)
 //     QUrl filelocation ("qrc:/sounds/scanner_beep.mp3");
 //     player.setSource(filelocation);
 //     audioOut.setVolume(100);
-//     player.play();♥
+//     player.play();
 // }
 
 void MainWindow::setView (QWidget* view)
@@ -211,6 +227,31 @@ void MainWindow::setView (QWidget* view)
         return;
 
     mViewStack->setCurrentWidget(view);
+}
+
+bool MainWindow::reallyQuit()
+{
+    QMessageBox msgBox;
+    msgBox.setStandardButtons(QMessageBox::Abort | QMessageBox::Ok);
+    msgBox.setDefaultButton(QMessageBox::Ok);
+    msgBox.setText ("Programm beenden.");
+    msgBox.setInformativeText("Möchten Sie das Programm wirklich beenden?");
+
+    bool ok = false;
+    int selection = msgBox.exec();
+
+    switch (selection)
+    {
+    case QMessageBox::Abort:
+        ok = false;
+        break;
+    case QMessageBox::Ok:
+        ok = true;
+        break;
+    default:
+        break;
+    }
+    return ok;
 }
 
 MainWindow::~MainWindow()

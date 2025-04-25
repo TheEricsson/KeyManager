@@ -14,6 +14,8 @@
 #include <QAudioOutput>
 #include <QScreenCapture>
 #include <QLineEdit>
+#include <QKeyEvent>
+#include <QAudioDevice>
 #include "winsubmenu.h"
 #include "camera.h"
 #include "dataobject.h"
@@ -50,6 +52,15 @@ ScannerView::ScannerView(QWidget *parent)
 
     layout()->addWidget(m_viewfinder);
 
+    // code text field
+    QHBoxLayout *codeLayout = new QHBoxLayout;
+    QLabel *codeDescr = new QLabel ("Daten", this);
+    mCodeLabel = new QLabel (this);
+    codeLayout->addWidget (codeDescr);
+    codeLayout->addWidget(mCodeLabel);
+
+    layout()->addItem(codeLayout);
+
     // mandant text field
     QHBoxLayout *mandantIdLayout = new QHBoxLayout;
     QLabel *mandantDescr = new QLabel ("Mandant", this);
@@ -61,7 +72,7 @@ ScannerView::ScannerView(QWidget *parent)
 
     // key text field
     QHBoxLayout *keyIdLayout = new QHBoxLayout;
-    QLabel *keyDescr = new QLabel ("Schlüssel", this);
+    QLabel *keyDescr = new QLabel ("Schlüsselnummer", this);
     mKeyLabel = new QLabel (this);
     keyIdLayout->addWidget (keyDescr);
     keyIdLayout->addWidget(mKeyLabel);
@@ -115,19 +126,68 @@ void ScannerView::stopScanner ()
         mGrabTimer->stop();
 
     if (mCameraInstance)
+    {
         mCameraInstance->stopCamera();
+        delete mCameraInstance;
+        mCameraInstance = 0;
+    }
 
     setScannerState (ScannerState::READY);
 }
 
+bool ScannerView::codeIsValid(const unsigned int code)
+{
+    if (code <= 99999999 && code >= 10001)
+        return true;
+    else
+        return false;
+}
+
+void ScannerView::playSound()
+{
+    const auto devices = QMediaDevices::audioOutputs();
+    for (const QAudioDevice &device : devices)
+        qDebug() << "Device: " << device.description();
+
+    QMediaPlayer player;
+    QAudioOutput audioOut;
+    audioOut.setDevice(QMediaDevices::defaultAudioOutput());
+    audioOut.setMuted(false);
+    audioOut.setVolume(100);
+    QUrl filelocation ("qrc:/sounds/scanner_beep.mp3");
+    player.setSource(filelocation);
+    player.setAudioOutput(&audioOut);
+    player.play();
+}
+
+void ScannerView::keyReleaseEvent(QKeyEvent *event)
+{
+    //override android key release event for back button
+    //stop camera before quitting view
+    switch (event->key())
+    {
+        case Qt::Key_Back:
+            onMenuBtnClicked(Gui::Back);
+            break;
+        default:
+            break;
+    }
+}
+
 void ScannerView::onMenuBtnClicked (Gui::MenuButton btnType)
 {
-    if (Gui::Repeat == btnType)
+    switch (btnType)
     {
-        startScanner();
+        case Gui::Repeat:
+            startScanner();
+            break;
+        case Gui::Back:
+            stopScanner();
+            emit menuButtonClicked(btnType);
+            break;
+        default:
+            break;
     }
-    else
-        WinSubmenu::menuButtonClicked(btnType);
 }
 
 void ScannerView::decodeFromVideoFrame ()
@@ -137,40 +197,48 @@ void ScannerView::decodeFromVideoFrame ()
     // no cam on windows pc -> use test image with barcode
     //QImage testCode (":/images/barcode00010150.png");
     QImage testCode (":/images/qrcode_0001-0001.png");
-    QString barcode = decoder.decodeImage(testCode);
+    QString decodedString = decoder.decodeImage(testCode);
 #else
-    QString barcode = decoder.decodeImage(capture);
+    QString decodedString = decoder.decodeImage(capture);
 #endif
 
-    QString barcodeAsNumber = barcode.mid (0, 4);
-    barcodeAsNumber.append(barcode.mid(5, 4));
-    int barcodeAsInt = barcodeAsNumber.toInt();
+    QString barcodeAsNumber = decodedString.mid (0, 4);
+    barcodeAsNumber.append(decodedString.mid(5, 4));
+    unsigned int barcodeAsInt = barcodeAsNumber.toInt();
 
-    if ("" != barcode.toStdString())
+    if ("" != decodedString.toStdString())
     {
-        qDebug () << "barcode:" << barcode;
+        qDebug () << "barcode:" << decodedString;
         qDebug () << "barcodeAsNumber:" << barcodeAsNumber;
         qDebug () << "barcodeAsInt: = " << barcodeAsInt;
     }
 
-    QString customerId = barcode.mid (0, 4);
-    QString keyId = barcode.mid (5, 4);
+    mCodeLabel->setText(decodedString);
 
-    if (customerId == "0001" && 4 == keyId.length())
+    QString customerId = decodedString.mid (0, 4);
+    QString keyId = decodedString.mid (5, 4);
+
+    if  (codeIsValid(barcodeAsInt))
     {
         mGrabTimer->stop ();
         mCameraInstance->stopCamera();
 
         // code recognized: play a supermarket beep sound :)
-        //playSound ();
+        playSound ();
 
-        setKeyLabel(barcodeAsNumber);
+        setCustomerLabel(customerId);
+        setKeyLabel(keyId);
 
         dataInterface()->resetScannerData();
         dataInterface()->setScannedCode (barcodeAsInt);
 
         // set scanview ui state
         setScannerState(ScannerState::SCANSUCCEEDED);
+    }
+    else
+    {
+        QString codeLabelWAppendix = decodedString + " (ungültig)";
+        mCodeLabel->setText(codeLabelWAppendix);
     }
 }
 
@@ -255,15 +323,15 @@ const QString ScannerView::getKeyLabel()
 
 ScannerView::~ScannerView()
 {
-    if (m_viewfinder != 0)
+    if (m_viewfinder)
     {
         delete m_viewfinder;
         m_viewfinder = 0;
     }
 
-    // if (mScannerData != 0)
-    // {
-    //     delete mScannerData;
-    //     mScannerData = 0;
-    // }
+    if (mCameraInstance)
+    {
+        delete mCameraInstance;
+        mCameraInstance = 0;
+    }
 }

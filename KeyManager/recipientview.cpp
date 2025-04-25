@@ -10,7 +10,6 @@
 #include <QSqlRelationalTableModel>
 #include <QItemSelection>
 #include <QLineEdit>
-#include <QMessageBox>
 #include <QCalendarWidget>
 #include <QCheckBox>
 #include <QButtonGroup>

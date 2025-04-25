@@ -71,43 +71,19 @@ IOInterfaceSQLITE::IOInterfaceSQLITE()
     QString dbLocation = "db.sqlite";
 #endif
 
-    qDebug () << "dbLocation: " << dbLocation;
-
     mDb.setDatabaseName(dbLocation);
 
     bool ok = mDb.open ();
 
     if(!ok)
     {
-        QMessageBox::critical(0, "Cannot open database",
-                              "Unable to establish a database connection.",
-                              QMessageBox::Cancel);
-
-        qDebug () << "AppDataLocation + filename = " << dbLocation;
-        qDebug () << "db.open () returned: " << ok;
-        qDebug () << mDb.isOpen();
-        qDebug () << mDb.isOpenError();
-
-        qDebug () << "mDb.databaseName(): " << mDb.databaseName();
-        qDebug () << "mDb.connectionName(): " << mDb.connectionName();
+        QMessageBox msgBox;
+        msgBox.setStandardButtons(QMessageBox::Abort);
+        msgBox.setText ("Fehler!");
+        msgBox.setInformativeText("Datenbank konnte nicht geöffnet werden.");
+        msgBox.setDetailedText(mDb.lastError().text());
+        msgBox.exec();
     }
-
-    QStringList tables = mDb.tables();
-
-    qDebug () << "number of tables: " << tables.count();
-
-    for (int i=0;i<tables.count();i++)
-    {
-        qDebug () << "table: " << tables [i];
-    }
-
-    // // database is empty -> create
-    // if (0 == tables.count())
-    // {
-    //     qDebug () <<  "FIRST START";
-
-    //     firstStart ();
-    // }
 }
 
 #ifdef Q_OS_ANDROID
@@ -1083,6 +1059,11 @@ unsigned int IOInterfaceSQLITE::getKeycodeFromInternalLocation (const unsigned i
     }
     else
         return 0;
+}
+
+const QString IOInterfaceSQLITE::dbGetLastError()
+{
+    return mDb.lastError().text();
 }
 
 void IOInterfaceSQLITE::byteArrayToImage (QByteArray imgBa, QImage& img)

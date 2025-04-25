@@ -4,6 +4,8 @@
 #include <QGridLayout>
 #include <QLabel>
 #include <QLayout>
+#include <QFile>
+#include <QKeyEvent>
 #include "globals.h"
 #include "dataobject.h"
 #include "menubutton.h"
@@ -24,7 +26,20 @@ WinSubmenu::WinSubmenu(QWidget *parent)
     mLayout->addWidget(mHeaderLabel,0,Qt::AlignCenter);
 
     mHeaderLabel->setSizePolicy(QSizePolicy::Expanding, QSizePolicy::MinimumExpanding);
-    //mHeaderLabel->setStyleSheet("QLabel {background-color: #e0ffff; color: black; font: bold 30px; border-style: solid; border-width: 1px; border-radius: 5px; border-color: #A9A9A9; }");
+
+    //set css styles
+    QFile f(":qdarkstyle/light/lightstyle.qss");
+    if (!f.exists())
+    {
+        qDebug () << "Unable to set stylesheet, file not found:";
+    }
+    else   {
+        f.open(QFile::ReadOnly | QFile::Text);
+        QTextStream ts(&f);
+        this->setStyleSheet(ts.readAll());
+    }
+
+    // mHeaderLabel->setStyleSheet("QLabel {background-color: #e0ffff; color: black; font: bold 30px; border-style: solid; border-width: 1px; border-radius: 5px; border-color: #A9A9A9; }");
 
     //setStyleSheet("QToolButton {border-style: solid; border-width: 1px; border-radius: 10px; border-color: #A9A9A9; font: 12px; padding: 6px;}");
 }
@@ -81,6 +96,11 @@ void WinSubmenu::setMenuButtons (const QList<Gui::MenuButton> &buttons)
         menuBtn->setButtonType(buttons[i]);
         menuBtn->setIconSize(QSize(Gui::buttonWidth,Gui::buttonHeight));
         menuBtn->setToolButtonStyle(Qt::ToolButtonTextUnderIcon);
+
+        QFont font("Roboto");
+        font.setStyleHint(QFont::SansSerif);
+        font.setPixelSize(12);
+        menuBtn->setFont(font);
 
         switch (buttons[i])
         {
@@ -208,6 +228,20 @@ void WinSubmenu::hideButton (int column, bool disable)
 void WinSubmenu::showButton (int column, bool enable)
 {
     hideButton(column, !enable);
+}
+
+void WinSubmenu::keyReleaseEvent(QKeyEvent *event)
+{
+    //catch native android button (back) and handle like the gui generated back key
+    switch (event->key())
+    {
+    case Qt::Key_Back:
+        qDebug () << "WinSubmenu::keyReleaseEvent - back key pressed";
+        onMenuBtnClicked(Gui::Back);
+        break;
+    default:
+        break;
+    }
 }
 
 WinSubmenu::~WinSubmenu ()

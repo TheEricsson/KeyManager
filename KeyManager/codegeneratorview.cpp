@@ -141,7 +141,13 @@ bool CodeGeneratorView::checkValues()
         return true;
     }
     else
-        QMessageBox::information(this, "Fehler", "Bitte Eingaben prüfen.");
+    {
+        QMessageBox msgBox;
+        msgBox.setStandardButtons(QMessageBox::Abort);
+        msgBox.setText ("Fehler!");
+        msgBox.setInformativeText("Eingaben unvollständig. Bitte prüfen.");
+        msgBox.exec();
+    }
     return false;
 }
 

@@ -17,7 +17,9 @@ AddKeyView::AddKeyView(QWidget *parent) : WinSubmenu {parent}
 
     mKeyDescription = new QTextEdit (this);
     mKeyCategories = new CheckBoxArray (this);
+    connect (mKeyCategories, SIGNAL(radioBtnToggled()), this, SLOT(onRadioBtnToggled()));
     mKeyStates = new CheckBoxArray (this);
+    connect (mKeyStates, SIGNAL(radioBtnToggled()), this, SLOT(onRadioBtnToggled()));
 
     QLabel *headerKeyCat = new QLabel ("Schlüsselkategorie", this);
     headerKeyCat->setAlignment(Qt::AlignHCenter);
@@ -82,6 +84,12 @@ void AddKeyView::onMenuBtnClicked (Gui::MenuButton btnType)
     }
 }
 
+void AddKeyView::onRadioBtnToggled()
+{
+    qDebug() << "AddKeyView::onRadioBtnToggled()";
+    update();
+}
+
 void AddKeyView::showEvent(QShowEvent *)
 {
     reset ();
@@ -103,7 +111,11 @@ bool AddKeyView::checkSelections ()
     if (_UNDEFINED == mKeyCategories->getCheckedButtonIndex() ||
         _UNDEFINED == mKeyStates->getCheckedButtonIndex())
     {
-        QMessageBox::information(0, "Unvollständige Eingaben", "Bitte vollständige Auswahl treffen.", QMessageBox::Ok);
+        QMessageBox msgBox;
+        msgBox.setStandardButtons(QMessageBox::Abort);
+        msgBox.setText ("Fehler!");
+        msgBox.setInformativeText("Eingaben unvollständig. Bitte prüfen.");
+        msgBox.exec();
         return false;
     }
     return true;

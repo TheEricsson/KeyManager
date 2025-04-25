@@ -1069,6 +1069,25 @@ QDialogButtonBox QPushButton {
 https://doc.qt.io/qt-5/stylesheet-examples.html#customizing-qtoolbutton
 
 --------------------------------------------------------------------------- */
+/*QToolButton {
+  border-style: solid;
+  border-width: 1px;
+  border-radius: 10px;
+  border-color: #A9A9A9;
+  font: 12px;
+  padding: 6px;
+}
+
+QToolButton:disabled {
+  opacity: 0.5;
+  border-style: solid;
+  border-width: 1px;
+  border-radius: 10px;
+  border-color: #A9A9A9;
+  font: 12px;
+  padding: 6px;
+}*/
+
 QToolButton {
   background-color: #C0C4C8;
   color: #19232D;
@@ -1076,9 +1095,6 @@ QToolButton {
   padding: 2px;
   outline: none;
   border: none;
-  /* The subcontrols below are used only in the DelayedPopup mode */
-  /* The subcontrols below are used only in the MenuButtonPopup mode */
-  /* The subcontrol below is used only in the InstantPopup or DelayedPopup mode */
 }
 
 QToolButton:disabled {

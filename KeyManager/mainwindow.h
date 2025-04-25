@@ -37,6 +37,7 @@ public:
     void setDataInterface (DataInterface *dataInterface);
     void setIOInterface (IOInterface *ioInterface);
     void init();
+    bool reallyQuit();
     ~MainWindow();
 
 private slots:

@@ -72,12 +72,13 @@ public:
     virtual bool dbCleanupTable (const QString& tablename, \
                                 const QString& filter, \
                                 const int numberOfEntriesToKeep)                                {Q_UNUSED(tablename); Q_UNUSED(filter); Q_UNUSED(numberOfEntriesToKeep); return false;};
-    virtual unsigned int getFreeKeycode (const unsigned int lockerId)                           {return _UNDEFINED;};
-    virtual unsigned int getFreeInternalLocation (const unsigned int lockerId)                  {return _UNDEFINED;};
+    virtual unsigned int getFreeKeycode (const unsigned int lockerId)                           {Q_UNUSED(lockerId); return _UNDEFINED;};
+    virtual unsigned int getFreeInternalLocation (const unsigned int lockerId)                  {Q_UNUSED(lockerId); return _UNDEFINED;};
     virtual unsigned int getKeycodeFromInternalLocation (const unsigned int lockerId, const unsigned int internalLoc) {Q_UNUSED(internalLoc); return _UNDEFINED;};
+    virtual const QString dbGetLastError()                                                      {return "IOInterface::dbGetLastError - not implemented.";};
     virtual void byteArrayToImage (QByteArray imgBa, QImage& img)                               {Q_UNUSED(imgBa); Q_UNUSED(img);}
 #ifdef Q_OS_ANDROID
-    virtual bool checkPermission(){};
+    virtual bool checkPermission()                                                              {return false;};
 #endif
 };
 

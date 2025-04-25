@@ -44,7 +44,7 @@ class IOInterfaceSQLITE : public IOInterface
         unsigned int getFreeKeycode (const unsigned int lockerId);
         unsigned int getFreeInternalLocation (const unsigned int lockerId);
         unsigned int getKeycodeFromInternalLocation (const unsigned int lockerId, const unsigned int internalLoc);
-
+        const QString dbGetLastError();
         void byteArrayToImage (QByteArray imgBa, QImage& img);
 
     private:

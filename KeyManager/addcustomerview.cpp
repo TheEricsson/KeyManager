@@ -137,10 +137,11 @@ bool AddCustomerView::checkSelections ()
 
     if (!checkOk)
     {
-        QMessageBox::information(0, "Unvollständige Eingaben",
-                                 "Einige erforderliche Felder wurden \n"
-                                 "nicht ausgefüllt. Bitte prüfen Sie \n "
-                                 "Ihre Eingaben.", QMessageBox::Ok);
+        QMessageBox msgBox;
+        msgBox.setStandardButtons(QMessageBox::Abort);
+        msgBox.setText ("Fehler!");
+        msgBox.setInformativeText("Eingaben unvollständig. Bitte prüfen.");
+        msgBox.exec();
     }
 
     return checkOk;

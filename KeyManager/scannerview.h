@@ -42,13 +42,17 @@ class ScannerView : public WinSubmenu
         void decodeFromVideoFrame ();
 
     private:
-        void startScanner ();
-        void stopScanner ();
+        void startScanner();
+        void stopScanner();
+        bool codeIsValid(const unsigned int code);
+        void playSound();
+        void keyReleaseEvent(QKeyEvent *event);
 
         Camera *mCameraInstance;
         QTimer *mGrabTimer;
         ScannerState mScannerState;
         QVideoWidget *m_viewfinder;
+        QLabel *mCodeLabel;
         QLabel *mCustomerLabel;
         QLabel *mKeyLabel;
 

@@ -144,6 +144,7 @@ void AddKeychainView::reset()
     mCustomersView->update();
     mRowSelected = false;
     mInternalLocation->clear();
+    update();
 }
 
 void AddKeychainView::showEvent(QShowEvent *)
@@ -329,6 +330,7 @@ void AddKeychainView::onButtonProposeLocationClicked ()
 {
     mInternalLocation->setText (QString::number(ioInterface()->getFreeInternalLocation (1)));
     mInternalLocation->update();
+    update();
 }
 
 void AddKeychainView::onAddCustomerButtonClicked(Gui::MenuButton btn)
