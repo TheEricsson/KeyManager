@@ -28,6 +28,7 @@
 #include "iointerfacesqlite.h"
 #include "toolsview.h"
 #include "returndateview.h"
+#include "tableview.h"
 
 #ifndef GMANDANTID
     #define GMANDANTID 1
@@ -122,6 +123,9 @@ void MainWindow::init()
     // views in the section 'settings'
     mViewStackManager->addNode(ViewStackManager::Settings, mToolsView);
 
+    // views in the section 'search'
+    mViewStackManager->addNode(ViewStackManager::Search, mTableView);
+
     mViewStackManager->setCurrentStackId(ViewStackManager::HandoverOut);
     mViewStack->setCurrentWidget(mHomeView);
 
@@ -187,6 +191,10 @@ void MainWindow::onMenuBtnClicked (Gui::MenuButton btnType)
                 break;
             case (Gui::Settings):
                 mViewStackManager->setCurrentStackId(ViewStackManager::Settings);
+                nextWidget = mViewStackManager->begin();
+                break;
+            case (Gui::Search):
+                mViewStackManager->setCurrentStackId(ViewStackManager::Search);
                 nextWidget = mViewStackManager->begin();
                 break;
             case (Gui::Exit):

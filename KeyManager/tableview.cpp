@@ -1,65 +1,81 @@
 #include "tableview.h"
 
 #include <QSqlTableModel>
+#include <QSqlRelationalTableModel>
+#include <QSortFilterProxyModel>
 #include <QTableView>
 #include <QHBoxLayout>
 #include <QPushButton>
+#include "iointerface.h"
 
 TableView::TableView(const QString &tableName, QWidget *parent)
     : WinSubmenu {parent}
 {
-    mAdresses = new QSqlTableModel(this);
-    mAdresses->setTable("keys");
-    mAdresses->setEditStrategy(QSqlTableModel::OnFieldChange);
-    mAdresses->select();
+    mKeychainModel = 0;
+    mFilteredKeychainModel = 0;
 
-    mAdresses->setHeaderData(0, Qt::Horizontal, tr("ID"));
-    mAdresses->setHeaderData(1, Qt::Horizontal, tr("Straße"));
-    mAdresses->setHeaderData(2, Qt::Horizontal, tr("Hausnummer"));
-    mAdresses->setHeaderData(3, Qt::Horizontal, tr("PLZ"));
-    mAdresses->setHeaderData(4, Qt::Horizontal, tr("Ort"));
+    mKeychain = new QTableView (this);
+    mKeychain->setSizeAdjustPolicy(QAbstractScrollArea::AdjustToContents);
+    mKeychain->setSizePolicy(QSizePolicy::Maximum, QSizePolicy::Maximum);
+    mKeychain->resizeColumnsToContents();
 
-    QTableView *adresses = new QTableView;
-    adresses->setModel(mAdresses);
+    layout()->addWidget(mKeychain);
 
-    mKeys = new QSqlTableModel(this);
-    mKeys->setTable("keyStates");
-    mKeys->setEditStrategy(QSqlTableModel::OnFieldChange);
-    mKeys->select();
+    QSpacerItem *spacer = new QSpacerItem (0, 0, QSizePolicy::Expanding, QSizePolicy::Expanding);
+    layout()->addItem(spacer);
 
-    mKeys->setHeaderData(0, Qt::Horizontal, tr("ID"));
-    mKeys->setHeaderData(1, Qt::Horizontal, tr("BarcodeMandant"));
-    mKeys->setHeaderData(2, Qt::Horizontal, tr("BarcodeID"));
-    mKeys->setHeaderData(3, Qt::Horizontal, tr("Art"));
-    mKeys->setHeaderData(4, Qt::Horizontal, tr("Anzahl"));
-    mKeys->setHeaderData(4, Qt::Horizontal, tr("Beschreibung"));
-
-    QTableView *keys = new QTableView;
-    keys->setModel(mKeys);
-
-    QPushButton* btnPrevious = new QPushButton ();
-    btnPrevious->setIcon(QIcon(":/images/menu_back.png"));
-    btnPrevious->setIconSize(QSize(75,75));
-
-    QVBoxLayout *mainLayout = new QVBoxLayout;
-
-    QSpacerItem *spacer = new QSpacerItem (1, 10);
-    mainLayout->addWidget(adresses);
-    mainLayout->addSpacerItem(spacer);
-    mainLayout->addWidget(keys);
-    mainLayout->addWidget(btnPrevious);
-
-    setLayout(mainLayout);
-    setWindowTitle(tr("Übersicht"));
-    show();
-
-    adresses->resizeColumnsToContents();
-    keys->resizeColumnsToContents();
-
-    connect (btnPrevious, SIGNAL (clicked()), this, SLOT (onPreviousBtnClicked()));
+    QList<Gui::MenuButton> menuButtons;
+    menuButtons.append(Gui::Back);
+    setMenuButtons(menuButtons);
 }
 
-void TableView::onPreviousBtnClicked ()
+void TableView::showEvent(QShowEvent *)
 {
-    emit previousButtonClicked ();
+    if (!mKeychainModel)
+        mKeychainModel = new QSqlRelationalTableModel (this);
+
+    if (!mFilteredKeychainModel)
+        mFilteredKeychainModel = new QSortFilterProxyModel (this);
+
+    ioInterface()->initKeychainModel(mKeychainModel);
+    setKeychainModel(mKeychainModel);
+    mFilteredKeychainModel->setSourceModel(mKeychainModel);
+    mKeychain->setModel(mFilteredKeychainModel);
+}
+
+bool TableView::setKeychainModel (QSqlRelationalTableModel* model)
+{
+    if (model)
+    {
+        model->setHeaderData(0, Qt::Horizontal, tr("Barcode"), Qt::DisplayRole);
+        model->setHeaderData(1, Qt::Horizontal, tr("Ausgabestatus"), Qt::DisplayRole);
+        model->setHeaderData(2, Qt::Horizontal, tr("Schlüsselhaken"), Qt::DisplayRole);
+        model->setHeaderData(3, Qt::Horizontal, tr("Straße"), Qt::DisplayRole);
+        model->setHeaderData(4, Qt::Horizontal, tr("Hausnummer"), Qt::DisplayRole);
+        model->setHeaderData(5, Qt::Horizontal, tr("PLZ"), Qt::DisplayRole);
+        model->setHeaderData(6, Qt::Horizontal, tr("Ort"), Qt::DisplayRole);
+
+        if (!mFilteredKeychainModel)
+            return false;
+
+        if (mKeychain)
+        {
+            mFilteredKeychainModel->setSourceModel(model);
+            mKeychain->hideColumn(7); // hide image column
+            mKeychain->setEditTriggers(QTableView::NoEditTriggers);
+            mKeychain->setSelectionMode(QTableView::NoSelection);
+            //mKeychain->verticalHeader()->hide();
+
+            mKeychain->show();
+
+            mKeychain->setSizeAdjustPolicy(QAbstractScrollArea::AdjustToContents);
+            mKeychain->setSizePolicy(QSizePolicy::Preferred, QSizePolicy::Maximum);
+
+            mKeychain->resizeColumnsToContents();
+
+            return true;
+        }
+        return false;
+    }
+    return false;
 }

@@ -31,7 +31,7 @@ class IOInterfaceSQLITE : public IOInterface
         QVariant getValue (const QString &tableName, const QString& columnName, int index);
         bool initKeyOverviewModel (QSqlRelationalTableModel *model, const QString &filter);
         bool initKeychainModel (QSqlRelationalTableModel *model, const QString &filter);
-        bool initKeychainHistoryModel (QSqlRelationalTableModel *model, const QString &filter);
+        bool initKeychainHistoryModel (QSqlRelationalTableModel *model, const QString &filter = "");
         bool initRecipientModel (QSqlRelationalTableModel *model);
         bool initCustomerModel (QSqlRelationalTableModel *model);
         bool addNewRecipient (const IOInterface::recipientData *data);

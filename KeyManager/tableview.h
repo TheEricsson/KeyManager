@@ -3,24 +3,25 @@
 
 #include <QObject>
 #include <QWidget>
+
 #include "winsubmenu.h"
 
-class QSqlTableModel;
+class QSqlRelationalTableModel;
+class QSortFilterProxyModel;
+class QTableView;
 
 class TableView : public WinSubmenu
 {
     Q_OBJECT
-public:
-    explicit TableView(const QString &tableName, QWidget *parent = nullptr);
+    public:
+        explicit TableView(const QString &tableName, QWidget *parent = nullptr);
 
-signals:
-    void previousButtonClicked ();
-private:
-    QSqlTableModel *mAdresses;
-    QSqlTableModel *mKeys;
-
-private slots:
-    void onPreviousBtnClicked();
+    private:
+        virtual void showEvent(QShowEvent *);
+        bool setKeychainModel (QSqlRelationalTableModel* model);
+        QSqlRelationalTableModel *mKeychainModel;
+        QSortFilterProxyModel *mFilteredKeychainModel;
+        QTableView *mKeychain;
 };
 
 #endif // TABLEVIEW_H
