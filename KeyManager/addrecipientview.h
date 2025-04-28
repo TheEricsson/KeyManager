@@ -20,6 +20,7 @@ class AddRecipientView : public WinSubmenu
     private slots:
         void toUpper(QString text);
         virtual void onMenuBtnClicked (Gui::MenuButton btnType);
+        void onValueChanged (QString value);
         void onIsCompanyBtnClicked ();
         void onIsPrivatePersonBtnClicked ();
         void onIsEmployeeBtnClicked ();

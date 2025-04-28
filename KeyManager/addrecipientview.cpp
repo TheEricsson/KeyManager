@@ -94,6 +94,13 @@ AddRecipientView::AddRecipientView (QWidget *parent)
     // line edit manipulators
     // convert all chars to uppercase
     connect(mStreetNumberEdit, SIGNAL(textChanged(QString)), SLOT(toUpper(QString)));
+
+    // trigger screen update, when values change -> otherwise, screen update on android target is buggy
+    connect (mRecipientNameEdit, SIGNAL(textChanged(QString)), this, SLOT(onValueChanged(QString)));
+    connect (mStreetEdit, SIGNAL(textChanged(QString)), this, SLOT(onValueChanged(QString)));
+    connect (mStreetNumberEdit, SIGNAL(textChanged(QString)), this, SLOT(onValueChanged(QString)));
+    connect (mAreaCodeEdit, SIGNAL(textChanged(QString)), this, SLOT(onValueChanged(QString)));
+    connect (mCityEdit, SIGNAL(textChanged(QString)), this, SLOT(onValueChanged(QString)));
 }
 
 void AddRecipientView::clearForm()
@@ -209,6 +216,15 @@ bool AddRecipientView::checkValues ()
     }
 
     return checkOk;
+}
+
+void AddRecipientView::onValueChanged (QString value)
+{
+    Q_UNUSED(value);
+
+    // do manual screen update, when value is changed.
+    // otherwise, visualisation in android target is buggy
+    update();
 }
 
 void AddRecipientView::onIsCompanyBtnClicked ()

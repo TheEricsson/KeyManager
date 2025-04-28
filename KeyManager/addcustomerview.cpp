@@ -82,6 +82,7 @@ void AddCustomerView::onMenuBtnClicked (Gui::MenuButton btnType)
 
 void AddCustomerView::onValueChanged (QString value)
 {
+
     update();
 }
 
