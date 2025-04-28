@@ -129,7 +129,7 @@ void MainWindow::init()
     if (0 == mDbInterface->countDbTables())
     {
         QMessageBox msgBox;
-        msgBox.setStandardButtons(QMessageBox::Abort);
+        msgBox.setStandardButtons(QMessageBox::Ok);
         msgBox.setText ("Erster Start");
         msgBox.setInformativeText("Eine neue Datenbank wird erstellt.");
         msgBox.exec();
