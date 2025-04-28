@@ -186,6 +186,7 @@ void ScannerView::onMenuBtnClicked (Gui::MenuButton btnType)
             emit menuButtonClicked(btnType);
             break;
         default:
+            emit menuButtonClicked(btnType);
             break;
     }
 }
