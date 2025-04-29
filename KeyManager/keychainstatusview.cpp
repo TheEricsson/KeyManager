@@ -274,6 +274,11 @@ bool KeychainStatusView::setKeysModel (QSqlRelationalTableModel* model)
 
             mKeys->resizeColumnsToContents();
 
+            // for (int i = 0; i < mKeys->model()->rowCount(); i++)
+            // {
+            //     mKeys->setIndexWidget(mKeys->model()->index(i, 5), new QPushButton ("Editieren", this));
+            // }
+
             return true;
         }
         return false;

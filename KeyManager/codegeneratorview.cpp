@@ -56,12 +56,6 @@ CodeGeneratorView::CodeGeneratorView(QWidget *parent) : WinSubmenu {parent}
 
     layout()->addItem(viewLayout);
 
-    // QString codeString = "00001-12345";
-    // QImage testImg = decoder.encodeData (codeString, QZXing::EncoderFormat_QR_CODE, QSize (240,240), QZXing::EncodeErrorCorrectionLevel_M, true, false);
-    // QLabel *code = new QLabel (this);
-    // code->setText(codeString);
-    // testCode->setPixmap(QPixmap::fromImage(testImg));
-
     QSpacerItem *spacer = new QSpacerItem (0, 0, QSizePolicy::Expanding, QSizePolicy::Expanding);
     layout()->addItem(spacer);
 
@@ -99,38 +93,31 @@ void CodeGeneratorView::onMenuBtnClicked (Gui::MenuButton btnType)
 
 void CodeGeneratorView::onNumberOfCodesChanged(QString text)
 {
-    qDebug () << "CodeGeneratorView::onNumberOfCodesChanged";
-
     update ();
-
     mNumberOfCodes = text;
 }
 
 void CodeGeneratorView::onprintHeightChanged(QString value)
 {
     update ();
-    qDebug ()<< "onprintHeightChanged";
     mPrintHeight = value;
 }
 
 void CodeGeneratorView::onprintWidthChanged(QString value)
 {
     update ();
-    qDebug ()<< "onprintWidthChanged";
     mPrintWidth = value;
 }
 
 void CodeGeneratorView::onBorderCheckStateChanged(Qt::CheckState value)
 {
     update ();
-    qDebug ()<< "onBorderCheckStateChanged";
     mBorderCheckState = value;
 }
 
 void CodeGeneratorView::onFoldableCheckStateChanged(Qt::CheckState value)
 {
     update ();
-    qDebug ()<< "onFoldableCheckStateChanged";
     mFoldableCheckState = value;
 }
 
@@ -143,12 +130,6 @@ bool CodeGeneratorView::checkValues()
     else
     {
         retVal = false;
-
-        QMessageBox msgBox;
-        msgBox.setStandardButtons(QMessageBox::Abort);
-        msgBox.setText ("Fehler!");
-        msgBox.setInformativeText("Eingaben unvollständig. Bitte prüfen.");
-        msgBox.exec();
     }
 
     if (mPrintWidth < mPrintHeight)
@@ -169,7 +150,7 @@ void CodeGeneratorView::generatePDF ()
     QImage codeImg;
     unsigned int lockerId = 1;
     unsigned int freeCode = ioInterface()->getFreeKeycode(lockerId);
-    PrinterInterface *pdfPrinter = new PrinterInterfacePdf ();   
+    PrinterInterface *pdfPrinter = new PrinterInterfacePdf ();
 
     pdfPrinter->saveAsFile();
     pdfPrinter->begin();
@@ -197,11 +178,9 @@ void CodeGeneratorView::generatePDF ()
         qrCode.prepend("-");
         qrCode.prepend(lockerCode);
 
-        qDebug () << "CodeGeneratorView::generatePDF (): code generated: " << qrCode;
-
         codeImg = decoder.encodeData (qrCode, QZXing::EncoderFormat_QR_CODE, QSize (300,300), QZXing::EncodeErrorCorrectionLevel_M, true, false);
 
-        pdfPrinter->drawKeycode(codeImg, mPrintHeight.toInt(), mPrintWidth.toInt(), mFoldableCheckState, borderPen);
+        pdfPrinter->drawQRCode(codeImg, mPrintHeight.toInt(), mPrintWidth.toInt(), mFoldableCheckState, borderPen);
 
         freeCode++;
     }
