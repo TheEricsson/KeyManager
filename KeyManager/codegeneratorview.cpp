@@ -136,19 +136,32 @@ void CodeGeneratorView::onFoldableCheckStateChanged(Qt::CheckState value)
 
 bool CodeGeneratorView::checkValues()
 {
+    bool retVal = false;
+
     if (mNumberOfCodes != "" && mNumberOfCodes != "0" && mPrintHeight != "" && mPrintWidth != "")
-    {
-        return true;
-    }
+        retVal = true;
     else
     {
+        retVal = false;
+
         QMessageBox msgBox;
         msgBox.setStandardButtons(QMessageBox::Abort);
         msgBox.setText ("Fehler!");
         msgBox.setInformativeText("Eingaben unvollständig. Bitte prüfen.");
         msgBox.exec();
     }
-    return false;
+
+    if (mPrintWidth < mPrintHeight)
+    {
+        retVal = false;
+
+        QMessageBox msgBox;
+        msgBox.setStandardButtons(QMessageBox::Abort);
+        msgBox.setText ("Fehler!");
+        msgBox.setInformativeText("Die Druckbreite darf nicht kleiner als die Druckhöhe sein.");
+        msgBox.exec();
+    }
+    return retVal;
 }
 
 void CodeGeneratorView::generatePDF ()
