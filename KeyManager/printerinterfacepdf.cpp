@@ -9,6 +9,10 @@ PrinterInterfacePdf::PrinterInterfacePdf()
 
     mPrinter.setResolution(mResolutionPPI);
     mPrinter.setOutputFormat(QPrinter::PdfFormat);
+    mPrinter.setPageSize(QPageSize::A4);
+    float a4PageHeight = 11.7;
+    mPixelPerPageY = a4PageHeight * mResolutionPPI;
+    mCurrentPage = 1;
 
     mPosX = 0;
     mPosY = 0;
@@ -42,6 +46,16 @@ void PrinterInterfacePdf::drawKeycode(QImage &img, int codeDim, int labelWidth, 
     float printSize = conversionFactor * codeDim;
     float printSizeLabelWidth = conversionFactor * labelWidth;
 
+    int nextPosY = mPosY + printSize + 5;
+
+    if (nextPosY >= mPixelPerPageY)
+    {
+        mCurrentPage += 1;
+        mPosY = 0;
+        nextPosY = printSize + 5;
+        mPrinter.newPage();
+    }
+
     mPainter.drawImage(QRect(mPosX, mPosY, printSize, printSize), img);
 
     if (style != Qt::NoPen)
@@ -52,7 +66,7 @@ void PrinterInterfacePdf::drawKeycode(QImage &img, int codeDim, int labelWidth, 
         drawBorder (mPosX, mPosY, printSizeLabelWidth, printSize, style);
     }
 
-    mPosY += printSize + 5;
+    mPosY = nextPosY;
 }
 
 void PrinterInterfacePdf::drawBorder (int posX, int posY, int width, int height, Qt::PenStyle style)

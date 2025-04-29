@@ -19,9 +19,11 @@ class PrinterInterfacePdf : public PrinterInterface
         QPainter mPainter;
         void drawBorder (int posX, int posY, int width, int height, Qt::PenStyle style);
 
-        int mResolutionPPI;
-        int mPosX;
-        int mPosY;
+        unsigned int mResolutionPPI;
+        unsigned int mPosX;
+        unsigned int mPosY;
+        unsigned int mCurrentPage;
+        unsigned int mPixelPerPageY;
 };
 
 #endif // PRINTERINTERFACEPDF_H
