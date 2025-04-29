@@ -7,10 +7,12 @@
 #include <QButtonGroup>
 #include <QRadioButton>
 #include <QCalendarWidget>
+#include <QMessageBox>
+#include <QTextEdit>
 #include "dataobjecthandover.h"
 #include "datainterface.h"
 #include "iointerface.h"
-#include <QTextEdit>
+#include "printerinterfacepdf.h".h"
 
 HandoverView::HandoverView (QWidget *parent)
     : WinSubmenu {parent}
@@ -120,6 +122,8 @@ void  HandoverView::onMenuBtnClicked (Gui::MenuButton btnType)
         case (Gui::Next):
             dataInterface()->setRecipientSigImg(mSigPad->getSignature());
             ioInterface()->dbInsertHandover(dataInterface()->getHandle());
+            if (reportRequested())
+                generateReport();
         //no catch in this class, emit signal
         default:
             emit menuButtonClicked(btnType);
@@ -168,6 +172,124 @@ void HandoverView::resetSignature ()
         disableButton(2, true);
         mSigPad->update ();
     }
+}
+
+bool HandoverView::reportRequested()
+{
+    QMessageBox msgBox;
+    msgBox.setStandardButtons(QMessageBox::Yes | QMessageBox::No);
+    msgBox.setText ("Protokoll");
+    msgBox.setInformativeText("Möchten Sie ein Protokoll (PDF-Format) erzeugen?");
+
+    bool retVal = false;
+
+    switch (msgBox.exec())
+    {
+        case QMessageBox::Yes:
+            retVal = true;
+            break;
+        case QMessageBox::No:
+            break;
+        default:
+            break;
+    }
+
+    return retVal;
+}
+
+void HandoverView::generateReport()
+{
+    PrinterInterface *pdfPrinter = new PrinterInterfacePdf ();
+
+    pdfPrinter->saveAsFile();
+    pdfPrinter->begin();
+
+    // header
+    pdfPrinter->insertHeader("Schlüsselübergabe");
+    pdfPrinter->insertHLine();
+
+    // address data of property
+    pdfPrinter->insertText("Objektadresse:");
+    int addressId = dataInterface()->getKeychainAddressId();
+    QString address = ioInterface()->getAddressStreet(addressId);
+    address.append(" ");
+    address.append(ioInterface()->getAddressStreetNumber(addressId));
+    pdfPrinter->insertText(address);
+    QString addressAreaCodeAndCity = QString::number(ioInterface()->getAddressAreaCode(addressId));
+    address.append(" ");
+    address.append(ioInterface()->getAddressCity(addressId));
+    pdfPrinter->insertText(addressAreaCodeAndCity);
+    pdfPrinter->insertHLine();
+
+    // internal data of keychain
+    pdfPrinter->insertText("Daten zum Schlüsselbund: ");
+    QString keyCode = "Code: ";
+    keyCode.append(QString::number(dataInterface()->getScannedCode()));
+    pdfPrinter->insertText(keyCode);
+    QString internalLoc = "Interne Zuordnung: ";
+    internalLoc.append(QString::number(dataInterface()->getInternalLocation()));
+    pdfPrinter->insertText(internalLoc);
+    pdfPrinter->insertHLine();
+
+    // recipient data
+    pdfPrinter->insertText("Schlüsselempfänger:");
+    QString recipientName = "Empfänger: ";
+    recipientName.append(dataInterface()->getRecipientName());
+    pdfPrinter->insertText(recipientName);
+    QString recipientStreet;
+    recipientStreet = dataInterface()->getRecipientStreet();
+    recipientStreet.append(" ");
+    recipientStreet.append(QString::number(dataInterface()->getRecipientStreetNumber()));
+    pdfPrinter->insertText(recipientStreet);
+    QString recipientAreaCodeAndCity;
+    recipientAreaCodeAndCity = QString::number(dataInterface()->getRecipientAreaCode());
+    recipientAreaCodeAndCity.append(" ");
+    recipientAreaCodeAndCity.append(dataInterface()->getRecipientCity());
+    pdfPrinter->insertText(recipientAreaCodeAndCity);
+    QString signee = dataInterface()->getRecipientSigName();
+    if ("" != signee)
+    {
+        signee.prepend("Unterzeichner: ");
+        pdfPrinter->insertText(signee);
+    }
+    pdfPrinter->insertHLine();
+
+    //additional infos
+    QString addInfo = dataInterface()->getRecipientAnnotation();
+    if ("" != addInfo)
+    {
+        addInfo.prepend("Zusätzliche Informationen: ");
+        pdfPrinter->insertText(addInfo);
+        pdfPrinter->insertHLine();
+    }
+
+    //handout date and deadline
+    pdfPrinter->insertText("Aus- und Rückgabedaten:");
+
+    Database::KeychainStatus status = dataInterface()->getNewKeychainStatusId();
+    QString statusById = ioInterface()->getKeychainStatusText(status);
+    statusById.prepend("Ausgabedauer: ");
+    pdfPrinter->insertText(statusById);
+    QString handoverDate = "Ausgabedatum: ";
+    handoverDate.append(dataInterface()->getHandoverDate());
+    pdfPrinter->insertText(handoverDate);
+
+    QString deadline = dataInterface()->getDeadlineDate();
+    if ("" == deadline)
+    {
+        deadline = "unbegrenzt";
+    }
+    deadline.prepend("Rückgabefrist: ");
+    pdfPrinter->insertText(deadline);
+    pdfPrinter->insertHLine();
+
+    pdfPrinter->insertText("Unterschrift des Empfängers:");
+    pdfPrinter->insertImage(dataInterface()->getRecipientSignature(), PrinterInterface::Medium, PrinterInterface::Left);
+    pdfPrinter->insertHLine();
+
+    pdfPrinter->finish();
+
+    delete pdfPrinter;
 }
 
 HandoverView::~HandoverView()

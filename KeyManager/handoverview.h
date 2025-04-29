@@ -26,6 +26,8 @@ class HandoverView : public WinSubmenu
         void showEvent(QShowEvent *);
         void reset ();
         void resetSignature ();
+        bool reportRequested();
+        void generateReport();
         SignaturePad *mSigPad;
         QLineEdit *mBarcodeLineEdit;
         QLineEdit *mNewStatusEdit;

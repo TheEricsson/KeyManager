@@ -14,11 +14,30 @@ class PrinterInterface
             None
         };
 
+        enum imgSize
+        {
+            Small,
+            Medium,
+            Big
+        };
+
+        enum imgAlignment
+        {
+            Left,
+            Centered,
+            Right,
+        };
+
         PrinterInterface();
         virtual ~PrinterInterface();
         virtual void saveAsFile(){};
-        virtual void add (const QImage& img, QRect size, QRect margin, bool foldable = false, PrinterInterface::BorderStyle borderstyle = BorderStyle::None){};
-        virtual void drawKeycode(QImage &img, int codeDim, int labelWidth = 0, bool foldable = false, Qt::PenStyle style = Qt::NoPen){};
+        //virtual void add (const QImage& img, QRect size, QRect margin, bool foldable = false, PrinterInterface::BorderStyle borderstyle = BorderStyle::None){};
+        virtual void drawQRCode(QImage &img, int codeDim, int labelWidth = 0, bool foldable = false, Qt::PenStyle style = Qt::NoPen){};
+        virtual void insertImage(const QImage &img, PrinterInterface::imgSize, PrinterInterface::imgAlignment){};
+        virtual void insertHLine(){};
+        virtual void insertText(QString text){};
+        virtual void insertHeader(QString text){};
+
         virtual void begin(){};
         virtual void finish(){};
 };
