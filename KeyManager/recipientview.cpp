@@ -280,7 +280,7 @@ void RecipientView::onTableSelectionChanged (const QItemSelection &itemNew, cons
     QString recipientType = mRecipients->model()->index(row, 2).data().toString ();
     dataInterface()->setRecipientType(recipientType);
     dataInterface()->setRecipientStreet(mRecipients->model()->index(row, 3).data().toString ());
-    dataInterface()->setRecipientStreetNumber(mRecipients->model()->index(row, 4).data().toInt ());
+    dataInterface()->setRecipientStreetNumber(mRecipients->model()->index(row, 4).data().toString ());
     dataInterface()->setRecipientAreaCode(mRecipients->model()->index(row, 5).data().toInt ());
     dataInterface()->setRecipientCity(mRecipients->model()->index(row, 6).data().toString());
 

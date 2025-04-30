@@ -13,7 +13,7 @@ class ViewDataRecipient
         void setDeadlineDate (const QString& date){mDeadlineDate = date;};
         void setRecipientName (const QString& name) {mName = name;};
         void setRecipientStreet (const QString& street) {mStreet = street;};
-        void setRecipientStreetNumber (const int& streetNumber) {mStreetNumber = streetNumber;};
+        void setRecipientStreetNumber (const QString& streetNumber) {mStreetNumber = streetNumber;};
         void setRecipientAreaCode (const int& areaCode) {mAreaCode = areaCode;};
         void setRecipientCity (const QString& city) {mCity = city;};
         void setRecipientType (const QString& recipientType) {mRecipientType = recipientType;};
@@ -25,7 +25,7 @@ class ViewDataRecipient
         const QString& getDeadlineDate (){return mDeadlineDate;};
         const QString& getRecipientName () {return mName;};
         const QString& getRecipientStreet () {return mStreet;};
-        const int& getRecipientStreetNumber () {return mStreetNumber;};
+        const QString& getRecipientStreetNumber () {return mStreetNumber;};
         const int& getRecipientAreaCode () {return mAreaCode;};
         const QString& getRecipientCity () {return mCity;};
         const QString& getRecipientType () {return mRecipientType;};
@@ -39,7 +39,7 @@ class ViewDataRecipient
         QString mName;
         QString mStreet;
         QString mRecipientType;
-        int mStreetNumber;
+        QString mStreetNumber;
         int mAreaCode;
         QString mCity;
         QString mSignee;

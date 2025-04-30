@@ -38,6 +38,7 @@ class IOInterfaceSQLITE : public IOInterface
         bool addNewCustomer (const IOInterface::customerData *data);
         bool getKeychainImg (const int aId, QImage& img);
         bool dbInsertHandover (DataInterface *data);
+        unsigned int getLastHandoverId();
         bool dbInsertKeychain (DataInterface *data);
         bool dbInsertKeychainImg (const unsigned int keyCode, const QImage& img);
         bool dbCleanupTable (const QString& tablename, const QString& filter, const int numberOfEntriesToKeep);

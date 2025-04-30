@@ -27,7 +27,10 @@ class HandoverView : public WinSubmenu
         void reset ();
         void resetSignature ();
         bool reportRequested();
-        void generateReport();
+        bool printRequested();
+        void pdfReport();
+        void printReport();
+        void insertDbErrorMessage();
         SignaturePad *mSigPad;
         QLineEdit *mBarcodeLineEdit;
         QLineEdit *mNewStatusEdit;

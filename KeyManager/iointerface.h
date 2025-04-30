@@ -67,6 +67,7 @@ public:
     virtual bool addNewRecipient (const IOInterface::recipientData *data)                       {Q_UNUSED(data); return false;};
     virtual bool addNewCustomer (const IOInterface::customerData *data)                         {Q_UNUSED(data); return false;};
     virtual bool dbInsertHandover (DataInterface *data)                                         {Q_UNUSED(data); return false;};
+    virtual unsigned int getLastHandoverId()                                                    {return 0;};
     virtual bool dbInsertKeychain (DataInterface *data)                                         {Q_UNUSED(data); return false;};
     virtual bool dbInsertKeychainImg (const unsigned int keyCode, const QImage& img)            {Q_UNUSED(keyCode); Q_UNUSED(img); return false;};
     virtual bool dbCleanupTable (const QString& tablename, \

@@ -88,10 +88,10 @@ const QString DataInterface::getRecipientStreet ()
     return mDataRecipient->getRecipientStreet();
 }
 
-int DataInterface::getRecipientStreetNumber ()
+const QString DataInterface::getRecipientStreetNumber ()
 {
     if (!mDataRecipient)
-        return _UNDEFINED;
+        return "";
 
     return mDataRecipient->getRecipientStreetNumber();
 }
@@ -178,7 +178,7 @@ bool DataInterface::setRecipientStreet(const QString& street)
     return true;
 }
 
-bool DataInterface::setRecipientStreetNumber(const int streetNr)
+bool DataInterface::setRecipientStreetNumber(const QString& streetNr)
 {
     if (!mDataRecipient)
         return false;

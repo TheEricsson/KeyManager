@@ -30,7 +30,7 @@ class DataInterface
         const QString getDeadlineDate ();
         const QString getRecipientName ();
         const QString getRecipientStreet ();
-        int getRecipientStreetNumber ();
+        const QString getRecipientStreetNumber ();
         int getRecipientAreaCode ();
         const QString getRecipientCity ();
         const QString getRecipientSigName ();
@@ -42,7 +42,7 @@ class DataInterface
         bool setRecipientName(const QString& name);
         bool setRecipientType(const QString& type);
         bool setRecipientStreet(const QString& street);
-        bool setRecipientStreetNumber(const int streetNr);
+        bool setRecipientStreetNumber(const QString& streetNr);
         bool setRecipientAreaCode(const int areaCode);
         bool setRecipientCity(const QString& city);
         bool setRecipientSigName (const QString &name);

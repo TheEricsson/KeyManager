@@ -167,7 +167,8 @@ void KeychainStatusView::showEvent(QShowEvent *)
     //set values for keychainstatus data from db
     ioInterface()->setKeychainData(dataInterface()->getDataKeychain(), keyCode);
 
-    mKeychainKeycode->setText(QString::number(dataInterface()->getScannedCode()));
+    int code = dataInterface()->getScannedCode();
+    mKeychainKeycode->setText(Database::normaliseKeycode(code));
     mKeychainStatus->setText(ioInterface()->getKeychainStatusText(dataInterface()->getKeychainStatusId()));
     mKeychainInternalLocation->setText(QString::number(dataInterface()->getInternalLocation()));
 

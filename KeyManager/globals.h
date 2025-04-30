@@ -66,6 +66,17 @@ namespace Database
     };
 
     const int maxHandoverEntries = 50;
+
+    inline const QString normaliseKeycode (const unsigned int code)
+    {
+        QString barcode = QString::number(code);
+        while (barcode.length() < 8)
+        {
+            barcode.prepend("0");
+        }
+        barcode.insert(4,"-");
+        return barcode;
+    }
 }
 
 #endif // GLOBALS_H

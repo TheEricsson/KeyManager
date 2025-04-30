@@ -34,8 +34,10 @@ SOURCES += \
     mainwindow.cpp \
     menubutton.cpp \
     printerinterface.cpp \
+    printerinterfacedevice.cpp \
     printerinterfacepdf.cpp \
     recipientview.cpp \
+    reportgenerator.cpp \
     returndateview.cpp \
     scannerview.cpp \
     signaturepad.cpp \
@@ -77,8 +79,10 @@ HEADERS += \
     mainwindow.h \
     menubutton.h \
     printerinterface.h \
+    printerinterfacedevice.h \
     printerinterfacepdf.h \
     recipientview.h \
+    reportgenerator.h \
     returndateview.h \
     scannerview.h \
     signaturepad.h \

@@ -12,7 +12,8 @@
 #include "dataobjecthandover.h"
 #include "datainterface.h"
 #include "iointerface.h"
-#include "printerinterfacepdf.h".h"
+#include "printerinterfacepdf.h"
+#include "reportgenerator.h"
 
 HandoverView::HandoverView (QWidget *parent)
     : WinSubmenu {parent}
@@ -121,9 +122,15 @@ void  HandoverView::onMenuBtnClicked (Gui::MenuButton btnType)
             break;
         case (Gui::Next):
             dataInterface()->setRecipientSigImg(mSigPad->getSignature());
-            ioInterface()->dbInsertHandover(dataInterface()->getHandle());
-            if (reportRequested())
-                generateReport();
+            if (ioInterface()->dbInsertHandover(dataInterface()->getHandle()))
+            {
+                if (reportRequested())
+                    pdfReport();
+                //if (printRequested())
+                //    printReport();
+            }
+            else
+                insertDbErrorMessage();
         //no catch in this class, emit signal
         default:
             emit menuButtonClicked(btnType);
@@ -148,7 +155,7 @@ void HandoverView::reset ()
 
     QString streetAndNumber = dataInterface ()->getRecipientStreet();
     streetAndNumber.append(" ");
-    streetAndNumber.append(QString::number(dataInterface()->getRecipientStreetNumber()));
+    streetAndNumber.append(dataInterface()->getRecipientStreetNumber());
     mRecipientStreetEdit->setText(streetAndNumber);
 
     QString areaCodeAndCity = QString::number(dataInterface()->getRecipientAreaCode());
@@ -179,7 +186,7 @@ bool HandoverView::reportRequested()
     QMessageBox msgBox;
     msgBox.setStandardButtons(QMessageBox::Yes | QMessageBox::No);
     msgBox.setText ("Protokoll");
-    msgBox.setInformativeText("Möchten Sie ein Protokoll (PDF-Format) erzeugen?");
+    msgBox.setInformativeText("Die Schlüsselübergabe wurde vollständig verarbeitet.\nMöchten Sie ein Protokoll im PDF-Format erzeugen?");
 
     bool retVal = false;
 
@@ -197,99 +204,51 @@ bool HandoverView::reportRequested()
     return retVal;
 }
 
-void HandoverView::generateReport()
+bool HandoverView::printRequested()
 {
-    PrinterInterface *pdfPrinter = new PrinterInterfacePdf ();
+    QMessageBox msgBox;
+    msgBox.setStandardButtons(QMessageBox::Yes | QMessageBox::No);
+    msgBox.setText ("Druck");
+    msgBox.setInformativeText("Möchten Sie das Protokoll jetzt ausdrucken?");
 
-    pdfPrinter->saveAsFile();
-    pdfPrinter->begin();
+    bool retVal = false;
 
-    // header
-    pdfPrinter->insertHeader("Schlüsselübergabe");
-    pdfPrinter->insertHLine();
-
-    // address data of property
-    pdfPrinter->insertText("Objektadresse:");
-    int addressId = dataInterface()->getKeychainAddressId();
-    QString address = ioInterface()->getAddressStreet(addressId);
-    address.append(" ");
-    address.append(ioInterface()->getAddressStreetNumber(addressId));
-    pdfPrinter->insertText(address);
-    QString addressAreaCodeAndCity = QString::number(ioInterface()->getAddressAreaCode(addressId));
-    address.append(" ");
-    address.append(ioInterface()->getAddressCity(addressId));
-    pdfPrinter->insertText(addressAreaCodeAndCity);
-    pdfPrinter->insertHLine();
-
-    // internal data of keychain
-    pdfPrinter->insertText("Daten zum Schlüsselbund: ");
-    QString keyCode = "Code: ";
-    keyCode.append(QString::number(dataInterface()->getScannedCode()));
-    pdfPrinter->insertText(keyCode);
-    QString internalLoc = "Interne Zuordnung: ";
-    internalLoc.append(QString::number(dataInterface()->getInternalLocation()));
-    pdfPrinter->insertText(internalLoc);
-    pdfPrinter->insertHLine();
-
-    // recipient data
-    pdfPrinter->insertText("Schlüsselempfänger:");
-    QString recipientName = "Empfänger: ";
-    recipientName.append(dataInterface()->getRecipientName());
-    pdfPrinter->insertText(recipientName);
-    QString recipientStreet;
-    recipientStreet = dataInterface()->getRecipientStreet();
-    recipientStreet.append(" ");
-    recipientStreet.append(QString::number(dataInterface()->getRecipientStreetNumber()));
-    pdfPrinter->insertText(recipientStreet);
-    QString recipientAreaCodeAndCity;
-    recipientAreaCodeAndCity = QString::number(dataInterface()->getRecipientAreaCode());
-    recipientAreaCodeAndCity.append(" ");
-    recipientAreaCodeAndCity.append(dataInterface()->getRecipientCity());
-    pdfPrinter->insertText(recipientAreaCodeAndCity);
-    QString signee = dataInterface()->getRecipientSigName();
-    if ("" != signee)
+    switch (msgBox.exec())
     {
-        signee.prepend("Unterzeichner: ");
-        pdfPrinter->insertText(signee);
-    }
-    pdfPrinter->insertHLine();
-
-    //additional infos
-    QString addInfo = dataInterface()->getRecipientAnnotation();
-    if ("" != addInfo)
-    {
-        addInfo.prepend("Zusätzliche Informationen: ");
-        pdfPrinter->insertText(addInfo);
-        pdfPrinter->insertHLine();
+    case QMessageBox::Yes:
+        retVal = true;
+        break;
+    case QMessageBox::No:
+        break;
+    default:
+        break;
     }
 
-    //handout date and deadline
-    pdfPrinter->insertText("Aus- und Rückgabedaten:");
+    return retVal;
+}
 
-    Database::KeychainStatus status = dataInterface()->getNewKeychainStatusId();
-    QString statusById = ioInterface()->getKeychainStatusText(status);
-    statusById.prepend("Ausgabedauer: ");
-    pdfPrinter->insertText(statusById);
-    QString handoverDate = "Ausgabedatum: ";
-    handoverDate.append(dataInterface()->getHandoverDate());
-    pdfPrinter->insertText(handoverDate);
+void HandoverView::pdfReport()
+{
+    ReportGenerator generator (ioInterface());
+    generator.createHandoverProtocol(ioInterface()->getLastHandoverId(), ReportGenerator::Pdf);
+}
 
-    QString deadline = dataInterface()->getDeadlineDate();
-    if ("" == deadline)
-    {
-        deadline = "unbegrenzt";
-    }
-    deadline.prepend("Rückgabefrist: ");
-    pdfPrinter->insertText(deadline);
-    pdfPrinter->insertHLine();
+void HandoverView::printReport()
+{
+    ReportGenerator generator (ioInterface());
+    generator.createHandoverProtocol(ioInterface()->getLastHandoverId(), ReportGenerator::Device);
+}
 
-    pdfPrinter->insertText("Unterschrift des Empfängers:");
-    pdfPrinter->insertImage(dataInterface()->getRecipientSignature(), PrinterInterface::Medium, PrinterInterface::Left);
-    pdfPrinter->insertHLine();
-
-    pdfPrinter->finish();
-
-    delete pdfPrinter;
+void HandoverView::insertDbErrorMessage()
+{
+    QMessageBox msgBox;
+    msgBox.setStandardButtons(QMessageBox::Abort);
+    msgBox.setText ("Datenbankfehler!");
+    QString errorText = "Datenübergabe an Datenbank fehlgeschlagen.\nFehlermeldung: ";
+    errorText.append(ioInterface()->dbGetLastError());
+    errorText.append("\nRückkehr zum Hauptmenü. Bitte den Vorgang erneut starten.");
+    msgBox.setInformativeText(errorText);
+    msgBox.exec();
 }
 
 HandoverView::~HandoverView()

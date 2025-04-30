@@ -10,12 +10,14 @@ class PrinterInterfacePdf : public PrinterInterface
     public:
         PrinterInterfacePdf();
         void saveAsFile();
+        void print();
         //void add (const QImage& img, QRect size, QRect margin, bool foldable, PrinterInterface::BorderStyle borderstyle);
         void drawQRCode(QImage &img, int codeDim, int labelWidth, bool foldable = false, Qt::PenStyle style = Qt::NoPen);
-        void insertImage(const QImage &img, PrinterInterface::imgSize, PrinterInterface::imgAlignment);
+        void insertImage(const QImage &img, PrinterInterface::imgSize size, PrinterInterface::imgAlignment alignment);
         void insertHLine();
         void insertText(QString text);
-        void insertHeader(QString text);
+        void insertHeaderH1(QString text);
+        void insertHeaderH2(QString text);
         void begin();
         void finish();
     private:
@@ -29,6 +31,7 @@ class PrinterInterfacePdf : public PrinterInterface
         unsigned int mCurrentPage;
         unsigned int mPixelPerPageY;
         unsigned int mPixelPerPageX;
+        unsigned int mPageMargin;
 };
 
 #endif // PRINTERINTERFACEPDF_H

@@ -8,7 +8,7 @@ ViewDataRecipient::ViewDataRecipient()
     mName = "";
     mStreet = "";
     mRecipientType = "";
-    mStreetNumber = _UNDEFINED;
+    mStreetNumber = "";
     mAreaCode = _UNDEFINED;
     mCity = "";
     mSignee = "";

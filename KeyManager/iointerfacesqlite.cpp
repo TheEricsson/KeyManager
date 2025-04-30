@@ -170,7 +170,7 @@ bool IOInterfaceSQLITE::initTables()
                         name     TEXT,\
                         type     INTEGER,\
                         street   TEXT,\
-                        houseNr  INTEGER,\
+                        houseNr  TEXT,\
                         areaCode INTEGER,\
                         city     TEXT)");
     query.finish();
@@ -240,7 +240,7 @@ bool IOInterfaceSQLITE::initTables()
                      duration              TEXT,\
                      recipient             TEXT,\
                      recipientStreet       TEXT,\
-                     recipientStreetNumber INTEGER,\
+                     recipientStreetNumber TEXT,\
                      recipientAreaCode     INTEGER,\
                      recipientCity         TEXT,\
                      signatureName         TEXT,\
@@ -688,10 +688,7 @@ QVariant IOInterfaceSQLITE::getValue (const QString &tableName, const QString& c
     query.exec();
 
     if (query.next())
-    {
-        qDebug () << "IOInterfaceSQLITE::getValue: " << query.value(0);
         return query.value(0);
-    }
 
     return _UNDEFINED;
 }
@@ -837,6 +834,28 @@ bool IOInterfaceSQLITE::dbInsertHandover (DataInterface *data)
         mDb.rollback();
 
     return queryOk;
+}
+
+unsigned int IOInterfaceSQLITE::getLastHandoverId()
+{
+    QSqlQuery query;
+
+    query.prepare("SELECT id FROM handovers");
+
+    if(query.exec())
+    {
+        if (!query.next())
+        {
+            return 0;
+        }
+        else
+        {
+            query.last();
+            unsigned int id = query.value(0).toUInt();
+            qDebug () << "IOInterfaceSQLITE::getLastHandoverId(): " << id;
+            return id;
+        }
+    }
 }
 
 bool IOInterfaceSQLITE::dbInsertKeychain (DataInterface *data)

@@ -2,6 +2,8 @@
 #include <QFileDialog>
 #include <QPainterPath>
 #include <QDesktopServices>
+#include <QRegularExpression>
+#include <QPrintDialog>
 
 PrinterInterfacePdf::PrinterInterfacePdf()
 {
@@ -19,8 +21,9 @@ PrinterInterfacePdf::PrinterInterfacePdf()
     mPixelPerPageX = a4PageWidth * mResolutionPPI;
 
     mCurrentPage = 1;
+    mPageMargin = 75;
 
-    mPosX = 0;
+    mPosX = mPageMargin;
     mPosY = 0;
 }
 
@@ -33,6 +36,15 @@ void PrinterInterfacePdf::saveAsFile()
 
     // open the file in file browser
     QDesktopServices::openUrl(QFileInfo(fileName).path());
+}
+
+void PrinterInterfacePdf::print()
+{
+    QPrintDialog printDialog;
+    if (printDialog.exec() == QDialog::Accepted)
+    {
+        qDebug () << "print";
+    }
 }
 
 // void PrinterInterfacePdf::add (const QImage& img, QRect size, QRect margin, bool foldable, PrinterInterface::BorderStyle borderstyle)
@@ -83,50 +95,106 @@ void PrinterInterfacePdf::drawQRCode (QImage &img, int codeDim, int labelWidth, 
     mPosY = nextPosY;
 }
 
-void PrinterInterfacePdf::insertImage(const QImage &img, PrinterInterface::imgSize, PrinterInterface::imgAlignment)
+void PrinterInterfacePdf::insertImage(const QImage &img, PrinterInterface::imgSize size, PrinterInterface::imgAlignment alignment)
 {
-    // input is in mm -> calculate factor depending on print resolution
-    float conversionFactor = mResolutionPPI / 2.41 / 10;
-    float printSize = conversionFactor * 50;
+    float printSizeFactor = 1;
+    QImage img_scaled;
+
+    switch (size)
+    {
+        case PrinterInterface::Small:
+            img_scaled = img.scaledToWidth(400, Qt::SmoothTransformation);
+            break;
+        case PrinterInterface::Medium:
+            img_scaled = img.scaledToWidth(600, Qt::SmoothTransformation);
+            break;
+        case PrinterInterface::Big:
+            img_scaled = img.scaledToWidth(1000, Qt::SmoothTransformation);
+            break;
+        default:
+            img_scaled = img;
+            break;
+    }
+
+    switch (alignment)
+    {
+        case PrinterInterface::Left:
+            mPosX = mPageMargin;
+            break;
+        case PrinterInterface::Centered:
+            mPosX = (mPixelPerPageX / 2) - (img_scaled.width() / 2);
+            break;
+        case PrinterInterface::Right:
+            mPosX = mPixelPerPageX - img_scaled.width() - mPageMargin;
+            break;
+        default:
+            break;
+    }
 
     mPosY += 10;
 
     // draw the image in document
-    mPainter.drawImage(QRect(mPosX, mPosY, img.width()*2, img.height()*2), img);
+    mPainter.drawImage(QRect(mPosX, mPosY, img_scaled.width(), img_scaled.height()), img);
 
     // set printer position...
-    int nextPosY = mPosY + printSize + 5;
+    int nextPosY = mPosY + img_scaled.height() + 5;
     // set new printer position
     mPosY = nextPosY;
+    mPosX = 0;
 }
 
 void PrinterInterfacePdf::insertHLine()
 {
-    mPosY += 30;
-    int margin = 100;
+    mPosY += 25;
+    mPosX = 0;
 
-    mPainter.drawLine(mPosX, mPosY, mPixelPerPageX - margin, mPosY);
+    mPainter.drawLine(mPosX + mPageMargin, mPosY, mPixelPerPageX - mPageMargin, mPosY);
 }
 
 void PrinterInterfacePdf::insertText(QString text)
 {
-    mPosY += 60;
+    mPosX = mPageMargin + 20;
+    mPosY += 15;
 
     QFont font("Roboto");
     font.setStyleHint(QFont::SansSerif);
-    font.setPixelSize(50);
+    font.setPixelSize(40);
     mPainter.setFont(font);
 
-    mPainter.drawText(mPosX, mPosY, text);
+    //mPainter.drawText(mPosX, mPosY, text);
+    mPainter.drawText(QRect(mPosX, mPosY, mPixelPerPageX - mPageMargin, mPixelPerPageY - mPageMargin), text);
+
+    mPosY += 45;
+    //count number of line break characters, to set the correct y position after inserting multiline text
+    int textlines = text.count("\n");
+    for (int i = 0; i < textlines; i++)
+    {
+        mPosY += 45;
+    }
 }
 
-void PrinterInterfacePdf::insertHeader(QString text)
+void PrinterInterfacePdf::insertHeaderH1 (QString text)
 {
+    mPosX = mPageMargin;
     mPosY += 110;
 
     QFont font("Roboto");
     font.setStyleHint(QFont::SansSerif);
     font.setPixelSize(100);
+    font.setBold(true);
+    mPainter.setFont(font);
+
+    mPainter.drawText(mPosX, mPosY, text);
+}
+
+void PrinterInterfacePdf::insertHeaderH2 (QString text)
+{
+    mPosX = mPageMargin;
+    mPosY += 50;
+
+    QFont font("Roboto");
+    font.setStyleHint(QFont::SansSerif);
+    font.setPixelSize(40);
     font.setBold(true);
     mPainter.setFont(font);
 
