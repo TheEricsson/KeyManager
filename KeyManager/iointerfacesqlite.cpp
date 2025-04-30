@@ -50,18 +50,19 @@ IOInterfaceSQLITE::IOInterfaceSQLITE()
     qDebug () << "QStandardPaths::ApplicationsLocation" << QStandardPaths::writableLocation(QStandardPaths::ApplicationsLocation);
     qDebug () << "QStandardPaths::RuntimeLocation" << QStandardPaths::writableLocation(QStandardPaths::RuntimeLocation);
     qDebug () << "QStandardPaths::DocumentsLocation" << QStandardPaths::writableLocation(QStandardPaths::DocumentsLocation);
+    qDebug () << "QStandardPaths::GenericDataLocation" << QStandardPaths::writableLocation(QStandardPaths::GenericDataLocation);
+    qDebug () << "QStandardPaths::HomeLocation" << QStandardPaths::writableLocation(QStandardPaths::HomeLocation);
+    qDebug () << "QStandardPaths::RuntimeLocation" << QStandardPaths::writableLocation(QStandardPaths::RuntimeLocation);
 
     mKeychainStatusId = Database::Undefined;
 
     mDb = QSqlDatabase::addDatabase("QSQLITE");
 
-    // todo: location is hardcoded by now..
 #ifdef Q_OS_ANDROID
-    //QString dbLocation = "/storage/emulated/0/Android/data/org.qtproject.example.KeyManager/files/db.sqlite";
-
-    //QString dbLocation = QStandardPaths::writableLocation(QStandardPaths::AppDataLocation);
-    QString dbLocation = QStandardPaths::writableLocation(QStandardPaths::DocumentsLocation);
+    QString dbLocation = QStandardPaths::writableLocation(QStandardPaths::GenericDataLocation);
     dbLocation.append("/db.sqlite");
+
+    qDebug () << "dbLocation: " << dbLocation;
 
     if (!checkPermission())
         qDebug () << "IOInterfaceSQLITE::checkPermissions failed!";

@@ -10,6 +10,7 @@ class PrinterInterfacePdf : public PrinterInterface
     public:
         PrinterInterfacePdf();
         void saveAsFile();
+        const QString getFilePath();
         void print();
         //void add (const QImage& img, QRect size, QRect margin, bool foldable, PrinterInterface::BorderStyle borderstyle);
         void drawQRCode(QImage &img, int codeDim, int labelWidth, bool foldable = false, Qt::PenStyle style = Qt::NoPen);
@@ -32,6 +33,8 @@ class PrinterInterfacePdf : public PrinterInterface
         unsigned int mPixelPerPageY;
         unsigned int mPixelPerPageX;
         unsigned int mPageMargin;
+
+        QString mFilePath;
 };
 
 #endif // PRINTERINTERFACEPDF_H

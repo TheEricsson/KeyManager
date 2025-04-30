@@ -4,6 +4,7 @@
 #include <QDesktopServices>
 #include <QRegularExpression>
 #include <QPrintDialog>
+#include <QStandardPaths>
 
 PrinterInterfacePdf::PrinterInterfacePdf()
 {
@@ -25,17 +26,24 @@ PrinterInterfacePdf::PrinterInterfacePdf()
 
     mPosX = mPageMargin;
     mPosY = 0;
+
+    mFilePath = "";
 }
 
 void PrinterInterfacePdf::saveAsFile()
 {
     // open file dialog and let user set location + file name
-    QString fileName = QFileDialog::getSaveFileName((QWidget* )0, "Export PDF", QString(), "*.pdf");
-    if (QFileInfo(fileName).suffix().isEmpty()) { fileName.append(".pdf"); }
-    mPrinter.setOutputFileName(fileName);
+    mFilePath = QFileDialog::getSaveFileName((QWidget* )0, "Export PDF", QString(), "*.pdf");
+    if (QFileInfo(mFilePath).suffix().isEmpty())
+    {
+        mFilePath.append(".pdf");
+    }
+    mPrinter.setOutputFileName(mFilePath);
+}
 
-    // open the file in file browser
-    QDesktopServices::openUrl(QFileInfo(fileName).path());
+const QString PrinterInterfacePdf::getFilePath()
+{
+    return mFilePath;
 }
 
 void PrinterInterfacePdf::print()

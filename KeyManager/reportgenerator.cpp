@@ -1,6 +1,9 @@
 #include "reportgenerator.h"
 #include "printerinterfacepdf.h"
 #include "printerinterfacedevice.h"
+#include <QDesktopServices>
+#include <QUrl>
+#include <QFileInfo>
 
 ReportGenerator::ReportGenerator(IOInterface *ioInterface)
 {
@@ -10,12 +13,14 @@ ReportGenerator::ReportGenerator(IOInterface *ioInterface)
 void ReportGenerator::createHandoverProtocol(unsigned int id, ReportGenerator::OutputFormat outputFormat)
 {
     PrinterInterface *printer;
+    bool showPdfFile = false;
 
     switch (outputFormat)
     {
         case ReportGenerator::Pdf:
             printer = new PrinterInterfacePdf();
             printer->saveAsFile();
+            showPdfFile = true;
             break;
         case ReportGenerator::Device:
             printer = new PrinterInterfaceDevice();
@@ -117,6 +122,26 @@ void ReportGenerator::createHandoverProtocol(unsigned int id, ReportGenerator::O
     printer->insertText(deadline);
     printer->insertHLine();
 
+    QImage imgKeychain;
+
+    if (mIOInterface->getKeychainImg(keyCode, imgKeychain))
+    {
+        if (!imgKeychain.isNull())
+        {
+            if (imgKeychain.height() > imgKeychain.width())
+            {
+                QImage img = imgKeychain.transformed(QTransform().rotate(90.0));
+                imgKeychain = img;
+            }
+            printer->insertHeaderH2("Schlüsselbund:");
+            printer->insertImage(imgKeychain, PrinterInterface::Medium, PrinterInterface::Left);
+            printer->insertHLine();
+        }
+    }
+
+    int getNumberOfEntries (const QString &tableName);
+    QVariant getValue (const QString &tableName, const QString& columnName, int index);
+
     printer->insertHeaderH2("Unterschrift des Empfängers:");
     QByteArray sigByteArray = mIOInterface->getValue("handovers", "signature", id).toByteArray();
     QImage sigImage;
@@ -124,17 +149,13 @@ void ReportGenerator::createHandoverProtocol(unsigned int id, ReportGenerator::O
     printer->insertImage(sigImage, PrinterInterface::Small, PrinterInterface::Left);
     printer->insertHLine();
 
-    QImage imgKeychain;
-
-    if (mIOInterface->getKeychainImg(keyCode, imgKeychain))
-    {
-        QImage keychainRotated = imgKeychain.transformed(QTransform().rotate(90.0));
-        printer->insertHeaderH2("Schlüsselbund:");
-        printer->insertImage(keychainRotated, PrinterInterface::Medium, PrinterInterface::Left);
-        printer->insertHLine();
-    }
-
     printer->finish();
+
+    if (showPdfFile)
+    {
+        //open file with the default app
+        QDesktopServices::openUrl(QUrl(printer->getFilePath()));
+    }
 
     delete printer;
 }

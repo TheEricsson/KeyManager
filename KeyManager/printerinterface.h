@@ -31,6 +31,7 @@ class PrinterInterface
         PrinterInterface();
         virtual ~PrinterInterface();
         virtual void saveAsFile(){};
+        virtual const QString getFilePath(){return "";};
         virtual void print(){};
         //virtual void add (const QImage& img, QRect size, QRect margin, bool foldable = false, PrinterInterface::BorderStyle borderstyle = BorderStyle::None){};
         virtual void drawQRCode(QImage &img, int codeDim, int labelWidth = 0, bool foldable = false, Qt::PenStyle style = Qt::NoPen){};
