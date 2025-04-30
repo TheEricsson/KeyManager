@@ -141,9 +141,6 @@ QWidget* ViewStackManager::previous (int queueId)
 
 QWidget* ViewStackManager::next (int queueId)
 {
-    qDebug () << "ViewStackManager::next";
-    qDebug () << "queueId: " << queueId;
-
     auto i = mStackMap.find(queueId);
 
     qDebug () << "i.key: " << i.key();

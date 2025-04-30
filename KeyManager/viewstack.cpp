@@ -25,7 +25,6 @@ QWidget* ViewStack::previous()
     if (0 < mIterator)
     {
         --mIterator;
-        qDebug () << "ViewStack::getPreviousWidget Iterator: " << mIterator;
         retVal = mStackList [mIterator];
     }
     return retVal;
@@ -63,16 +62,9 @@ QWidget* ViewStack::next ()
     QWidget *retVal = nullptr;
     mIterator++;
 
-    qDebug () << "ViewStack::next ()";
-    qDebug () << "mIterator: " << mIterator;
-    qDebug () << "mStackList.size(): " << mStackList.size();
-
-
     if (mIterator < mStackList.size())
-    {
-        qDebug () << "ViewStack::getNextWidget Iterator: " << mIterator;
         retVal = mStackList [mIterator];
-    }
+
     return retVal;
 }
 
