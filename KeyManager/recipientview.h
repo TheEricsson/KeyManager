@@ -34,7 +34,7 @@ private slots:
     virtual void onMenuBtnClicked (Gui::MenuButton btnType);
     void onTableSelectionChanged (const QItemSelection &itemNew, const QItemSelection &itemOld);
     void onSelectedDateChanged (QDate date);
-    void onKeychainStatusChanged (Database::KeychainStatus newStatus);
+    void onKeychainStatusChanged (KeychainStatus::Value newStatus);
     void onRecipientNameTextChanged (const QString &text);
     void onAddRecipientButtonClicked(Gui::MenuButton btn);
 
@@ -55,7 +55,7 @@ private:
     QLineEdit *mSearchField;
 
     QLabel *mReturnDateLabel;
-    Database::KeychainStatus mDurationHandout;
+    KeychainStatus::Value mDurationHandout;
     QVBoxLayout *mDateLayout;
 
     AddRecipientView *mAddRecipientView;

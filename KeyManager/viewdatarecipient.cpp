@@ -12,5 +12,5 @@ ViewDataRecipient::ViewDataRecipient()
     mAreaCode = _UNDEFINED;
     mCity = "";
     mSignee = "";
-    mNewKeychainStatus = Database::KeychainStatus::Undefined;
+    mNewKeychainStatus = KeychainStatus::Value::Undefined;
 }

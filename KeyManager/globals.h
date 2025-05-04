@@ -46,9 +46,9 @@ namespace Gui
     };
 }
 
-namespace Database
+namespace KeychainStatus
 {
-    enum KeychainStatus
+    enum Value
     {
         Available = 1,
         TemporaryOut = 2,
@@ -57,14 +57,32 @@ namespace Database
         Lost = 5,
         Undefined = 999
     };
+}
 
-    enum RecipientType
+namespace KeyStatus
+{
+    enum Value
+    {
+        Ok = 1,
+        NoFit = 2,
+        Lost = 3,
+        Broken = 4,
+        Undefined = 999
+    };
+}
+
+namespace RecipientType
+{
+    enum Value
     {
         Company = 1,
         Employee = 2,
         PrivatePerson = 3
     };
+}
 
+namespace Database
+{
     const int maxHandoverEntries = 50;
 
     inline const QString normaliseKeycode (const unsigned int code)

@@ -190,10 +190,10 @@ void KeychainStatusView::setNextBtnText ()
 {
     switch (dataInterface()->getKeychainStatusId())
     {
-        case Database::AdministrationEnded:
-        case Database::TemporaryOut:
-        case Database::PermanentOut:
-        case Database::Lost:
+        case KeychainStatus::AdministrationEnded:
+        case KeychainStatus::TemporaryOut:
+        case KeychainStatus::PermanentOut:
+        case KeychainStatus::Lost:
             setButtonText(2, "Rücknahme");
             break;
         default:

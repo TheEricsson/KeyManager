@@ -10,6 +10,8 @@
 #include <QFile>
 #include <QMessageBox>
 #include <QKeyEvent>
+#include <QMainWindow>
+#include <QStackedWidget>
 
 #include "homeview.h"
 #include "tableview.h"
@@ -35,7 +37,7 @@
 #endif
 
 MainWindow::MainWindow(QWidget *parent)
-    : QWidget(parent)
+    : QMainWindow (parent)
 {
     mScanView = 0;
     mHomeView = 0;
@@ -74,8 +76,8 @@ void MainWindow::setIOInterface (IOInterface *ioInterface)
 
 void MainWindow::init()
 {
-    mViewStack = new QStackedLayout (this);
-    setLayout(mViewStack);
+    mViewStack = new QStackedWidget (this);
+    setCentralWidget(mViewStack);
 
     mHomeView = new HomeView (this);
     mScanView = new ScannerView (this);

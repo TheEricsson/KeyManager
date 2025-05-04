@@ -13,15 +13,16 @@ TableView::TableView(const QString &tableName, QWidget *parent)
 {
     mKeychainModel = 0;
     mFilteredKeychainModel = 0;
+    setHeader("Suchfunktion");
 
     mKeychain = new QTableView (this);
-    mKeychain->setSizeAdjustPolicy(QAbstractScrollArea::AdjustToContents);
-    mKeychain->setSizePolicy(QSizePolicy::Maximum, QSizePolicy::Maximum);
-    mKeychain->resizeColumnsToContents();
+    //mKeychain->setSizeAdjustPolicy(QAbstractScrollArea::AdjustToContents);
+    mKeychain->setSizePolicy(QSizePolicy::Expanding, QSizePolicy::Expanding);
+    //mKeychain->resizeColumnsToContents();
 
     layout()->addWidget(mKeychain);
 
-    QSpacerItem *spacer = new QSpacerItem (0, 0, QSizePolicy::Expanding, QSizePolicy::Expanding);
+    QSpacerItem *spacer = new QSpacerItem (0, 0, QSizePolicy::Minimum, QSizePolicy::Minimum);
     layout()->addItem(spacer);
 
     QList<Gui::MenuButton> menuButtons;
@@ -68,10 +69,10 @@ bool TableView::setKeychainModel (QSqlRelationalTableModel* model)
 
             mKeychain->show();
 
-            mKeychain->setSizeAdjustPolicy(QAbstractScrollArea::AdjustToContents);
-            mKeychain->setSizePolicy(QSizePolicy::Preferred, QSizePolicy::Maximum);
+            //mKeychain->setSizeAdjustPolicy(QAbstractScrollArea::AdjustToContents);
+            //mKeychain->setSizePolicy(QSizePolicy::Preferred, QSizePolicy::Maximum);
 
-            mKeychain->resizeColumnsToContents();
+            //mKeychain->resizeColumnsToContents();
 
             return true;
         }

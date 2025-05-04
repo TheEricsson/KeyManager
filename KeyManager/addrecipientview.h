@@ -32,7 +32,7 @@ class AddRecipientView : public WinSubmenu
         QLabel* mLabelRecipientName;
         QRadioButton* mIsCompany;
 
-        Database::RecipientType mRecipientType;
+        RecipientType::Value mRecipientType;
         QLineEdit* mRecipientNameEdit;
         QLineEdit* mStreetEdit;
         QLineEdit* mStreetNumberEdit;

@@ -76,7 +76,7 @@ RecipientView::RecipientView(QWidget *parent) : WinSubmenu {parent}
     connect (mRecipients->selectionModel(), SIGNAL(selectionChanged(const QItemSelection &, const QItemSelection &)), this, SLOT(onTableSelectionChanged(const QItemSelection &, const QItemSelection &)));
     connect (mSearchField, SIGNAL(textChanged(const QString &)), this, SLOT(setTableFilter(const QString &)));
     //connect (mReturnDateWidget, SIGNAL(dateSelectionChanged(QDate)), this, SLOT(onSelectedDateChanged (QDate)));
-    //connect (mReturnDateWidget, SIGNAL(keychainStatusChanged(Database::KeychainStatus)), this, SLOT(onKeychainStatusChanged (Database::KeychainStatus)));
+    //connect (mReturnDateWidget, SIGNAL(keychainStatusChanged(KeychainStatus::Value)), this, SLOT(onKeychainStatusChanged (KeychainStatus::Value)));
     connect (mRecipientNameEdit, SIGNAL(textChanged(const QString &)), this, SLOT(onRecipientNameTextChanged(const QString &)));
 }
 
@@ -156,11 +156,11 @@ void RecipientView::reset()
 
     switch (dataInterface()->getKeychainStatusId())
     {
-        case Database::KeychainStatus::AdministrationEnded:
-        case Database::KeychainStatus::Lost:
-        case Database::KeychainStatus::PermanentOut:
-        case Database::KeychainStatus::TemporaryOut:
-        case Database::KeychainStatus::Undefined:
+        case KeychainStatus::Value::AdministrationEnded:
+        case KeychainStatus::Value::Lost:
+        case KeychainStatus::Value::PermanentOut:
+        case KeychainStatus::Value::TemporaryOut:
+        case KeychainStatus::Value::Undefined:
             hideSearchField(true);
             hideNameField(true);
             setTableFilter(2, "Mitarbeiter");
@@ -169,7 +169,7 @@ void RecipientView::reset()
             dataInterface()->setRecipientDeadlineDate("");
 
             update ();
-            dataInterface()->setNewKeychainStatusId(Database::KeychainStatus::Available);
+            dataInterface()->setNewKeychainStatusId(KeychainStatus::Value::Available);
             break;
         default:
             hideSearchField(false);
@@ -198,10 +198,10 @@ void RecipientView::onMenuBtnClicked (Gui::MenuButton btnType)
     case (Gui::Next):
         switch (dataInterface()->getNewKeychainStatusId())
         {
-            case Database::KeychainStatus::AdministrationEnded:
-            case Database::KeychainStatus::Available:
-            case Database::KeychainStatus::Lost:
-            case Database::KeychainStatus::PermanentOut:
+            case KeychainStatus::Value::AdministrationEnded:
+            case KeychainStatus::Value::Available:
+            case KeychainStatus::Value::Lost:
+            case KeychainStatus::Value::PermanentOut:
                 dataInterface()->setRecipientDeadlineDate("");
                 break;
             default:
@@ -328,7 +328,7 @@ void RecipientView::onSelectedDateChanged (QDate date)
     update ();
 }
 
-void RecipientView::onKeychainStatusChanged (Database::KeychainStatus newStatus)
+void RecipientView::onKeychainStatusChanged (KeychainStatus::Value newStatus)
 {
     dataInterface()->setNewKeychainStatusId(newStatus);
     update ();

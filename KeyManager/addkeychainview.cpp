@@ -205,10 +205,10 @@ void AddKeychainView::onMenuBtnClicked (Gui::MenuButton btnType)
             {
                 if (ConfirmationDialog ())
                 {
-                    dataInterface()->setNewKeychainStatusId(Database::KeychainStatus::Available);
+                    dataInterface()->setNewKeychainStatusId(KeychainStatus::Value::Available);
                     dataInterface()->setKeychainInternalLocation(mInternalLocation->text().toInt());
 
-                    //mViewDataKeychain->setNewStatus(Database::KeychainStatus::Available);
+                    //mViewDataKeychain->setNewStatus(KeychainStatus::Value::Available);
                     //mViewDataKeychain->setInternalLocation(mInternalLocation->text().toInt());
 
                     bool retVal = ioInterface()->dbInsertKeychain (dataInterface()->getHandle());

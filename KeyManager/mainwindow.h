@@ -2,12 +2,13 @@
 #define MAINWINDOW_H
 
 #include <QWidget>
+#include <QMainWindow>
 #include "globals.h"
 
 class QPushButton;
 class QGridLayout;
 class ScannerView;
-class QStackedLayout;
+class QStackedWidget;
 class HomeView;
 class ScannerView;
 class TableView;
@@ -25,10 +26,9 @@ class IOInterfaceSQLITE;
 class IOInterface;
 class ToolsView;
 class ReturnDateView;
-
 class ViewStack;
 
-class MainWindow : public QWidget
+class MainWindow : public QMainWindow
 {
     Q_OBJECT
 
@@ -52,7 +52,7 @@ private:
     QPushButton* btnManage;
     QPushButton* btnExit;
 
-    QStackedLayout *mViewStack;
+    QStackedWidget *mViewStack;
     ViewStackManager *mViewStackManager;
 
     // views for the key management
