@@ -22,8 +22,8 @@ TableView::TableView(const QString &tableName, QWidget *parent)
 
     layout()->addWidget(mKeychain);
 
-    QSpacerItem *spacer = new QSpacerItem (0, 0, QSizePolicy::Minimum, QSizePolicy::Minimum);
-    layout()->addItem(spacer);
+    //QSpacerItem *spacer = new QSpacerItem (0, 0, QSizePolicy::Minimum, QSizePolicy::Minimum);
+    //layout()->addItem(spacer);
 
     QList<Gui::MenuButton> menuButtons;
     menuButtons.append(Gui::Back);

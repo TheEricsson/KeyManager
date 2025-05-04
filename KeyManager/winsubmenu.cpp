@@ -20,12 +20,13 @@ WinSubmenu::WinSubmenu(QWidget *parent)
     mIOInterface = 0;
     mButtonLayout = 0;
 
-    mLayout = new QVBoxLayout (this);
+    mLayout = new QVBoxLayout ();
+    setLayout(mLayout);
 
     mHeaderLabel = new QLabel (this);
-    mLayout->addWidget(mHeaderLabel,0,Qt::AlignCenter);
+    //mLayout->addWidget(mHeaderLabel,0,Qt::AlignCenter);
 
-    mHeaderLabel->setSizePolicy(QSizePolicy::Expanding, QSizePolicy::MinimumExpanding);
+    mHeaderLabel->setSizePolicy(QSizePolicy::Expanding, QSizePolicy::Minimum);
 
     //set css styles
     QFile f(":qdarkstyle/light/lightstyle.qss");
@@ -36,7 +37,7 @@ WinSubmenu::WinSubmenu(QWidget *parent)
     else   {
         f.open(QFile::ReadOnly | QFile::Text);
         QTextStream ts(&f);
-        this->setStyleSheet(ts.readAll());
+        setStyleSheet(ts.readAll());
     }
 
     // mHeaderLabel->setStyleSheet("QLabel {background-color: #e0ffff; color: black; font: bold 30px; border-style: solid; border-width: 1px; border-radius: 5px; border-color: #A9A9A9; }");

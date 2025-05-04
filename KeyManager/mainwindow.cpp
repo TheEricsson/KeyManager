@@ -12,7 +12,8 @@
 #include <QKeyEvent>
 #include <QMainWindow>
 #include <QStackedWidget>
-
+#include <QDockWidget>
+#include <QPushbutton>
 #include "homeview.h"
 #include "tableview.h"
 #include "keychainstatusview.h"
@@ -79,18 +80,18 @@ void MainWindow::init()
     mViewStack = new QStackedWidget (this);
     setCentralWidget(mViewStack);
 
-    mHomeView = new HomeView (this);
-    mScanView = new ScannerView (this);
-    mTableView = new TableView ("addresses", this);
-    mRecipientView = new RecipientView (this);
-    mKeychainStatusView = new KeychainStatusView (this);
-    mAddRecipientView = new AddRecipientView (this);
-    mHandoverView = new HandoverView (this);
-    mAnnotationView = new AnnotationView (this);
-    mAddKeychainView = new AddKeychainView (this);
-    mEditKeyView = new EditKeyView (this);
-    mToolsView = new ToolsView (this);
-    mReturnDateView = new ReturnDateView (this);
+    mHomeView = new HomeView ();
+    mScanView = new ScannerView ();
+    mTableView = new TableView ("addresses");
+    mRecipientView = new RecipientView ();
+    mKeychainStatusView = new KeychainStatusView ();
+    mAddRecipientView = new AddRecipientView ();
+    mHandoverView = new HandoverView ();
+    mAnnotationView = new AnnotationView ();
+    mAddKeychainView = new AddKeychainView ();
+    mEditKeyView = new EditKeyView ();
+    mToolsView = new ToolsView ();
+    mReturnDateView = new ReturnDateView ();
 
     registerView (mHomeView);
     registerView (mScanView);
