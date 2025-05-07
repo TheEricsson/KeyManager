@@ -23,39 +23,7 @@
 
 IOInterfaceSQLITE::IOInterfaceSQLITE()
 {
-    // QSettings settings (QString("res/config.ini"), QSettings::IniFormat);
-    // QString dbType = settings.value("database/dbType", "error").toString();
-    // QString dbHostName = settings.value("database/dbHostName", "error").toString();
-    // QString dbDatabaseName = settings.value("database/dbDatabaseName", "error").toString();
-    // QString dbUserName = settings.value("database/dbUserName", "error").toString();
-    // QString dbPassword = settings.value("database/dbPassword", "error").toString();
-
-    // qDebug () << "opening database -> parameters:" << dbType;
-    // qDebug () << "dbType" << dbType;
-    // qDebug () << "dbHostName" << dbType;
-    // qDebug () << "dbDatabaseName" << dbType;
-    // qDebug () << "dbUserName" << dbType;
-    // qDebug () << "dbPassword" << dbType;
-
-    // QSqlDatabase db = QSqlDatabase::addDatabase(dbType);
-    // db.setHostName(dbHostName);
-    // db.setDatabaseName(dbDatabaseName);
-    // db.setUserName(dbUserName);
-    // db.setPassword(dbPassword);
-
-    qDebug () << "paths:";
-    qDebug () << "QStandardPaths::AppConfigLocation" << QStandardPaths::writableLocation(QStandardPaths::AppConfigLocation);
-    qDebug () << "QStandardPaths::AppDataLocation" << QStandardPaths::writableLocation(QStandardPaths::AppDataLocation);
-    qDebug () << "QStandardPaths::AppLocalDataLocation" << QStandardPaths::writableLocation(QStandardPaths::AppLocalDataLocation);
-    qDebug () << "QStandardPaths::ApplicationsLocation" << QStandardPaths::writableLocation(QStandardPaths::ApplicationsLocation);
-    qDebug () << "QStandardPaths::RuntimeLocation" << QStandardPaths::writableLocation(QStandardPaths::RuntimeLocation);
-    qDebug () << "QStandardPaths::DocumentsLocation" << QStandardPaths::writableLocation(QStandardPaths::DocumentsLocation);
-    qDebug () << "QStandardPaths::GenericDataLocation" << QStandardPaths::writableLocation(QStandardPaths::GenericDataLocation);
-    qDebug () << "QStandardPaths::HomeLocation" << QStandardPaths::writableLocation(QStandardPaths::HomeLocation);
-    qDebug () << "QStandardPaths::RuntimeLocation" << QStandardPaths::writableLocation(QStandardPaths::RuntimeLocation);
-
     mKeychainStatusId = Database::Undefined;
-
     mDb = QSqlDatabase::addDatabase("QSQLITE");
 
 #ifdef Q_OS_ANDROID

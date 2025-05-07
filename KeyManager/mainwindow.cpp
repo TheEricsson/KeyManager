@@ -28,7 +28,7 @@
 #include "iointerfacesqlite.h"
 #include "toolsview.h"
 #include "returndateview.h"
-#include "tableview.h"
+#include "searchview.h"
 
 #ifndef GMANDANTID
     #define GMANDANTID 1
@@ -39,7 +39,7 @@ MainWindow::MainWindow(QWidget *parent)
 {
     mScanView = 0;
     mHomeView = 0;
-    mTableView = 0;
+    mSearchView = 0;
     mKeychainStatusView = 0;
     mRecipientView = 0;
     mAddRecipientView = 0;
@@ -79,7 +79,7 @@ void MainWindow::init()
 
     mHomeView = new HomeView (this);
     mScanView = new ScannerView (this);
-    mTableView = new TableView ("addresses", this);
+    mSearchView = new SearchView (this);
     mRecipientView = new RecipientView (this);
     mKeychainStatusView = new KeychainStatusView (this);
     mAddRecipientView = new AddRecipientView (this);
@@ -92,7 +92,7 @@ void MainWindow::init()
 
     registerView (mHomeView);
     registerView (mScanView);
-    registerView (mTableView);
+    registerView (mSearchView);
     registerView (mRecipientView);
     registerView (mKeychainStatusView);
     registerView (mAddRecipientView);
@@ -124,7 +124,7 @@ void MainWindow::init()
     mViewStackManager->addNode(ViewStackManager::Settings, mToolsView);
 
     // views in the section 'search'
-    mViewStackManager->addNode(ViewStackManager::Search, mTableView);
+    mViewStackManager->addNode(ViewStackManager::Search, mSearchView);
 
     mViewStackManager->setCurrentStackId(ViewStackManager::HandoverOut);
     mViewStack->setCurrentWidget(mHomeView);

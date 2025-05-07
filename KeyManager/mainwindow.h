@@ -3,6 +3,7 @@
 
 #include <QWidget>
 #include "globals.h"
+#include <QMainWindow>
 
 class QPushButton;
 class QGridLayout;
@@ -10,7 +11,7 @@ class ScannerView;
 class QStackedLayout;
 class HomeView;
 class ScannerView;
-class TableView;
+class SearchView;
 class KeychainStatusView;
 class RecipientView;
 class AddRecipientView;
@@ -25,7 +26,6 @@ class IOInterfaceSQLITE;
 class IOInterface;
 class ToolsView;
 class ReturnDateView;
-
 class ViewStack;
 
 class MainWindow : public QWidget
@@ -58,7 +58,7 @@ private:
     // views for the key management
     HomeView *mHomeView;
     ScannerView *mScanView;
-    TableView *mTableView;
+    SearchView *mSearchView;
     KeychainStatusView *mKeychainStatusView;
     RecipientView *mRecipientView;
     AddRecipientView *mAddRecipientView;

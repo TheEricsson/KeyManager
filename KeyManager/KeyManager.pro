@@ -40,10 +40,12 @@ SOURCES += \
     reportgenerator.cpp \
     returndateview.cpp \
     scannerview.cpp \
+    searchview.cpp \
     signaturepad.cpp \
     tableview.cpp \
     tests/qrencodertest.cpp \
     toolsview.cpp \
+    treeviewimpl.cpp \
     viewdataannotation.cpp \
     viewdatahandover.cpp \
     viewdatakeychain.cpp \
@@ -85,10 +87,12 @@ HEADERS += \
     reportgenerator.h \
     returndateview.h \
     scannerview.h \
+    searchview.h \
     signaturepad.h \
     tableview.h \
     tests/qrencodertest.h \
     toolsview.h \
+    treeviewimpl.h \
     viewdataannotation.h \
     viewdatahandover.h \
     viewdatakeychain.h \
