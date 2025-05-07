@@ -18,7 +18,7 @@ class IOInterfaceSQLITE : public IOInterface
         bool initFirstStart();
         bool addKey (const IOInterface::keyData *data);
         bool findKeyCode(unsigned int code);
-        Database::KeychainStatus getKeychainStatusId (const int& keyCode);
+        KeychainStatus::Value getKeychainStatusId (const int& keyCode);
         const QString getKeychainStatusText (int statusId);
         int getKeychainInternalLocation (const int& keyCode);
         int getKeychainAddressId (const int& keyCode);
@@ -63,7 +63,7 @@ class IOInterfaceSQLITE : public IOInterface
         int mKeychainInternalLocation;
         QImage mKeychainImg;
         QString mKeychainStatus;
-        Database::KeychainStatus mKeychainStatusId;
+        KeychainStatus::Value mKeychainStatusId;
 };
 
 #endif // IOINTERFACESQLITE_H

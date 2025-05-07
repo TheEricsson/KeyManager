@@ -12,38 +12,38 @@ AddKeyView::AddKeyView(QWidget *parent) : WinSubmenu {parent}
 {
     mKeyCategories = 0;
     mKeyStates = 0;
-
     setHeader("Schlüsseleigenschaften setzen");
 
-    mKeyDescription = new QTextEdit (this);
-    mKeyCategories = new CheckBoxArray (this);
+    mKeyDescription = new QTextEdit ();
+    mKeyCategories = new CheckBoxArray ();
     connect (mKeyCategories, SIGNAL(radioBtnToggled()), this, SLOT(onRadioBtnToggled()));
-    mKeyStates = new CheckBoxArray (this);
-    connect (mKeyStates, SIGNAL(radioBtnToggled()), this, SLOT(onRadioBtnToggled()));
+    //mKeyStates = new CheckBoxArray (this);
+    //connect (mKeyStates, SIGNAL(radioBtnToggled()), this, SLOT(onRadioBtnToggled()));
 
     QLabel *headerKeyCat = new QLabel ("Schlüsselkategorie", this);
     headerKeyCat->setAlignment(Qt::AlignHCenter);
-    headerKeyCat->setContentsMargins(0,0,0,0);
-    headerKeyCat->setSizePolicy(QSizePolicy::MinimumExpanding, QSizePolicy::MinimumExpanding);
-    QLabel *headerKeyStatus = new QLabel ("Schlüsselstatus", this);
-    headerKeyStatus->setAlignment(Qt::AlignHCenter);
-    headerKeyStatus->setContentsMargins(0,0,0,0);
-    headerKeyStatus->setSizePolicy(QSizePolicy::MinimumExpanding, QSizePolicy::MinimumExpanding);
+    //headerKeyCat->setContentsMargins(0,0,0,0);
+    //headerKeyCat->setSizePolicy(QSizePolicy::MinimumExpanding, QSizePolicy::MinimumExpanding);
+    //QLabel *headerKeyStatus = new QLabel ("Schlüsselstatus", this);
+    //headerKeyStatus->setAlignment(Qt::AlignHCenter);
+    //headerKeyStatus->setContentsMargins(0,0,0,0);
+    //headerKeyStatus->setSizePolicy(QSizePolicy::MinimumExpanding, QSizePolicy::MinimumExpanding);
     QLabel *headerDescription = new QLabel ("Zusätzliche Angaben", this);
-    headerKeyStatus->setAlignment(Qt::AlignHCenter);
-    headerKeyStatus->setContentsMargins(0,0,0,0);
-    headerKeyStatus->setSizePolicy(QSizePolicy::MinimumExpanding, QSizePolicy::MinimumExpanding);
+    //headerKeyStatus->setAlignment(Qt::AlignHCenter);
+    //headerKeyStatus->setContentsMargins(0,0,0,0);
+    //headerKeyStatus->setSizePolicy(QSizePolicy::MinimumExpanding, QSizePolicy::MinimumExpanding);
 
     layout()->addWidget(headerKeyCat);
     layout()->addWidget(mKeyCategories);
-    layout()->addWidget(headerKeyStatus);
-    layout()->addWidget(mKeyStates);
+    //layout()->addWidget(headerKeyStatus);
+    //layout()->addWidget(mKeyStates);
     layout()->addWidget(headerDescription);
     layout()->addWidget(mKeyDescription);
 
     QList<Gui::MenuButton> menuButtons;
     menuButtons.append(Gui::Back);
     menuButtons.append(Gui::Ok);
+
     setMenuButtons(menuButtons);
 
     update ();
@@ -68,7 +68,7 @@ void AddKeyView::onMenuBtnClicked (Gui::MenuButton btnType)
                     IOInterface::keyData *data = new IOInterface::keyData();
                     data->keychainId = keyCode;
                     data->categoryId = mKeyCategories->getCheckedButtonIndex();
-                    data->statusId = mKeyStates->getCheckedButtonIndex();
+                    data->statusId = (int)KeyStatus::Ok;//mKeyStates->getCheckedButtonIndex();
                     data->description = mKeyDescription->toPlainText();
                     ioInterface()->addKey (data);
                     delete data;
@@ -100,16 +100,15 @@ void AddKeyView::reset ()
     mKeyCategories->setData (ioInterface(), dataInterface());
     mKeyCategories->init ("keyCategories", "category");
 
-    mKeyStates->setData (ioInterface(), dataInterface());
-    mKeyStates->init ("keyStates", "status");
+    //mKeyStates->setData (ioInterface(), dataInterface());
+    //mKeyStates->init ("keyStates", "status");
 
-    update();
+    //update();
 }
 
 bool AddKeyView::checkSelections ()
 {
-    if (_UNDEFINED == mKeyCategories->getCheckedButtonIndex() ||
-        _UNDEFINED == mKeyStates->getCheckedButtonIndex())
+    if (_UNDEFINED == mKeyCategories->getCheckedButtonIndex())
     {
         QMessageBox msgBox;
         msgBox.setStandardButtons(QMessageBox::Abort);

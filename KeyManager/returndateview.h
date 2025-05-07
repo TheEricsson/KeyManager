@@ -16,7 +16,7 @@ class ReturnDateView : public WinSubmenu
         explicit ReturnDateView (QWidget *parent = nullptr);
     signals:
         void dateSelectionChanged (QDate date);
-        void keychainStatusChanged (Database::KeychainStatus aStatus);
+        void keychainStatusChanged (KeychainStatus::Value aStatus);
     private slots:
         void onHandoverTemporaryClicked (bool aChecked);
         void onHandoverPermanentClicked(bool aChecked);

@@ -19,7 +19,7 @@ class ViewDataRecipient
         void setRecipientType (const QString& recipientType) {mRecipientType = recipientType;};
         void setSignatureName (const QString& signee) {mSignee = signee;};
         void setSignatureImg (const QImage& sigImage) {mSigImg = sigImage;};
-        void setNewKeychainStatus (Database::KeychainStatus newStatus) {mNewKeychainStatus= newStatus;};
+        void setNewKeychainStatus (KeychainStatus::Value newStatus) {mNewKeychainStatus= newStatus;};
 
         const QString& getCurrentDate (){return mCurrentDate;};
         const QString& getDeadlineDate (){return mDeadlineDate;};
@@ -31,7 +31,7 @@ class ViewDataRecipient
         const QString& getRecipientType () {return mRecipientType;};
         const QString& getSignatureName () {return mSignee;};
         const QImage& getSignatureImg () {return mSigImg;};
-        Database::KeychainStatus getNewKeychainStatus () {return mNewKeychainStatus;};
+        KeychainStatus::Value getNewKeychainStatus () {return mNewKeychainStatus;};
 
     private:
         QString mCurrentDate;
@@ -44,7 +44,7 @@ class ViewDataRecipient
         QString mCity;
         QString mSignee;
         QImage mSigImg;
-        Database::KeychainStatus mNewKeychainStatus;
+        KeychainStatus::Value mNewKeychainStatus;
 };
 
 #endif // VIEWDATARECIPIENT_H

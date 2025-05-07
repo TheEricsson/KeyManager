@@ -146,7 +146,7 @@ void HandoverView::showEvent(QShowEvent *)
 void HandoverView::reset ()
 {
     mBarcodeLineEdit->setText(QString::number(dataInterface()->getScannedCode()));
-    Database::KeychainStatus status = dataInterface()->getNewKeychainStatusId();
+    KeychainStatus::Value status = dataInterface()->getNewKeychainStatusId();
     QString statusById = ioInterface()->getKeychainStatusText(status);
     mNewStatusEdit->setText(statusById);
     mHandoverDateEdit->setText(dataInterface()->getHandoverDate());

@@ -20,8 +20,8 @@ class DataInterface
         ~DataInterface();
 
         DataInterface* getHandle (){return this;};
-        Database::KeychainStatus getKeychainStatusId ();
-        Database::KeychainStatus getNewKeychainStatusId ();
+        KeychainStatus::Value getKeychainStatusId ();
+        KeychainStatus::Value getNewKeychainStatusId ();
         int getKeychainAddressId ();
         int getInternalLocation ();
         bool setKeychainInternalLocation (const int location);
@@ -36,8 +36,8 @@ class DataInterface
         const QString getRecipientSigName ();
         const QImage getRecipientSignature ();
         const QString getRecipientAnnotation ();
-        bool setKeychainStatusId (Database::KeychainStatus status);
-        bool setNewKeychainStatusId (Database::KeychainStatus status);
+        bool setKeychainStatusId (KeychainStatus::Value status);
+        bool setNewKeychainStatusId (KeychainStatus::Value status);
 
         bool setRecipientName(const QString& name);
         bool setRecipientType(const QString& type);

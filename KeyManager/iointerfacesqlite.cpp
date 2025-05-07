@@ -23,7 +23,18 @@
 
 IOInterfaceSQLITE::IOInterfaceSQLITE()
 {
-    mKeychainStatusId = Database::Undefined;
+    qDebug () << "paths:";
+    qDebug () << "QStandardPaths::AppConfigLocation" << QStandardPaths::writableLocation(QStandardPaths::AppConfigLocation);
+    qDebug () << "QStandardPaths::AppDataLocation" << QStandardPaths::writableLocation(QStandardPaths::AppDataLocation);
+    qDebug () << "QStandardPaths::AppLocalDataLocation" << QStandardPaths::writableLocation(QStandardPaths::AppLocalDataLocation);
+    qDebug () << "QStandardPaths::ApplicationsLocation" << QStandardPaths::writableLocation(QStandardPaths::ApplicationsLocation);
+    qDebug () << "QStandardPaths::RuntimeLocation" << QStandardPaths::writableLocation(QStandardPaths::RuntimeLocation);
+    qDebug () << "QStandardPaths::DocumentsLocation" << QStandardPaths::writableLocation(QStandardPaths::DocumentsLocation);
+    qDebug () << "QStandardPaths::GenericDataLocation" << QStandardPaths::writableLocation(QStandardPaths::GenericDataLocation);
+    qDebug () << "QStandardPaths::HomeLocation" << QStandardPaths::writableLocation(QStandardPaths::HomeLocation);
+    qDebug () << "QStandardPaths::RuntimeLocation" << QStandardPaths::writableLocation(QStandardPaths::RuntimeLocation);
+
+    mKeychainStatusId = KeychainStatus::Undefined;
     mDb = QSqlDatabase::addDatabase("QSQLITE");
 
 #ifdef Q_OS_ANDROID
@@ -407,7 +418,7 @@ bool IOInterfaceSQLITE::findKeyCode(unsigned int code)
 }
 
 //keychain data
-Database::KeychainStatus IOInterfaceSQLITE::getKeychainStatusId (const int& keyCode)
+KeychainStatus::Value IOInterfaceSQLITE::getKeychainStatusId (const int& keyCode)
 {
     QSqlQuery query;
     query.prepare("SELECT keychainStatusId FROM keychains WHERE id = ?");
@@ -416,10 +427,10 @@ Database::KeychainStatus IOInterfaceSQLITE::getKeychainStatusId (const int& keyC
 
     if (query.next())
     {
-        return (Database::KeychainStatus) query.value(0).toInt();
+        return (KeychainStatus::Value) query.value(0).toInt();
     }
     else
-        return Database::Undefined;
+        return KeychainStatus::Undefined;
 }
 
 const QString IOInterfaceSQLITE::getKeychainStatusText (int statusId)
@@ -542,7 +553,7 @@ bool IOInterfaceSQLITE::setKeychainData (ViewDataKeychain* data, const int& keyC
     {
         qDebug () << "ok";
 
-        data->setStatus ((Database::KeychainStatus) query.value(0).toInt());
+        data->setStatus ((KeychainStatus::Value) query.value(0).toInt());
         data->setInternalLocation(query.value(1).toInt());
         data->setAddressId (query.value(2).toInt());
         QImage img;
@@ -554,7 +565,7 @@ bool IOInterfaceSQLITE::setKeychainData (ViewDataKeychain* data, const int& keyC
     return false;
 }
 
-// Database::KeychainStatus IOInterfaceSQLITE::getKeychainStatusId (const int& keyCode)
+// KeychainStatus::Value IOInterfaceSQLITE::getKeychainStatusId (const int& keyCode)
 // {
 //
 
@@ -569,7 +580,7 @@ bool IOInterfaceSQLITE::setKeychainData (ViewDataKeychain* data, const int& keyC
 //     // set keychain status
 //     if (query.next())
 //     {
-//         mKeychainStatusId = (Database::KeychainStatus) query.value(0).toInt();
+//         mKeychainStatusId = (KeychainStatus::Value) query.value(0).toInt();
 //     }
 
 //     return mKeychainStatusId;

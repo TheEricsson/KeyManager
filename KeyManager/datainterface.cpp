@@ -18,12 +18,12 @@ DataInterface::DataInterface()
     mDataAnnotation = new ViewDataAnnotation();
 }
 
-Database::KeychainStatus DataInterface::getKeychainStatusId ()
+KeychainStatus::Value DataInterface::getKeychainStatusId ()
 {
     return mDataKeychain->getStatus();
 }
 
-Database::KeychainStatus DataInterface::getNewKeychainStatusId ()
+KeychainStatus::Value DataInterface::getNewKeychainStatusId ()
 {
     return mDataKeychain->getNewStatus();
 }
@@ -133,7 +133,7 @@ const QString DataInterface::getRecipientAnnotation ()
     return mDataAnnotation->getAnnotation();
 }
 
-bool DataInterface::setKeychainStatusId (Database::KeychainStatus status)
+bool DataInterface::setKeychainStatusId (KeychainStatus::Value status)
 {
     if (!mDataKeychain)
         return false;
@@ -142,7 +142,7 @@ bool DataInterface::setKeychainStatusId (Database::KeychainStatus status)
     return true;
 }
 
-bool DataInterface::setNewKeychainStatusId (Database::KeychainStatus status)
+bool DataInterface::setNewKeychainStatusId (KeychainStatus::Value status)
 {
     if (!mDataKeychain)
         return false;

@@ -12,7 +12,7 @@ CheckBoxArray::CheckBoxArray(QWidget *parent)
     mDataInterface = nullptr;
     mRadioButtonList.clear();
 
-    QVBoxLayout *layout = new QVBoxLayout (this);
+    QVBoxLayout *layout = new QVBoxLayout ();
     setLayout(layout);
 }
 
@@ -53,7 +53,7 @@ bool CheckBoxArray::init (const QString &tableName, const QString &valueColumn)
 
     for (int i = 1; i <= count; i++)
     {
-        QRadioButton *checkBox = new QRadioButton (this);
+        QRadioButton *checkBox = new QRadioButton ();
         checkBox->setText(mIoInterface->getValue(tableName, valueColumn, i).toString());
         checkBox->setChecked(false);
 

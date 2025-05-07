@@ -61,23 +61,23 @@ void ReturnDateView::showEvent(QShowEvent *)
 {
     switch (dataInterface()->getKeychainStatusId())
     {
-        case Database::KeychainStatus::AdministrationEnded:
-        case Database::KeychainStatus::Lost:
-        case Database::KeychainStatus::PermanentOut:
-        case Database::KeychainStatus::TemporaryOut:
-        case Database::KeychainStatus::Undefined:
+        case KeychainStatus::Value::AdministrationEnded:
+        case KeychainStatus::Value::Lost:
+        case KeychainStatus::Value::PermanentOut:
+        case KeychainStatus::Value::TemporaryOut:
+        case KeychainStatus::Value::Undefined:
             onHandoverPermanentClicked (true);
             mReturnDateLabel->setVisible(false);
-            dataInterface()->setNewKeychainStatusId(Database::KeychainStatus::Available);
+            dataInterface()->setNewKeychainStatusId(KeychainStatus::Value::Available);
             emit menuButtonClicked(Gui::Next);
             break;
-        case Database::KeychainStatus::Available:
+        case KeychainStatus::Value::Available:
         default:
             mHandoverTemporary->setChecked(true);
             onHandoverTemporaryClicked (true);
             mCalendar->setMinimumDate(QDate::currentDate());
             mCalendar->setSelectedDate(QDate::currentDate().addDays(14));
-            dataInterface()->setNewKeychainStatusId(Database::KeychainStatus::TemporaryOut);
+            dataInterface()->setNewKeychainStatusId(KeychainStatus::Value::TemporaryOut);
             onDateClicked(mCalendar->selectedDate());
             mReturnDateLabel->setVisible(true);
             break;
@@ -95,7 +95,7 @@ void ReturnDateView::onHandoverTemporaryClicked (bool aChecked)
     mReturnDateLabel->setVisible(true);
     //mCalendar->setVisible(aChecked);
     //mReturnDateLabel->setVisible(true);
-    dataInterface()->setNewKeychainStatusId(Database::KeychainStatus::TemporaryOut);
+    dataInterface()->setNewKeychainStatusId(KeychainStatus::Value::TemporaryOut);
     onDateClicked(mCalendar->selectedDate());
     update ();
 }
@@ -109,7 +109,7 @@ void ReturnDateView::onHandoverPermanentClicked(bool aChecked)
     //mCalendar->setVisible(!aChecked);
     //mReturnDateLabel->setVisible(false);
 
-    dataInterface()->setNewKeychainStatusId(Database::KeychainStatus::PermanentOut);
+    dataInterface()->setNewKeychainStatusId(KeychainStatus::Value::PermanentOut);
     dataInterface()->setRecipientDeadlineDate ("");
     mReturnDateLabel->setVisible(false);
     update ();
@@ -124,7 +124,7 @@ void ReturnDateView::onHandoverEndOfServiceClicked(bool aChecked)
     //mCalendar->setVisible(!aChecked);
     //mReturnDateLabel->setVisible(false);
 
-    dataInterface()->setNewKeychainStatusId(Database::KeychainStatus::AdministrationEnded);
+    dataInterface()->setNewKeychainStatusId(KeychainStatus::Value::AdministrationEnded);
     dataInterface()->setRecipientDeadlineDate ("");
     mReturnDateLabel->setVisible(false);
     update ();

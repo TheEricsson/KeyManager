@@ -23,7 +23,7 @@ public:
 
     struct recipientData
     {
-        Database::RecipientType type;
+        RecipientType::Value type;
         QString name;
         QString street;
         QString number;
@@ -47,7 +47,7 @@ public:
     virtual bool findKeyCode(unsigned int keyCode)                                              {Q_UNUSED(keyCode); return false;};
     virtual unsigned int getLockerIdByKeycode (unsigned int keyCode)                            {Q_UNUSED(keyCode); return 0;};
     virtual unsigned int getKeyIdByKeycode (unsigned int keyCode)                               {Q_UNUSED(keyCode); return 0;};
-    virtual Database::KeychainStatus getKeychainStatusId (const int& keyCode)                   {Q_UNUSED(keyCode); return Database::Undefined;};
+    virtual KeychainStatus::Value getKeychainStatusId (const int& keyCode)                      {Q_UNUSED(keyCode); return KeychainStatus::Undefined;};
     virtual const QString getKeychainStatusText (int statusId)                                  {Q_UNUSED(statusId); return "IOInterface::getKeychainStatusText - not implemented.";};
     virtual int getKeychainInternalLocation (const int& keyCode)                                {Q_UNUSED(keyCode); return _UNDEFINED;};
     virtual int getKeychainAddressId (const int& keyCode)                                       {Q_UNUSED(keyCode); return _UNDEFINED;};
@@ -57,7 +57,7 @@ public:
     virtual const QString getAddressCity (const int& addressId)                                 {Q_UNUSED(addressId); return "IOInterface::getAddressCity - not implemented.";};
     virtual bool getKeychainImg (const int keyCode, QImage& img)                                {Q_UNUSED(keyCode); Q_UNUSED(img); return false;};
     virtual bool setKeychainData (ViewDataKeychain* data, const int& keyCode)                   {Q_UNUSED(keyCode); Q_UNUSED(data); return false;};
-    virtual int getNumberOfEntries (const QString &tableName)                                         {Q_UNUSED(tableName); return _UNDEFINED;};
+    virtual int getNumberOfEntries (const QString &tableName)                                   {Q_UNUSED(tableName); return _UNDEFINED;};
     virtual QVariant getValue (const QString &tableName, const QString& columnName, int index)  {Q_UNUSED(tableName); Q_UNUSED(columnName); Q_UNUSED(index); return _UNDEFINED;};
     virtual bool initKeyOverviewModel (QSqlRelationalTableModel *model, const QString &filter)  {Q_UNUSED(model); Q_UNUSED(filter); return false;};
     virtual bool initKeychainModel (QSqlRelationalTableModel *model, const QString &filter = "") {Q_UNUSED(model); Q_UNUSED(filter); return false;};
