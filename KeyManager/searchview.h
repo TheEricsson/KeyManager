@@ -11,7 +11,7 @@ class SearchView : public WinSubmenu
 {
     Q_OBJECT
 public:
-    SearchView(QWidget *parent = nullptr);
+    explicit SearchView(QWidget *parent = nullptr);
     ~SearchView();
     virtual void showEvent(QShowEvent *);
 private:

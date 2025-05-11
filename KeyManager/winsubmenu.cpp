@@ -6,6 +6,7 @@
 #include <QLayout>
 #include <QFile>
 #include <QKeyEvent>
+#include <QBoxLayout>
 #include "globals.h"
 #include "dataobject.h"
 #include "menubutton.h"
@@ -18,15 +19,25 @@ WinSubmenu::WinSubmenu(QWidget *parent)
     mButtonsSet = false;
     mDataInterface = 0;
     mIOInterface = 0;
-    mButtonLayout = 0;
+    mBottomLayout = 0;
+    mTopLayout = 0;
+    mCentralLayout  = 0;
 
-    mLayout = new QVBoxLayout ();
-    setLayout(mLayout);
+    mBaseLayout = new QBoxLayout(QBoxLayout::TopToBottom, this);
 
-    mHeaderLabel = new QLabel (this);
+    setLayout(mBaseLayout);
+
+    /*set layout dummies for the layout sections
+    this prevents errors, when layouts are replaced at runtime not starting with index 0*/
+
+    setTopLayout(new QHBoxLayout());
+    setCentralLayout(new QHBoxLayout());
+    setBottomLayout(new QHBoxLayout());
+
+    //mHeaderLabel = new QLabel (this);
     //mLayout->addWidget(mHeaderLabel,0,Qt::AlignCenter);
 
-    mHeaderLabel->setSizePolicy(QSizePolicy::Expanding, QSizePolicy::Minimum);
+    //mHeaderLabel->setSizePolicy(QSizePolicy::Expanding, QSizePolicy::Minimum);
 
     //set css styles
     QFile f(":qdarkstyle/light/lightstyle.qss");
@@ -57,9 +68,96 @@ void WinSubmenu::setIOInterface (IOInterface *ioData)
         mIOInterface = ioData;
 }
 
+void WinSubmenu::setTopLayout (QLayout *layout)
+{
+    QLayout *current = getTopLayout();
+    if (0 != current)
+    {
+        mBaseLayout->removeItem(current);
+        delete current;
+    }
+
+    if (layout)
+    {
+        layout->setSizeConstraint(QLayout::SetFixedSize);
+        mBaseLayout->insertLayout(0, layout);
+    }
+}
+
+void WinSubmenu::setCentralLayout (QLayout *layout)
+{
+    QLayout *current = getCentralLayout();
+    if (0 != current)
+    {
+        mBaseLayout->removeItem(current);
+        delete current;
+    }
+
+    if (layout)
+    {
+        layout->setSizeConstraint(QLayout::SetMaximumSize);
+        mBaseLayout->insertLayout(1, layout);
+        mBaseLayout->update();
+    }
+}
+
+void WinSubmenu::setBottomLayout (QLayout *layout)
+{
+    QLayout *current = getBottomLayout();
+    if (0 != current)
+    {
+        mBaseLayout->removeItem(current);
+        delete current;
+    }
+
+    if (layout)
+    {
+        layout->setSizeConstraint(QLayout::SetFixedSize);
+        mBaseLayout->insertLayout(2, layout);
+        mBaseLayout->update();
+    }
+}
+
+QLayout* WinSubmenu::getTopLayout ()
+{
+    QLayoutItem *item = mBaseLayout->itemAt(0);
+    QLayout *layout = 0;
+
+    if (0 != item)
+        layout = (QLayout*) item;
+
+    return layout;
+}
+
+QLayout* WinSubmenu::getCentralLayout ()
+{
+    QLayoutItem *item = mBaseLayout->itemAt(1);
+    QLayout *layout = 0;
+
+    if (0 != item)
+        layout = (QLayout*) item;
+
+    return layout;
+}
+
+QLayout* WinSubmenu::getBottomLayout ()
+{
+    QLayoutItem *item = mBaseLayout->itemAt(2);
+    QLayout *layout = 0;
+
+    if (0 != item)
+        layout = (QLayout*) item;
+
+    return layout;
+}
+
 void WinSubmenu::setHeader (const QString& label)
-{    
-    mHeaderLabel->setText(label);
+{
+    QHBoxLayout *layout = new QHBoxLayout();
+    QLabel *header = new QLabel (label);
+    layout->addWidget(header,0,Qt::AlignCenter);
+    setTopLayout(layout);
+    //mHeaderLabel->setText(label);
 }
 
 void  WinSubmenu::onMenuBtnClicked (Gui::MenuButton btnType)
@@ -89,11 +187,11 @@ void WinSubmenu::setMenuButtons (const QList<Gui::MenuButton> &buttons)
     if (0 == itemCnt)
         return;
 
-    mButtonLayout = new QHBoxLayout ();
+    QHBoxLayout *btnLayout = new QHBoxLayout ();
 
     for (int i = 0; i<buttons.count();i++)
     {
-        MenuButton *menuBtn = new MenuButton (this);
+        MenuButton *menuBtn = new MenuButton ();
         menuBtn->setButtonType(buttons[i]);
         menuBtn->setIconSize(QSize(Gui::buttonWidth,Gui::buttonHeight));
         menuBtn->setToolButtonStyle(Qt::ToolButtonTextUnderIcon);
@@ -171,25 +269,20 @@ void WinSubmenu::setMenuButtons (const QList<Gui::MenuButton> &buttons)
             default:
                 break;
         }
-        mButtonLayout->addWidget(menuBtn);
+        btnLayout->addWidget(menuBtn);
         connect (menuBtn, SIGNAL (clicked(Gui::MenuButton)), this, SLOT (onMenuBtnClicked(Gui::MenuButton)));
     }
 
-    if (mButtonLayout)
-    {
-        // QSpacerItem *spacer = new QSpacerItem (0, 0, QSizePolicy::Expanding,QSizePolicy::Expanding);
-        // mLayout->addSpacerItem(spacer);
-        mLayout->addLayout(mButtonLayout);
-    }
-
+    setBottomLayout(btnLayout);
     mButtonsSet = true;
 }
 
 void WinSubmenu::setButtonText (int column, const QString &btnText)
 {
-    if (mButtonLayout)
+    QLayout *btnLayout = getBottomLayout();
+    if (btnLayout)
     {
-        QToolButton *btn = (QToolButton*)mButtonLayout->itemAt(column)->widget();
+        QToolButton *btn = (QToolButton*)btnLayout->itemAt(column)->widget();
         if (btn)
         {
             btn->setText(btnText);
@@ -199,9 +292,10 @@ void WinSubmenu::setButtonText (int column, const QString &btnText)
 
 void WinSubmenu::disableButton (int column, bool disable)
 {
-    if (mButtonLayout)
+    QLayout *btnLayout = getBottomLayout();
+    if (btnLayout)
     {
-        QToolButton *btn = (QToolButton*)mButtonLayout->itemAt(column)->widget();
+        QToolButton *btn = (QToolButton*)btnLayout->itemAt(column)->widget();
         if (btn)
         {
             btn->setDisabled(disable);
@@ -216,9 +310,10 @@ void WinSubmenu::enableButton (int column, bool enable)
 
 void WinSubmenu::hideButton (int column, bool disable)
 {
-    if (mButtonLayout)
+    QLayout *btnLayout = getBottomLayout();
+    if (btnLayout)
     {
-        QToolButton *btn = (QToolButton*)mButtonLayout->itemAt(column)->widget();
+        QToolButton *btn = (QToolButton*)btnLayout->itemAt(column)->widget();
         if (btn)
         {
             btn->setHidden(disable);

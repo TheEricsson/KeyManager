@@ -21,7 +21,7 @@ AddRecipientView::AddRecipientView (QWidget *parent)
     mCityEdit = 0;
     mRecipientType = RecipientType::Company; // usual case
 
-    setHeader("Empfänger anlegen");
+    //setHeader("Empfänger anlegen");
 
     QGridLayout* gridLayout = new QGridLayout ();
 
@@ -81,10 +81,10 @@ AddRecipientView::AddRecipientView (QWidget *parent)
     gridLayout->addWidget(city, 6, 0, 1, 1);
     gridLayout->addWidget(mCityEdit, 6, 1, 1, 1);
 
-    layout()->addItem(gridLayout);
-
     QSpacerItem *spacer = new QSpacerItem (0, 0, QSizePolicy::Expanding, QSizePolicy::Expanding);
-    layout()->addItem(spacer);
+    gridLayout->addItem(spacer, 7, 0, 0);
+
+    setCentralLayout(gridLayout);
 
     QList<Gui::MenuButton> menuButtons;
     menuButtons.append(Gui::Back);

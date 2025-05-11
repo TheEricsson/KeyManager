@@ -9,7 +9,7 @@ class CodeGeneratorView : public WinSubmenu
     Q_OBJECT
 
     public:
-        CodeGeneratorView(QWidget *parent = nullptr);
+        explicit CodeGeneratorView(QWidget *parent = nullptr);
     private slots:
         virtual void onMenuBtnClicked (Gui::MenuButton btnType);
         void onNumberOfCodesChanged(QString text);

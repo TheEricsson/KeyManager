@@ -13,7 +13,7 @@ class SignaturePad : public QWidget
     Q_OBJECT
 public:
 
-    SignaturePad(QWidget *parent = nullptr);
+    explicit SignaturePad(QWidget *parent = nullptr);
     void setPenColor(const QColor &newColor);
     void setPenWidth(int newWidth);
 

@@ -7,46 +7,20 @@
 #include "checkboxarray.h"
 #include "iointerface.h"
 #include <QMessageBox>
+#include <QRadioButton>
 
 AddKeyView::AddKeyView(QWidget *parent) : WinSubmenu {parent}
 {
+    mKeyDescription = 0;
     mKeyCategories = 0;
     mKeyStates = 0;
-    setHeader("Schlüsseleigenschaften setzen");
 
-    mKeyDescription = new QTextEdit ();
-    mKeyCategories = new CheckBoxArray ();
-    connect (mKeyCategories, SIGNAL(radioBtnToggled()), this, SLOT(onRadioBtnToggled()));
-    //mKeyStates = new CheckBoxArray (this);
-    //connect (mKeyStates, SIGNAL(radioBtnToggled()), this, SLOT(onRadioBtnToggled()));
-
-    QLabel *headerKeyCat = new QLabel ("Schlüsselkategorie", this);
-    headerKeyCat->setAlignment(Qt::AlignHCenter);
-    //headerKeyCat->setContentsMargins(0,0,0,0);
-    //headerKeyCat->setSizePolicy(QSizePolicy::MinimumExpanding, QSizePolicy::MinimumExpanding);
-    //QLabel *headerKeyStatus = new QLabel ("Schlüsselstatus", this);
-    //headerKeyStatus->setAlignment(Qt::AlignHCenter);
-    //headerKeyStatus->setContentsMargins(0,0,0,0);
-    //headerKeyStatus->setSizePolicy(QSizePolicy::MinimumExpanding, QSizePolicy::MinimumExpanding);
-    QLabel *headerDescription = new QLabel ("Zusätzliche Angaben", this);
-    //headerKeyStatus->setAlignment(Qt::AlignHCenter);
-    //headerKeyStatus->setContentsMargins(0,0,0,0);
-    //headerKeyStatus->setSizePolicy(QSizePolicy::MinimumExpanding, QSizePolicy::MinimumExpanding);
-
-    layout()->addWidget(headerKeyCat);
-    layout()->addWidget(mKeyCategories);
-    //layout()->addWidget(headerKeyStatus);
-    //layout()->addWidget(mKeyStates);
-    layout()->addWidget(headerDescription);
-    layout()->addWidget(mKeyDescription);
+    setHeader("Schlüssel hinzufügen");
 
     QList<Gui::MenuButton> menuButtons;
     menuButtons.append(Gui::Back);
     menuButtons.append(Gui::Ok);
-
     setMenuButtons(menuButtons);
-
-    update ();
 }
 
 void AddKeyView::onMenuBtnClicked (Gui::MenuButton btnType)
@@ -87,7 +61,7 @@ void AddKeyView::onMenuBtnClicked (Gui::MenuButton btnType)
 void AddKeyView::onRadioBtnToggled()
 {
     qDebug() << "AddKeyView::onRadioBtnToggled()";
-    update();
+    //update();
 }
 
 void AddKeyView::showEvent(QShowEvent *)
@@ -97,13 +71,39 @@ void AddKeyView::showEvent(QShowEvent *)
 
 void AddKeyView::reset ()
 {
+    if (!mKeyDescription)
+        mKeyDescription = new QTextEdit ();
+    else
+        mKeyDescription->clear();
+
+    if (!mKeyCategories)
+        mKeyCategories = new CheckBoxArray (this);
+
+    QLabel *keyTypeHeader = new QLabel("Schlüsselkategorie");
+    QLabel *keyAdditionalInfoHeader = new QLabel ("Zusätzliche Angaben");
+    QSpacerItem *spacer = new QSpacerItem (0, 0, QSizePolicy::Expanding, QSizePolicy::Expanding);
+
     mKeyCategories->setData (ioInterface(), dataInterface());
     mKeyCategories->init ("keyCategories", "category");
 
-    //mKeyStates->setData (ioInterface(), dataInterface());
-    //mKeyStates->init ("keyStates", "status");
+    QVBoxLayout *centralLayout = new QVBoxLayout();
+    centralLayout->addWidget(keyTypeHeader);
 
-    //update();
+    for (unsigned int i = 0; i < mKeyCategories->count(); i++)
+    {
+        QRadioButton *btn= mKeyCategories->getButtonAt(i);
+        if (0 != btn)
+        {
+            centralLayout->addWidget(btn);
+        }
+    }
+    centralLayout->addWidget(keyAdditionalInfoHeader);
+    centralLayout->addWidget(mKeyDescription);
+    centralLayout->addItem(spacer);
+
+    setCentralLayout(centralLayout);
+
+    //connect (mKeyCategories, SIGNAL(radioBtnToggled()), this, SLOT(onRadioBtnToggled()));
 }
 
 bool AddKeyView::checkSelections ()
@@ -118,4 +118,10 @@ bool AddKeyView::checkSelections ()
         return false;
     }
     return true;
+}
+
+AddKeyView::~AddKeyView()
+{
+    //if (mKeyCategories)
+    //    delete mKeyCategories;
 }

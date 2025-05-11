@@ -13,14 +13,16 @@ TableView::TableView(const QString &tableName, QWidget *parent)
 {
     mKeychainModel = 0;
     mFilteredKeychainModel = 0;
-    setHeader("Suchfunktion");
+    //setHeader("Suchfunktion");
 
     mKeychain = new QTableView (this);
     //mKeychain->setSizeAdjustPolicy(QAbstractScrollArea::AdjustToContents);
     mKeychain->setSizePolicy(QSizePolicy::Expanding, QSizePolicy::Expanding);
     //mKeychain->resizeColumnsToContents();
 
-    layout()->addWidget(mKeychain);
+    QHBoxLayout *centralLayout = new QHBoxLayout();
+    centralLayout->addWidget(mKeychain);
+    setCentralLayout(centralLayout);
 
     //QSpacerItem *spacer = new QSpacerItem (0, 0, QSizePolicy::Minimum, QSizePolicy::Minimum);
     //layout()->addItem(spacer);

@@ -11,7 +11,7 @@ class MenuButton : public QToolButton
     Q_OBJECT
 
     public:
-        MenuButton (QWidget *parent = nullptr);
+        explicit MenuButton (QWidget *parent = nullptr);
         void setButtonType (Gui::MenuButton btnType) {mButtonType = btnType;};
         void setButtonText (const QString &btnText);
         Gui::MenuButton getButtonType () {return mButtonType;};

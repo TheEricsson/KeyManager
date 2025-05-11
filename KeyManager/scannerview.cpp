@@ -39,45 +39,40 @@ ScannerView::ScannerView(QWidget *parent)
     decoder.setSourceFilterType(QZXing::SourceFilter_ImageNormal);
     decoder.setTryHarderBehaviour(QZXing::TryHarderBehaviour_ThoroughScanning | QZXing::TryHarderBehaviour_Rotate);
 
-    setHeader("Scannen Sie einen Barcode");
+    //setHeader("Scannen Sie einen Barcode");
 
     m_viewfinder = 0;
 
     // layout for the cam video/ pic screen
     m_viewfinder = new QVideoWidget (this);
     m_viewfinder->setMinimumSize(300, 150);
+
     m_viewfinder->setAspectRatioMode(Qt::AspectRatioMode::KeepAspectRatioByExpanding);
-    m_viewfinder->setSizePolicy(QSizePolicy::Policy::Expanding, QSizePolicy::Policy::Expanding);
+    m_viewfinder->setSizePolicy(QSizePolicy::MinimumExpanding, QSizePolicy::MinimumExpanding);
     m_viewfinder->setContentsMargins(0, 0, 0, 0);
 
-    layout()->addWidget(m_viewfinder);
-
     // code text field
-    QHBoxLayout *codeLayout = new QHBoxLayout;
     QLabel *codeDescr = new QLabel ("Daten", this);
     mCodeLabel = new QLabel (this);
-    codeLayout->addWidget (codeDescr);
-    codeLayout->addWidget(mCodeLabel);
-
-    layout()->addItem(codeLayout);
 
     // mandant text field
-    QHBoxLayout *mandantIdLayout = new QHBoxLayout;
-    QLabel *mandantDescr = new QLabel ("Mandant", this);
-    mCustomerLabel = new QLabel (this);
-    mandantIdLayout->addWidget (mandantDescr);
-    mandantIdLayout->addWidget(mCustomerLabel);
-
-    layout()->addItem(mandantIdLayout);
+    QLabel *groupDescr = new QLabel ("Gruppe", this);
+    mGroupLabel = new QLabel (this);
 
     // key text field
-    QHBoxLayout *keyIdLayout = new QHBoxLayout;
     QLabel *keyDescr = new QLabel ("Schlüsselnummer", this);
     mKeyLabel = new QLabel (this);
-    keyIdLayout->addWidget (keyDescr);
-    keyIdLayout->addWidget(mKeyLabel);
 
-    layout()->addItem(keyIdLayout);
+    QGridLayout* centralLayout = new QGridLayout();
+    centralLayout->addWidget(m_viewfinder, 0, 0, 1, 2);
+    centralLayout->addWidget (codeDescr, 1, 0);
+    centralLayout->addWidget(mCodeLabel, 1, 1);
+    centralLayout->addWidget (groupDescr, 2, 0);
+    centralLayout->addWidget(mGroupLabel, 2, 1);
+    centralLayout->addWidget (keyDescr, 3, 0);
+    centralLayout->addWidget(mKeyLabel, 3, 1);
+
+    setCentralLayout(centralLayout);
 
     QList<Gui::MenuButton> menuButtons;
     menuButtons.append(Gui::Back);
@@ -104,8 +99,9 @@ void ScannerView::startScanner ()
     if (!mCameraInstance)
     {
         mCameraInstance = new Camera ();
-        mCameraInstance->setVideoOutput(getViewfinder());
     }
+    mCameraInstance->reset();
+    mCameraInstance->setVideoOutput(getViewfinder());
 
     if (!mGrabTimer)
     {
@@ -145,6 +141,11 @@ bool ScannerView::codeIsValid(const unsigned int code)
 
 void ScannerView::playSound()
 {
+    //test this->
+    QApplication::beep();
+    return;
+
+    //not working :/
     const auto devices = QMediaDevices::audioOutputs();
     for (const QAudioDevice &device : devices)
         qDebug() << "Device: " << device.description();
@@ -251,14 +252,14 @@ void ScannerView::setScannerState (ScannerState aStatus)
     {
         case READY:
             qDebug () << "ScannerState is READY";
-            mCustomerLabel->setText("---");
+            mGroupLabel->setText("---");
             mKeyLabel->setText("---");
             disableButton(1, false);
             disableButton(2, true);
             disableButton(3, true);
             break;
         case SCANNING:
-            mCustomerLabel->setText("---");
+            mGroupLabel->setText("---");
             mKeyLabel->setText("---");
             qDebug() <<  "ScannerState is SCANNING";
             disableButton(1, true);
@@ -304,7 +305,7 @@ QVideoWidget* ScannerView::getViewfinder ()
 
 void ScannerView::setCustomerLabel (QString aCustomerId)
 {
-    mCustomerLabel->setText(aCustomerId);
+    mGroupLabel->setText(aCustomerId);
 }
 
 void ScannerView::setKeyLabel (QString aKeyId)
@@ -314,7 +315,7 @@ void ScannerView::setKeyLabel (QString aKeyId)
 
 const QString ScannerView::getCustomerLabel ()
 {
-    return mCustomerLabel->text();
+    return mGroupLabel->text();
 }
 
 const QString ScannerView::getKeyLabel()

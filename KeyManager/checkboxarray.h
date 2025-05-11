@@ -7,13 +7,15 @@
 
 class QRadioButton;
 
-class CheckBoxArray : public QWidget
+class CheckBoxArray : public QObject
 {
     Q_OBJECT
     public:
-        explicit CheckBoxArray(QWidget *parent = nullptr);
+        explicit CheckBoxArray(QObject *parent = nullptr);
         void setData (IOInterface *ioInterface = nullptr, DataInterface *dataInterface = nullptr);
         bool init (const QString &tableName, const QString &filter);
+        QRadioButton* getButtonAt (unsigned int index);
+        unsigned int count();
         int getCheckedButtonIndex ();
         ~CheckBoxArray();
     signals:

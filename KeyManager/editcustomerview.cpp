@@ -12,15 +12,15 @@ EditCustomerView::EditCustomerView(QWidget *parent) : WinSubmenu {parent}
     mCustomerView = 0;
     mCustomerModel = 0;
 
-    setHeader("Kundenverwaltung");
+    //setHeader("Kundenverwaltung");
 
     mCustomerView = new QTableView (this);
     mCustomerModel = new QSqlRelationalTableModel (this);
 
     setCustomersModel(mCustomerModel);
 
-    QSpacerItem *spacer = new QSpacerItem (0, 0, QSizePolicy::Expanding, QSizePolicy::Expanding);
-    layout()->addItem(spacer);
+    // QSpacerItem *spacer = new QSpacerItem (0, 0, QSizePolicy::Expanding, QSizePolicy::Expanding);
+    // layout()->addItem(spacer);
 
     QList<Gui::MenuButton> menuButtons;
     menuButtons.append(Gui::Back);

@@ -18,6 +18,8 @@ class DataInterface;
 class DatabaseImpl;
 class QHBoxLayout;
 class IOInterface;
+class QGridLayout;
+class QBoxLayout;
 
 class WinSubmenu : public QWidget
 {
@@ -30,6 +32,14 @@ public:
     void setData (ViewDataScanner *data);
 
 protected:
+
+    void setTopLayout (QLayout *layout);
+    void setCentralLayout (QLayout *layout);
+    void setBottomLayout (QLayout *layout);
+
+    QLayout* getTopLayout ();
+    QLayout* getCentralLayout ();
+    QLayout* getBottomLayout ();
 
     DataInterface* dataInterface (){return mDataInterface;};
     IOInterface* ioInterface (){return mIOInterface;};
@@ -50,10 +60,13 @@ private slots:
 private:
     void keyReleaseEvent (QKeyEvent *event);
     QList <QPushButton*> mMenuButtons;
-    QVBoxLayout *mLayout;
     QLabel *mHeaderLabel;
     bool mButtonsSet;
-    QHBoxLayout *mButtonLayout;
+
+    QBoxLayout *mBaseLayout;
+    QBoxLayout *mTopLayout;
+    QBoxLayout *mCentralLayout;
+    QBoxLayout *mBottomLayout;
 
     DataInterface *mDataInterface;
     IOInterface *mIOInterface;

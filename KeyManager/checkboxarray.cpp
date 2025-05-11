@@ -5,15 +5,12 @@
 #include <QLayout>
 #include <QRadioButton>
 
-CheckBoxArray::CheckBoxArray(QWidget *parent)
-    : QWidget{parent}
+CheckBoxArray::CheckBoxArray(QObject *parent)
+    : QObject {parent}
 {
     mIoInterface = nullptr;
     mDataInterface = nullptr;
     mRadioButtonList.clear();
-
-    QVBoxLayout *layout = new QVBoxLayout ();
-    setLayout(layout);
 }
 
 void CheckBoxArray::setData (IOInterface *ioInterface, DataInterface *dataInterface)
@@ -63,14 +60,19 @@ bool CheckBoxArray::init (const QString &tableName, const QString &valueColumn)
         itemPair.first = i;
         itemPair.second = checkBox;
         mRadioButtonList.append(itemPair);
-
-        if (layout())
-            layout()->addWidget(checkBox);
-        else
-            qDebug () << "CheckBoxArray::init - No Layout set.";
     }
 
     return true;
+}
+
+QRadioButton* CheckBoxArray::getButtonAt (unsigned int index)
+{
+    return mRadioButtonList[index].second;
+}
+
+unsigned int CheckBoxArray::count()
+{
+    return mRadioButtonList.count();
 }
 
 int CheckBoxArray::getCheckedButtonIndex ()
@@ -97,9 +99,7 @@ int CheckBoxArray::getCheckedButtonIndex ()
 
 void CheckBoxArray::onRadioBtnClicked()
 {
-    qDebug () << "CheckBoxArray::onRadioBtnClicked()";
     emit radioBtnToggled();
-    update();
 }
 
 CheckBoxArray::~CheckBoxArray()

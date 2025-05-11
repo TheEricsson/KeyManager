@@ -33,7 +33,7 @@ KeychainStatusView::KeychainStatusView(QWidget *parent)
     mViewData = 0;
     mCameraView = 0;
 
-    setHeader("Informationen zum Schlüsselbund");
+    //setHeader("Informationen zum Schlüsselbund");
 
     QLabel* keychainKeycode = new QLabel ("Gescannter Code: ", this);
     QLabel* keychainStatus = new QLabel ("Aktueller Status: ", this);
@@ -68,7 +68,7 @@ KeychainStatusView::KeychainStatusView(QWidget *parent)
     keychainData->addItem(spacerItem, 0, 3, 1, 1);
     keychainData->addWidget(mKeysImgPreview, 0, 4, 5, 1, Qt::AlignLeft);
 
-    layout()->addItem(keychainData);
+    //layout()->addItem(keychainData);
 
     //mKeychain = new QTableView (this);
 
@@ -81,19 +81,26 @@ KeychainStatusView::KeychainStatusView(QWidget *parent)
     // layout()->addWidget(mKeysImgPreview);
 
     QLabel *keysHeader = new QLabel ("Hinterlegte Schlüssel", this);
-    layout()->addWidget(keysHeader);
+    keychainData->addWidget(keysHeader, 5, 0, 1, 5);
+    //layout()->addWidget(keysHeader);
 
     mKeys = new QTableView (this);
-    layout()->addWidget(mKeys);
+    //layout()->addWidget(mKeys);
+    keychainData->addWidget(mKeys, 6, 0, 1, 5);
 
     QLabel *historyHeader = new QLabel ("Historie", this);
-    layout()->addWidget(historyHeader);
+    //layout()->addWidget(historyHeader);
+    keychainData->addWidget(historyHeader, 7, 0, 1, 5);
 
     mHistory = new QTableView (this);
-    layout()->addWidget(mHistory);
+    //layout()->addWidget(mHistory);
+    keychainData->addWidget(mHistory, 8, 0, 1, 5);
 
     QSpacerItem *spacer = new QSpacerItem (0, 0, QSizePolicy::Expanding, QSizePolicy::Expanding);
-    layout()->addItem(spacer);
+    //layout()->addItem(spacer);
+    keychainData->addItem(spacer, 9, 0, 1, 4);
+
+    setCentralLayout(keychainData);
 
     QList<Gui::MenuButton> menuButtons;
     menuButtons.append(Gui::Back);

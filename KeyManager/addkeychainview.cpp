@@ -37,40 +37,30 @@ AddKeychainView::AddKeychainView(QWidget *parent) : WinSubmenu {parent}
 
     mFilteredModel = new QSortFilterProxyModel (this);
 
-    setHeader("Schlüsselbund anlegen");
+    //setHeader("Schlüsselbund anlegen");
 
-    //QVBoxLayout* layout = new QVBoxLayout (this);
-
-    QHBoxLayout* searchLayout = new QHBoxLayout ();
     mSearchLabel = new QLabel ("Suche", this);
     mSearchField = new QLineEdit (this);
-    searchLayout->addWidget(mSearchLabel);
-    searchLayout->addWidget(mSearchField);
-    layout()->addItem(searchLayout);
 
     mCustomersView = new QTableView (this);
     mCustomersView->setModel(mFilteredModel);
-    layout()->addWidget(mCustomersView);
-
-    //mCustomersView->clearSelection();
-    mCustomersView->update();
-    mCustomersView->setFocus();
 
     QLabel *internalLocLabel = new QLabel ("Schlüsselhaken zuweisen:", this);
     mInternalLocation = new QLineEdit (this);
-    mInternalLocation->clear();
-    mInternalLocation->setValidator(new QRegularExpressionValidator(QRegularExpression("\\d\\d\\d\\d\\d"), mInternalLocation));
     QPushButton *btnLocProposal = new QPushButton("Freien Schlüsselhaken\n vorschlagen", this);
 
-    QHBoxLayout *btnLayoutLoc = new QHBoxLayout ();
-    btnLayoutLoc->addWidget(internalLocLabel);
-    btnLayoutLoc->addWidget(mInternalLocation);
-    btnLayoutLoc->addWidget(btnLocProposal);
-
-    layout()->addItem(btnLayoutLoc);
-
     QSpacerItem *spacer = new QSpacerItem (0, 0, QSizePolicy::Expanding, QSizePolicy::Expanding);
-    layout()->addItem(spacer);
+
+    QGridLayout* centralLayout = new QGridLayout();
+    centralLayout->addWidget(mSearchLabel, 0, 0);
+    centralLayout->addWidget(mSearchField, 0, 1);
+    centralLayout->addWidget(mCustomersView, 1, 0, 1, 3);
+    centralLayout->addWidget(internalLocLabel, 2, 0);
+    centralLayout->addWidget(mInternalLocation, 2, 1);
+    centralLayout->addWidget(btnLocProposal, 2, 2);
+    centralLayout->addItem(spacer, 3, 0);
+
+    setCentralLayout(centralLayout);
 
     QList<Gui::MenuButton> menuButtons;
     menuButtons.append(Gui::Back);
@@ -80,9 +70,15 @@ AddKeychainView::AddKeychainView(QWidget *parent) : WinSubmenu {parent}
     setMenuButtons(menuButtons);
     setButtonText(2, "Schlüssel hinzufügen");
 
-    connect (mCustomersView->selectionModel(), SIGNAL(selectionChanged(const QItemSelection &, const QItemSelection &)), this, SLOT(onTableSelectionChanged(const QItemSelection &, const QItemSelection &)));
-    connect (mSearchField, SIGNAL(textChanged(const QString &)), this, SLOT(setTableFilter(const QString &)));
-    connect (btnLocProposal, SIGNAL(clicked ()), this, SLOT(onButtonProposeLocationClicked ()));
+    mCustomersView->update();
+    mCustomersView->setFocus();
+
+    mInternalLocation->clear();
+    mInternalLocation->setValidator(new QRegularExpressionValidator(QRegularExpression("\\d\\d\\d\\d\\d"), mInternalLocation));
+
+    connect (mCustomersView->selectionModel(), SIGNAL(selectionChanged(QItemSelection,QItemSelection)), this, SLOT(onTableSelectionChanged(QItemSelection,QItemSelection)));
+    connect (mSearchField, SIGNAL(textChanged(QString)), this, SLOT(setTableFilter(QString)));
+    connect (btnLocProposal, SIGNAL(clicked()), this, SLOT(onButtonProposeLocationClicked()));
 }
 
 bool AddKeychainView::setModel (QSqlRelationalTableModel* model)

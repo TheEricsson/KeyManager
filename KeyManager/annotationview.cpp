@@ -10,10 +10,13 @@ AnnotationView::AnnotationView (QWidget *parent)
 {
     mDataAnnotation = 0;
 
-    setHeader("Zuätzliche Notizen");
+    //setHeader("Zuätzliche Notizen");
     mTextEditor = new QTextEdit (this);
     mTextEditor->setSizePolicy(QSizePolicy::Policy::Expanding, QSizePolicy::Policy::Expanding);
-    layout()->addWidget(mTextEditor);
+
+    QHBoxLayout *centralLayout = new QHBoxLayout();
+    centralLayout->addWidget(mTextEditor);
+    setCentralLayout(centralLayout);
 
     QList<Gui::MenuButton> menuButtons;
     menuButtons.append(Gui::Back);

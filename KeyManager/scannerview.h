@@ -53,7 +53,7 @@ class ScannerView : public WinSubmenu
         ScannerState mScannerState;
         QVideoWidget *m_viewfinder;
         QLabel *mCodeLabel;
-        QLabel *mCustomerLabel;
+        QLabel *mGroupLabel;
         QLabel *mKeyLabel;
 
         ViewDataScanner *mScannerData;

@@ -33,38 +33,29 @@ RecipientView::RecipientView(QWidget *parent) : WinSubmenu {parent}
 
     mFilteredModel = new QSortFilterProxyModel (this);
 
-    setHeader("Empfänger auswählen");
+    //setHeader("Empfänger auswählen");
 
-    QHBoxLayout* searchLayout = new QHBoxLayout ();
+    QGridLayout* centralLayout = new QGridLayout();
+
     mSearchLabel = new QLabel ("Suche", this);
     mSearchField = new QLineEdit (this);
-    searchLayout->addWidget(mSearchLabel);
-    searchLayout->addWidget(mSearchField);
-    layout()->addItem(searchLayout);
 
     mRecipients = new QTableView (this);
     mRecipients->setModel(mFilteredModel);
-    layout()->addWidget(mRecipients);
-
-    mRecipients->update();
-    mRecipients->setFocus();
 
     mRecipientNameLabel = new QLabel ("Unterzeichner:", this);
     mRecipientNameEdit = new QLineEdit ("", this);
-    QVBoxLayout *recipientNameLayout = new QVBoxLayout ();
-    recipientNameLayout->addWidget(mRecipientNameLabel);
-    recipientNameLayout->addWidget(mRecipientNameEdit);
-    layout()->addItem(recipientNameLayout);
-
-    // QCalendarWidget *calendar = new QCalendarWidget (this);
-    // layout()->addWidget(calendar);
-
-    //mReturnDateWidget = new ReturnDateView (this);
-    //mReturnDateWidget->resize(this->size())
-    //layout()->addWidget(mReturnDateWidget);
 
     QSpacerItem *spacer = new QSpacerItem (0, 0, QSizePolicy::Expanding, QSizePolicy::Expanding);
-    layout()->addItem(spacer);
+
+    centralLayout->addWidget(mSearchLabel, 0, 0);
+    centralLayout->addWidget(mSearchField, 0, 1);
+    centralLayout->addWidget(mRecipients, 1, 0, 1, 2);
+    centralLayout->addWidget(mRecipientNameLabel, 2, 0);
+    centralLayout->addWidget(mRecipientNameEdit, 2, 1);
+    centralLayout->addItem(spacer, 3, 0);
+
+    setCentralLayout(centralLayout);
 
     QList<Gui::MenuButton> menuButtons;
     menuButtons.append(Gui::Back);
@@ -72,6 +63,9 @@ RecipientView::RecipientView(QWidget *parent) : WinSubmenu {parent}
     menuButtons.append(Gui::Next);
     setMenuButtons(menuButtons);
     disableButton(2, true);
+
+    mRecipients->update();
+    mRecipients->setFocus();
 
     connect (mRecipients->selectionModel(), SIGNAL(selectionChanged(const QItemSelection &, const QItemSelection &)), this, SLOT(onTableSelectionChanged(const QItemSelection &, const QItemSelection &)));
     connect (mSearchField, SIGNAL(textChanged(const QString &)), this, SLOT(setTableFilter(const QString &)));

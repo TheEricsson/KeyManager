@@ -20,7 +20,7 @@ HandoverView::HandoverView (QWidget *parent)
 {
     mSigPad = 0;
 
-    setHeader("Ausgabe abschließen");
+    //setHeader("Ausgabe abschließen");
 
     //clear ();
 
@@ -89,9 +89,10 @@ HandoverView::HandoverView (QWidget *parent)
     gridLayout->addWidget(notes, 8, 0);
     gridLayout->addWidget(mNotesEdit, 8, 1);
 
-    layout()->addItem(gridLayout);
     mSigPad = new SignaturePad ();
-    layout()->addWidget(mSigPad);
+    gridLayout->addWidget(mSigPad, 9, 0, 1, 2);
+
+    setCentralLayout(gridLayout);
 
     QList<Gui::MenuButton> menuButtons;
     menuButtons.append(Gui::Back);

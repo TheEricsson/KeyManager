@@ -5,10 +5,11 @@ TreeViewImpl::TreeViewImpl(QWidget *parent) : QTreeView {parent}
 
 }
 
-void TreeViewImpl::mousePressEvent(QMouseEvent *event)
+/*void TreeViewImpl::mousePressEvent(QMouseEvent *event)
 {
     Q_UNUSED(event);
     qDebug () << "TreeViewImpl::mousePressEvent";
 
     update();
 }
+*/

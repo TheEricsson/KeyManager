@@ -18,18 +18,22 @@ EditKeyView::EditKeyView(QWidget *parent) : WinSubmenu {parent}
     setHeader("Schlüsselverwaltung");
     mKeychainCode = new QLabel (this);
 
+    QVBoxLayout* centralLayout = new QVBoxLayout();
+
     QLabel *headerTable = new QLabel ("Hinterlegte Schlüssel:");
     mKeys = new QTableView (this);
 
     mKeyModel = new QSqlRelationalTableModel (this);
     mKeys->setModel(mKeyModel);
 
-    layout()->addWidget(mKeychainCode);
-    layout()->addWidget(headerTable);
-    layout()->addWidget(mKeys);
+    centralLayout->addWidget(mKeychainCode);
+    centralLayout->addWidget(headerTable);
+    centralLayout->addWidget(mKeys);
 
     QSpacerItem *spacer = new QSpacerItem (0, 0, QSizePolicy::Expanding, QSizePolicy::Expanding);
-    layout()->addItem(spacer);
+    centralLayout->addItem(spacer);
+
+    setCentralLayout(centralLayout);
 
     QList<Gui::MenuButton> menuButtons;
     menuButtons.append(Gui::Back);
@@ -146,7 +150,8 @@ void EditKeyView::reset()
     int barcode = dataInterface()->getScannedCode();
 
     QString labelText = "Schlüsselbund Nr: ";
-    labelText.append (QString::number(barcode));
+
+    labelText.append (Database::normaliseKeycode(barcode));
     mKeychainCode->setText(labelText);
 
     QString filterKeyTable = "keychainId = ";

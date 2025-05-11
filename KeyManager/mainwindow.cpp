@@ -14,6 +14,7 @@
 #include <QStackedWidget>
 #include <QDockWidget>
 #include <QPushbutton>
+#include <QStatusBar>
 #include "homeview.h"
 #include "tableview.h"
 #include "keychainstatusview.h"
@@ -79,6 +80,10 @@ void MainWindow::init()
 {
     mViewStack = new QStackedWidget (this);
     setCentralWidget(mViewStack);
+    qDebug () << "centralWidget width: " << centralWidget()->screen()->size().width();
+    qDebug () << "centralWidget height: " << centralWidget()->screen()->size().height();
+    QStatusBar *bar = statusBar();
+    setStatusBar(bar);
 
     mHomeView = new HomeView (this);
     mScanView = new ScannerView (this);

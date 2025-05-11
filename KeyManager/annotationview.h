@@ -11,7 +11,7 @@ class AnnotationView : public WinSubmenu
 {
     Q_OBJECT
 public:
-    AnnotationView(QWidget *parent = nullptr);
+    explicit AnnotationView(QWidget *parent = nullptr);
     ~AnnotationView();
 
 private slots:

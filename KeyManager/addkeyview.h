@@ -12,6 +12,7 @@ class AddKeyView : public WinSubmenu
     Q_OBJECT
     public:
         explicit AddKeyView(QWidget *parent = nullptr);
+        ~AddKeyView();
     private slots:
         virtual void onMenuBtnClicked (Gui::MenuButton btnType);
         void onRadioBtnToggled();

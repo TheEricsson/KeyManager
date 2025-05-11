@@ -13,7 +13,7 @@ class EditKeyView : public WinSubmenu
 {
     Q_OBJECT
     public:
-        EditKeyView(QWidget *parent = nullptr);
+        explicit EditKeyView(QWidget *parent = nullptr);
         ~EditKeyView();
     private slots:
         virtual void onMenuBtnClicked (Gui::MenuButton btnType);

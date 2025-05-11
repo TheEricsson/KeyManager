@@ -16,7 +16,9 @@ CameraView::CameraView(QWidget *parent)
     mViewfinder->setSizePolicy(QSizePolicy::MinimumExpanding, QSizePolicy::MinimumExpanding);
     mViewfinder->setContentsMargins(0, 0, 0, 0);
 
-    layout()->addWidget(mViewfinder);
+    QHBoxLayout *centralLayout = new QHBoxLayout();
+    centralLayout->addWidget(mViewfinder);
+    setCentralLayout(centralLayout);
 
     QList<Gui::MenuButton> menuButtons;
     menuButtons.append(Gui::Back);

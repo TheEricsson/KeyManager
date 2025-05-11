@@ -10,20 +10,23 @@ SearchView::SearchView (QWidget *parent)
 {
     mDataView = new TreeViewImpl (this);
     mDataView->setSizeAdjustPolicy(QAbstractScrollArea::AdjustToContents);
-    mDataView->setSizePolicy(QSizePolicy::Maximum, QSizePolicy::Maximum);
+    mDataView->setSizePolicy(QSizePolicy::MinimumExpanding, QSizePolicy::MinimumExpanding);
 
-    mStandardModel = new QStandardItemModel;
+    mStandardModel = new QStandardItemModel (this);
     mDataView->setModel(mStandardModel);
-    mDataView->expandAll();
 
-    layout()->addWidget(mDataView);
+    //QSpacerItem *spacer = new QSpacerItem (0, 0, QSizePolicy::Expanding, QSizePolicy::Expanding);
 
-    QSpacerItem *spacer = new QSpacerItem (0, 0, QSizePolicy::Expanding, QSizePolicy::Expanding);
-    layout()->addItem(spacer);
+    QVBoxLayout *centralLayout = new QVBoxLayout();
+    centralLayout->addWidget(mDataView);
+    //centralLayout->addItem(spacer);
+    setCentralLayout(centralLayout);
 
     QList<Gui::MenuButton> menuButtons;
     menuButtons.append(Gui::Back);
     setMenuButtons(menuButtons);
+
+    mDataView->expandAll();
 }
 
 void SearchView::showEvent(QShowEvent *)

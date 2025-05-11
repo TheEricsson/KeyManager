@@ -10,11 +10,12 @@ class QCamera;
 class QImageCapture;
 class QVideoWidget;
 
-class Camera : public QWidget
+class Camera : public QObject
 {
     Q_OBJECT
 public:
-    explicit Camera(QWidget *parent = nullptr);
+    explicit Camera();
+    void reset ();
     ~Camera();
     QCamera* getCamera ();
     QImageCapture* getImageCapture ();

@@ -10,17 +10,18 @@ ToolsView::ToolsView(QWidget *parent)
 {
     mCodeGeneratorView = 0;
 
-    setHeader("Tools");
+    //setHeader("Tools");
 
     QGridLayout *gridLayout = new QGridLayout();
     QPushButton *encoderBtn = new QPushButton("Codegenerator", this);
     encoderBtn->setMinimumSize(QSize(Gui::buttonHeight,Gui::buttonWidth));
 
-    gridLayout->addWidget(encoderBtn, 0, 0);
-    layout()->addItem(gridLayout);
-
     QSpacerItem *spacer = new QSpacerItem (0, 0, QSizePolicy::Expanding, QSizePolicy::Expanding);
-    layout()->addItem(spacer);
+
+    gridLayout->addWidget(encoderBtn, 0, 0);
+    gridLayout->addItem(spacer, 1, 0);
+
+    setCentralLayout(gridLayout);
 
     QList<Gui::MenuButton> menuButtons;
     menuButtons.append(Gui::Back);
@@ -45,18 +46,18 @@ void ToolsView::onBtnClicked_CodeGenerator (Gui::MenuButton btn)
 {
     switch (btn)
     {
-    case Gui::Back:
-    case Gui::Ok:
-        if (mCodeGeneratorView)
-        {
-            mCodeGeneratorView->hide();
-            delete mCodeGeneratorView;
-            mCodeGeneratorView = 0;
-            setFocus();
-            update ();
-        }
-        break;
-    default:
-        break;
+        case Gui::Back:
+        case Gui::Ok:
+            if (mCodeGeneratorView)
+            {
+                mCodeGeneratorView->hide();
+                delete mCodeGeneratorView;
+                mCodeGeneratorView = 0;
+                setFocus();
+                update ();
+            }
+            break;
+        default:
+            break;
     }
 }

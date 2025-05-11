@@ -9,7 +9,7 @@
 
 AddCustomerView::AddCustomerView(QWidget *parent) : WinSubmenu {parent}
 {
-    setHeader("Kunde hinzufügen");
+    //setHeader("Kunde hinzufügen");
 
     mStreet = new QLineEdit (this);
     mStreetNr = new QLineEdit (this);
@@ -41,10 +41,10 @@ AddCustomerView::AddCustomerView(QWidget *parent) : WinSubmenu {parent}
     gridLayout->addWidget(headerCity, 3, 0, Qt::AlignLeft);
     gridLayout->addWidget(mCity, 3, 1, Qt::AlignLeft);
 
-    layout()->addItem(gridLayout);
-
     QSpacerItem *spacer = new QSpacerItem (0, 0, QSizePolicy::Expanding, QSizePolicy::Expanding);
-    layout()->addItem(spacer);
+    gridLayout->addItem(spacer, 4, 1, 1, 1);
+
+    setCentralLayout(gridLayout);
 
     QList<Gui::MenuButton> menuButtons;
     menuButtons.append(Gui::Back);

@@ -21,7 +21,7 @@ CodeGeneratorView::CodeGeneratorView(QWidget *parent) : WinSubmenu {parent}
     mBorderCheckState = Qt::Checked;
     mFoldableCheckState = Qt::Checked;
 
-    setHeader("Codegenerator");
+    //setHeader("Codegenerator");
 
     QLabel *numberOfCodes = new QLabel ("Anzahl gewünschter Codes:", this);
     QLineEdit *numberOfCodesEdit = new QLineEdit(this);
@@ -54,10 +54,10 @@ CodeGeneratorView::CodeGeneratorView(QWidget *parent) : WinSubmenu {parent}
     viewLayout->addWidget(borders, 3, 0);
     viewLayout->addWidget(foldable, 4, 0);
 
-    layout()->addItem(viewLayout);
-
     QSpacerItem *spacer = new QSpacerItem (0, 0, QSizePolicy::Expanding, QSizePolicy::Expanding);
-    layout()->addItem(spacer);
+    viewLayout->addItem(spacer, 5, 0);
+
+    setCentralLayout(viewLayout);
 
     QList<Gui::MenuButton> menuButtons;
     menuButtons.append(Gui::Back);

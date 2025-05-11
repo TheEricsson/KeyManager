@@ -11,7 +11,7 @@ class EditCustomerView : public WinSubmenu
 {
     Q_OBJECT
     public:
-        EditCustomerView(QWidget *parent = nullptr);
+        explicit EditCustomerView(QWidget *parent = nullptr);
     private:
         void showEvent(QShowEvent *);
         void reset();

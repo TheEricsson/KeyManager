@@ -11,7 +11,7 @@ ReturnDateView::ReturnDateView (QWidget *parent) : WinSubmenu {parent}
 {
     mCalendar = 0;
 
-    //setHeader("Rückgabedatum wählen");
+    setHeader("Rückgabedatum wählen");
 
     mCalendar = new QCalendarWidget (this);
 
@@ -32,16 +32,18 @@ ReturnDateView::ReturnDateView (QWidget *parent) : WinSubmenu {parent}
     mReturnDateLabel = new QLabel (this);
     //mReturnDateLabel->setStyleSheet("{font: bold 25px; color: #EE2C2C}");
 
-    //QVBoxLayout *layout = new QVBoxLayout ();
+    QVBoxLayout *centralLayout = new QVBoxLayout ();
 
-    layout()->addWidget(mHandoverTemporary);
-    layout()->addWidget(handoverPermanent);
-    layout()->addWidget(handoverEndOfService);
-    layout()->addWidget(mCalendar);
-    layout()->addWidget(mReturnDateLabel);
+    centralLayout->addWidget(mHandoverTemporary);
+    centralLayout->addWidget(handoverPermanent);
+    centralLayout->addWidget(handoverEndOfService);
+    centralLayout->addWidget(mCalendar);
+    centralLayout->addWidget(mReturnDateLabel);
 
     QSpacerItem *spacer = new QSpacerItem (0, 0, QSizePolicy::Expanding, QSizePolicy::Expanding);
-    layout()->addItem(spacer);
+    centralLayout->addItem(spacer);
+
+    setCentralLayout(centralLayout);
 
     QList<Gui::MenuButton> menuButtons;
     menuButtons.append(Gui::Back);

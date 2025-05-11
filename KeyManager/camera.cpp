@@ -13,14 +13,19 @@
     #include <QPermission>
 #endif
 
-Camera::Camera (QWidget *parent)
-    : QWidget{parent}
+Camera::Camera ()
 {
     mCamera = 0;
     mImageCapture = 0;
     mVideoWidget = 0;
 
     init ();
+}
+
+void Camera::reset ()
+{
+    setCamera(QMediaDevices::defaultVideoInput());
+    initCaptureSession ();
 }
 
 void Camera::takePicture ()
@@ -64,7 +69,7 @@ void Camera::checkPermissions ()
     switch (qApp->checkPermission(cameraPermission))
     {
     case Qt::PermissionStatus::Undetermined:
-        qApp->requestPermission(cameraPermission, this, &Camera::checkPermissions);
+        qApp->requestPermission(cameraPermission, &Camera::checkPermissions);
         return;
     case Qt::PermissionStatus::Denied:
         qWarning("Camera permission is not granted!");
