@@ -61,7 +61,7 @@ void AddKeyView::onMenuBtnClicked (Gui::MenuButton btnType)
 void AddKeyView::onRadioBtnToggled()
 {
     qDebug() << "AddKeyView::onRadioBtnToggled()";
-    //update();
+    update();
 }
 
 void AddKeyView::showEvent(QShowEvent *)
@@ -81,7 +81,7 @@ void AddKeyView::reset ()
 
     QLabel *keyTypeHeader = new QLabel("Schlüsselkategorie");
     QLabel *keyAdditionalInfoHeader = new QLabel ("Zusätzliche Angaben");
-    QSpacerItem *spacer = new QSpacerItem (0, 0, QSizePolicy::Expanding, QSizePolicy::Expanding);
+    //QSpacerItem *spacer = new QSpacerItem (0, 0, QSizePolicy::Expanding, QSizePolicy::Expanding);
 
     mKeyCategories->setData (ioInterface(), dataInterface());
     mKeyCategories->init ("keyCategories", "category");
@@ -99,11 +99,12 @@ void AddKeyView::reset ()
     }
     centralLayout->addWidget(keyAdditionalInfoHeader);
     centralLayout->addWidget(mKeyDescription);
-    centralLayout->addItem(spacer);
+    //->addItem(spacer);
+    centralLayout->update();
 
     setCentralLayout(centralLayout);
 
-    //connect (mKeyCategories, SIGNAL(radioBtnToggled()), this, SLOT(onRadioBtnToggled()));
+    connect (mKeyCategories, SIGNAL(radioBtnToggled()), this, SLOT(onRadioBtnToggled()));
 }
 
 bool AddKeyView::checkSelections ()

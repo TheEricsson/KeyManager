@@ -82,6 +82,7 @@ void WinSubmenu::setTopLayout (QLayout *layout)
         layout->setSizeConstraint(QLayout::SetFixedSize);
         mBaseLayout->insertLayout(0, layout);
     }
+    update();
 }
 
 void WinSubmenu::setCentralLayout (QLayout *layout)
@@ -99,6 +100,7 @@ void WinSubmenu::setCentralLayout (QLayout *layout)
         mBaseLayout->insertLayout(1, layout);
         mBaseLayout->update();
     }
+    update();
 }
 
 void WinSubmenu::setBottomLayout (QLayout *layout)
@@ -116,6 +118,7 @@ void WinSubmenu::setBottomLayout (QLayout *layout)
         mBaseLayout->insertLayout(2, layout);
         mBaseLayout->update();
     }
+    update();
 }
 
 QLayout* WinSubmenu::getTopLayout ()
