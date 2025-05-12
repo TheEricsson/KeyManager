@@ -7,10 +7,12 @@
 #include "mainwindow.h"
 #include "datainterface.h"
 #include "iointerfacesqlite.h"
+#include "androidapplication.h"
 
 int main(int argc, char *argv[])
 {
-    QApplication a(argc, argv);
+    //QApplication a(argc, argv);
+    AndroidApplication a(argc, argv);
 
     QFont font("Roboto");
     font.setStyleHint(QFont::SansSerif);
