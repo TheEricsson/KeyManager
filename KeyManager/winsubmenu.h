@@ -58,7 +58,7 @@ private slots:
     void onMenuBtnClicked(Gui::MenuButton btnType);
 
 private:
-    void keyReleaseEvent (QKeyEvent *event);
+    virtual void keyReleaseEvent (QKeyEvent *event);
     QList <QPushButton*> mMenuButtons;
     QLabel *mHeaderLabel;
     bool mButtonsSet;

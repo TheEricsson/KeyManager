@@ -3,7 +3,7 @@
 
 #include "winsubmenu.h"
 
-class TreeViewImpl;
+class QTreeView;
 class QStandardItem;
 class QStandardItemModel;
 
@@ -18,7 +18,7 @@ private:
     QList<QStandardItem *> prepareRow(const QString &first,
                const QString &second,
                const QString &third);
-    TreeViewImpl *mDataView;
+    QTreeView *mDataView;
     QStandardItemModel *mStandardModel;;
 };
 

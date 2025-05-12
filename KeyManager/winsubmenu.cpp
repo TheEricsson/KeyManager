@@ -7,6 +7,9 @@
 #include <QFile>
 #include <QKeyEvent>
 #include <QBoxLayout>
+#include <QStyleOption>
+#include <QPainter>
+
 #include "globals.h"
 #include "dataobject.h"
 #include "menubutton.h"
@@ -23,16 +26,17 @@ WinSubmenu::WinSubmenu(QWidget *parent)
     mTopLayout = 0;
     mCentralLayout  = 0;
 
-    mBaseLayout = new QBoxLayout(QBoxLayout::TopToBottom, this);
-
-    setLayout(mBaseLayout);
-
     /*set layout dummies for the layout sections
     this prevents errors, when layouts are replaced at runtime not starting with index 0*/
+
+    mBaseLayout = new QBoxLayout(QBoxLayout::TopToBottom, this);
+    setLayout(mBaseLayout);
 
     setTopLayout(new QHBoxLayout());
     setCentralLayout(new QHBoxLayout());
     setBottomLayout(new QHBoxLayout());
+
+    setAttribute(Qt::WA_LayoutUsesWidgetRect);
 
     //mHeaderLabel = new QLabel (this);
     //mLayout->addWidget(mHeaderLabel,0,Qt::AlignCenter);
@@ -341,8 +345,29 @@ void WinSubmenu::keyReleaseEvent(QKeyEvent *event)
     default:
         break;
     }
+    QWidget::keyReleaseEvent(event);
 }
 
 WinSubmenu::~WinSubmenu ()
 {
+    QLayout *current = getBottomLayout();
+    if (0 != current)
+    {
+        mBaseLayout->removeItem(current);
+        delete current;
+    }
+
+    current = getTopLayout();
+    if (0 != current)
+    {
+        mBaseLayout->removeItem(current);
+        delete current;
+    }
+
+    current = getCentralLayout();
+    if (0 != current)
+    {
+        mBaseLayout->removeItem(current);
+        delete current;
+    }
 }

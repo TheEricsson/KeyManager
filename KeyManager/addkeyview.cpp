@@ -58,12 +58,6 @@ void AddKeyView::onMenuBtnClicked (Gui::MenuButton btnType)
     }
 }
 
-void AddKeyView::onRadioBtnToggled()
-{
-    qDebug() << "AddKeyView::onRadioBtnToggled()";
-    update();
-}
-
 void AddKeyView::showEvent(QShowEvent *)
 {
     reset ();

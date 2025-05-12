@@ -45,7 +45,6 @@ SOURCES += \
     tableview.cpp \
     tests/qrencodertest.cpp \
     toolsview.cpp \
-    treeviewimpl.cpp \
     viewdataannotation.cpp \
     viewdatahandover.cpp \
     viewdatakeychain.cpp \
@@ -57,6 +56,7 @@ SOURCES += \
     winsubmenu.cpp
 
 HEADERS += \
+    AndroidApplication.h \
     addcustomerview.h \
     addkeychainview.h \
     addkeyview.h \
@@ -92,7 +92,6 @@ HEADERS += \
     tableview.h \
     tests/qrencodertest.h \
     toolsview.h \
-    treeviewimpl.h \
     viewdataannotation.h \
     viewdatahandover.h \
     viewdatakeychain.h \

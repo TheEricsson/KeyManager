@@ -1,32 +1,27 @@
 #include "searchview.h"
 #include <QSpacerItem>
 #include <QLayout>
-#include "treeviewimpl.h"
+#include <QTreeView>
 #include <QStandardItem>
 #include <QStandardItemModel>
 
 SearchView::SearchView (QWidget *parent)
     : WinSubmenu {parent}
 {
-    mDataView = new TreeViewImpl (this);
+    mDataView = new QTreeView (this);
     mDataView->setSizeAdjustPolicy(QAbstractScrollArea::AdjustToContents);
     mDataView->setSizePolicy(QSizePolicy::MinimumExpanding, QSizePolicy::MinimumExpanding);
 
     mStandardModel = new QStandardItemModel (this);
     mDataView->setModel(mStandardModel);
 
-    //QSpacerItem *spacer = new QSpacerItem (0, 0, QSizePolicy::Expanding, QSizePolicy::Expanding);
-
     QVBoxLayout *centralLayout = new QVBoxLayout();
     centralLayout->addWidget(mDataView);
-    //centralLayout->addItem(spacer);
     setCentralLayout(centralLayout);
 
     QList<Gui::MenuButton> menuButtons;
     menuButtons.append(Gui::Back);
     setMenuButtons(menuButtons);
-
-    mDataView->expandAll();
 }
 
 void SearchView::showEvent(QShowEvent *)
@@ -41,6 +36,7 @@ void SearchView::showEvent(QShowEvent *)
     preparedRow.first()->appendRow(secondRow);
 }
 
+//test...
 QList<QStandardItem *> SearchView::prepareRow(const QString &first,
                                               const QString &second,
                                               const QString &third)
@@ -54,5 +50,6 @@ QList<QStandardItem *> SearchView::prepareRow(const QString &first,
 
 SearchView::~SearchView()
 {
-    delete mStandardModel;
+    if (0 != mStandardModel)
+        delete mStandardModel;
 }

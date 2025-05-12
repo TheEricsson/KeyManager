@@ -16,16 +16,11 @@ TableView::TableView(const QString &tableName, QWidget *parent)
     //setHeader("Suchfunktion");
 
     mKeychain = new QTableView (this);
-    //mKeychain->setSizeAdjustPolicy(QAbstractScrollArea::AdjustToContents);
     mKeychain->setSizePolicy(QSizePolicy::Expanding, QSizePolicy::Expanding);
-    //mKeychain->resizeColumnsToContents();
 
     QHBoxLayout *centralLayout = new QHBoxLayout();
     centralLayout->addWidget(mKeychain);
     setCentralLayout(centralLayout);
-
-    //QSpacerItem *spacer = new QSpacerItem (0, 0, QSizePolicy::Minimum, QSizePolicy::Minimum);
-    //layout()->addItem(spacer);
 
     QList<Gui::MenuButton> menuButtons;
     menuButtons.append(Gui::Back);

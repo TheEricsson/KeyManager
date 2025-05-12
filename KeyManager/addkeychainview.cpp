@@ -44,6 +44,7 @@ AddKeychainView::AddKeychainView(QWidget *parent) : WinSubmenu {parent}
 
     mCustomersView = new QTableView (this);
     mCustomersView->setModel(mFilteredModel);
+    mCustomersView->setSizePolicy(QSizePolicy::MinimumExpanding, QSizePolicy::MinimumExpanding);
 
     QLabel *internalLocLabel = new QLabel ("Schlüsselhaken zuweisen:", this);
     mInternalLocation = new QLineEdit (this);
