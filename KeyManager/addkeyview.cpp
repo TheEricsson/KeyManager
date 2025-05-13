@@ -75,7 +75,7 @@ void AddKeyView::reset ()
 
     QLabel *keyTypeHeader = new QLabel("Schlüsselkategorie");
     QLabel *keyAdditionalInfoHeader = new QLabel ("Zusätzliche Angaben");
-    //QSpacerItem *spacer = new QSpacerItem (0, 0, QSizePolicy::Expanding, QSizePolicy::Expanding);
+    QSpacerItem *spacer = new QSpacerItem (0, 0, QSizePolicy::Expanding, QSizePolicy::Expanding);
 
     mKeyCategories->setData (ioInterface(), dataInterface());
     mKeyCategories->init ("keyCategories", "category");
@@ -93,7 +93,7 @@ void AddKeyView::reset ()
     }
     centralLayout->addWidget(keyAdditionalInfoHeader);
     centralLayout->addWidget(mKeyDescription);
-    //->addItem(spacer);
+    centralLayout->addItem(spacer);
     centralLayout->update();
 
     setCentralLayout(centralLayout);

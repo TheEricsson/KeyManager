@@ -14,6 +14,7 @@ class QPushButton;
 class KeychainDataHandover;
 class QSortFilterProxyModel;
 class CameraView;
+class ImageView;
 
 class KeychainStatusView : public WinSubmenu
 {
@@ -31,6 +32,7 @@ class KeychainStatusView : public WinSubmenu
         void keyCodeBtnClicked();
         void keyImgBtnClicked();
         void onCameraViewButtonClicked(Gui::MenuButton btn);
+        void onImageViewButtonClicked(Gui::MenuButton btn);
 
     private:
         virtual void showEvent(QShowEvent *);
@@ -56,6 +58,7 @@ class KeychainStatusView : public WinSubmenu
         QPushButton *mKeysImgPreview;
         ViewDataKeychain *mViewData;
         CameraView *mCameraView;
+        ImageView *mImageView;
 };
 
 #endif // KEYCHAINSTATUSVIEW_H

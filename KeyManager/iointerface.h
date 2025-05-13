@@ -59,6 +59,7 @@ public:
     virtual bool setKeychainData (ViewDataKeychain* data, const int& keyCode)                   {Q_UNUSED(keyCode); Q_UNUSED(data); return false;};
     virtual int getNumberOfEntries (const QString &tableName)                                   {Q_UNUSED(tableName); return _UNDEFINED;};
     virtual QVariant getValue (const QString &tableName, const QString& columnName, int index)  {Q_UNUSED(tableName); Q_UNUSED(columnName); Q_UNUSED(index); return _UNDEFINED;};
+    virtual QList<QVariant> getTableColumn (const QString &tableName, const QString& columnName){Q_UNUSED(tableName); Q_UNUSED(columnName);};
     virtual bool initKeyOverviewModel (QSqlRelationalTableModel *model, const QString &filter)  {Q_UNUSED(model); Q_UNUSED(filter); return false;};
     virtual bool initKeychainModel (QSqlRelationalTableModel *model, const QString &filter = "") {Q_UNUSED(model); Q_UNUSED(filter); return false;};
     virtual bool initKeychainHistoryModel (QSqlRelationalTableModel *model, const QString &filter) {Q_UNUSED(model); Q_UNUSED(filter); return false;};

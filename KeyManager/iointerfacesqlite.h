@@ -29,11 +29,13 @@ class IOInterfaceSQLITE : public IOInterface
         bool setKeychainData (ViewDataKeychain* data, const int& keyCode);
         int getNumberOfEntries (const QString &tableName);
         QVariant getValue (const QString &tableName, const QString& columnName, int index);
+        QList<QVariant> getTableColumn (const QString &tableName, const QString& columnName);
         bool initKeyOverviewModel (QSqlRelationalTableModel *model, const QString &filter);
         bool initKeychainModel (QSqlRelationalTableModel *model, const QString &filter);
         bool initKeychainHistoryModel (QSqlRelationalTableModel *model, const QString &filter = "");
         bool initRecipientModel (QSqlRelationalTableModel *model);
         bool initCustomerModel (QSqlRelationalTableModel *model);
+        bool initSearchViewModel (QSqlRelationalTableModel *model, const QString &filter = "");
         bool addNewRecipient (const IOInterface::recipientData *data);
         bool addNewCustomer (const IOInterface::customerData *data);
         bool getKeychainImg (const int aId, QImage& img);

@@ -27,6 +27,7 @@ SOURCES += \
     editkeyview.cpp \
     handoverview.cpp \
     homeview.cpp \
+    imageview.cpp \
     iointerface.cpp \
     iointerfacesqlite.cpp \
     keychainstatusview.cpp \
@@ -74,6 +75,7 @@ HEADERS += \
     globals.h \
     handoverview.h \
     homeview.h \
+    imageview.h \
     initdb.h \
     iointerface.h \
     iointerfacesqlite.h \

@@ -14,7 +14,7 @@ HomeView::HomeView(QWidget *parent)
     setHeader("KEYMANAGER");
 
     QPixmap logo (":/images/logo.png");
-    QPixmap logo_scaled = logo.scaled(QSize(Gui::logoWidth, Gui::logoHeight), Qt::KeepAspectRatio, Qt::SmoothTransformation);
+    QPixmap logo_scaled = logo.scaled(QSize(Gui::logoWidth, Gui::logoHeight), Qt::KeepAspectRatioByExpanding, Qt::SmoothTransformation);
     QLabel *label = new QLabel(this);
     label->setScaledContents(true);
     label->setMaximumHeight(Gui::logoHeight);
@@ -26,7 +26,7 @@ HomeView::HomeView(QWidget *parent)
 
     QSpacerItem *spacer = new QSpacerItem (0, 0, QSizePolicy::Expanding, QSizePolicy::Expanding);
 
-    QHBoxLayout *centralLayout = new QHBoxLayout();
+    QVBoxLayout *centralLayout = new QVBoxLayout();
     centralLayout->addWidget(label);
     centralLayout->addItem(spacer);
     setCentralLayout(centralLayout);

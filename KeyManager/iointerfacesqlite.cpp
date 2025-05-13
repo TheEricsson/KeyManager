@@ -673,6 +673,28 @@ QVariant IOInterfaceSQLITE::getValue (const QString &tableName, const QString& c
     return _UNDEFINED;
 }
 
+QList<QVariant> IOInterfaceSQLITE::getTableColumn (const QString &tableName, const QString& columnName)
+{
+    QString queryString = "SELECT ";
+    queryString.append(columnName);
+    queryString.append(" FROM ");
+    queryString.append(tableName);
+
+    QSqlQuery query;
+    query.setForwardOnly(true);
+    query.prepare(queryString);
+    query.exec();
+
+    QList<QVariant> tableItems;
+
+    while (query.next())
+    {
+        tableItems << query.value(0);
+    }
+
+    return tableItems;
+}
+
 bool IOInterfaceSQLITE::initRecipientModel (QSqlRelationalTableModel *model)
 {
     if (model)
@@ -870,10 +892,14 @@ bool IOInterfaceSQLITE::dbInsertKeychainImg (const unsigned int keyCode, const Q
 {
     qDebug() << "IOInterfaceSQLITE::dbInsertKeychainImg";
 
-    QByteArray BaImg = imageToByteArray(img);
+    QByteArray BaImg;
+
+    if (!img.isNull())
+        BaImg = imageToByteArray(img);
+    else
+        BaImg = 0;
 
     bool queryOk = false;
-
     QSqlQuery query;
 
     // insert new keychain entry

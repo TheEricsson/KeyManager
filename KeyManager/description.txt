@@ -1,0 +1,19 @@
+Die KeyManager App wurde für die Wohnungswirtschaft entwickelt.
+
+Im ersten Schritt werden über die App QR-Codes mit einer eindeutigen Kennung erzeugt. Diese Codes werden an den jeweiligen Schlüsseln/ Schlüsselbunden fixiert, sie dienen als eindeutige Referenz. 
+
+Im Falle eines neu erstellten Codes, wird beim ersten Scannen der Schlüsselbund neu angelegt. Hierbei gibt der Benutzer für alle Schlüssel am Schlüsselbund den Schlüsseltyp und ggf. zusätzliche Informationen an. Ein Bild des gesamten Schlüsselbundes kann über die Gerätekamera aufgenommen und in der Datenbank abgespeichert werden. 
+
+Der Prozess zur Ausgabe und Rücknahme von Schlüsselbunden erfolgt über Ihr Handy oder Ihr Tablet. Dazu wird zunächst der Code am Schlüsselbund mit der Kamera-App gescannt. Die App erkennt den hinterlegten Schlüsselbund und zeigt eine Informationsseite mit relevanten Daten an. 
+
+Je nach aktuellen Status, wird die Ausgabe oder die Rücknahme des Schlüsselbundes über die App angeboten.
+
+Im Falle der Rücknahme wird der entsprechende Mitarbeiter aus der Datenbank ausgewählt. Für die Übergabe an Firmen, Dienstleister oder Privatpersonen kann der entsprechende Kontakt in der App gewählt werden. Hierbei wird eine Rückgabefrist gesetzt. Zusätzlich können individuelle Bemerkungen zu jedem Übergabevorgang abgespeichert werden. 
+
+Der Vorgang einer Ausgabe bzw. Rücknahme wird mit der Unterzeichnung des Empfängers abgeschlossen. Der Datensatz wird in einer Datenbank abgespeichert und die Historie jedes Schlüsselbundes lässt sich jederzeit nachvollziehen. 
+
+Die Erstellung eines Übergabeprotokolls im PDF-Format ist ebenfalls möglich. 
+
+Die App zeigt den aktuellen Status aller Schlüssel an. Die Ansicht kann nach verschiedenen Kriterien (Liegenschaft, Dienstleister, Rückgabefristen) gefiltert werden. Eine Volltextsuche ist ebenfalls integriert. 
+
+Mit dem KeyManager behalten Sie den Status Ihrer Schlüssel jederzeit im Blick!

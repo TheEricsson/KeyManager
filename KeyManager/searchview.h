@@ -15,6 +15,7 @@ public:
     ~SearchView();
     virtual void showEvent(QShowEvent *);
 private:
+    void setTreeData ();
     QList<QStandardItem *> prepareRow(const QString &first,
                const QString &second,
                const QString &third);

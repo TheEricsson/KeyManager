@@ -44,16 +44,16 @@ WinSubmenu::WinSubmenu(QWidget *parent)
     //mHeaderLabel->setSizePolicy(QSizePolicy::Expanding, QSizePolicy::Minimum);
 
     //set css styles
-    QFile f(":qdarkstyle/light/lightstyle.qss");
-    if (!f.exists())
-    {
-        qDebug () << "Unable to set stylesheet, file not found:";
-    }
-    else   {
-        f.open(QFile::ReadOnly | QFile::Text);
-        QTextStream ts(&f);
-        setStyleSheet(ts.readAll());
-    }
+    // QFile f(":qdarkstyle/light/lightstyle.qss");
+    // if (!f.exists())
+    // {
+    //     qDebug () << "Unable to set stylesheet, file not found:";
+    // }
+    // else   {
+    //     f.open(QFile::ReadOnly | QFile::Text);
+    //     QTextStream ts(&f);
+    //     setStyleSheet(ts.readAll());
+    // }
 
     // mHeaderLabel->setStyleSheet("QLabel {background-color: #e0ffff; color: black; font: bold 30px; border-style: solid; border-width: 1px; border-radius: 5px; border-color: #A9A9A9; }");
 
@@ -83,7 +83,7 @@ void WinSubmenu::setTopLayout (QLayout *layout)
 
     if (layout)
     {
-        layout->setSizeConstraint(QLayout::SetFixedSize);
+        layout->setSizeConstraint(QLayout::SetMinimumSize);
         mBaseLayout->insertLayout(0, layout);
     }
     update();
@@ -118,7 +118,7 @@ void WinSubmenu::setBottomLayout (QLayout *layout)
 
     if (layout)
     {
-        layout->setSizeConstraint(QLayout::SetFixedSize);
+        layout->setSizeConstraint(QLayout::SetMinimumSize);
         mBaseLayout->insertLayout(2, layout);
         mBaseLayout->update();
     }
@@ -273,6 +273,14 @@ void WinSubmenu::setMenuButtons (const QList<Gui::MenuButton> &buttons)
                 //menuBtn->setIcon(QIcon(":/images/TODO"));
                 menuBtn->setButtonText("Drucken");
                 break;
+            case (Gui::DeleteImage):
+                //menuBtn->setIcon(QIcon(":/images/TODO"));
+                menuBtn->setButtonText("Bild\nLöschen");
+                break;
+            case (Gui::NewImageFromCam):
+                //menuBtn->setIcon(QIcon(":/images/TODO"));
+                menuBtn->setButtonText("Neues Bild\naufnehmen");
+                break;
             default:
                 break;
         }
@@ -345,7 +353,7 @@ void WinSubmenu::keyReleaseEvent(QKeyEvent *event)
     default:
         break;
     }
-    QWidget::keyReleaseEvent(event);
+    //QWidget::keyReleaseEvent(event);
 }
 
 WinSubmenu::~WinSubmenu ()

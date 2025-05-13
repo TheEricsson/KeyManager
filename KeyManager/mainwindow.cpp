@@ -51,18 +51,6 @@ MainWindow::MainWindow(QWidget *parent)
     mAddKeychainView = 0;
     mEditKeyView = 0;
     mViewStack = 0;
-
-    //set css styles
-    QFile f(":qdarkstyle/light/lightstyle.qss");
-    if (!f.exists())
-    {
-        qDebug () << "Unable to set stylesheet, file not found:";
-    }
-    else   {
-        f.open(QFile::ReadOnly | QFile::Text);
-        QTextStream ts(&f);
-        setStyleSheet(ts.readAll());
-    }
 }
 
 void MainWindow::setDataInterface (DataInterface *dataInterface)
@@ -76,7 +64,7 @@ void MainWindow::setIOInterface (IOInterface *ioInterface)
 }
 
 void MainWindow::init()
-{
+{   
     mViewStack = new QStackedWidget (this);
     setCentralWidget(mViewStack);
     qDebug () << "centralWidget width: " << centralWidget()->screen()->size().width();
@@ -135,6 +123,18 @@ void MainWindow::init()
 
     mViewStackManager->setCurrentStackId(ViewStackManager::HandoverOut);
     mViewStack->setCurrentWidget(mHomeView);
+
+    //set css styles for all widgets
+    QFile f(":qdarkstyle/light/lightstyle.qss");
+    if (!f.exists())
+    {
+        qDebug () << "Unable to set stylesheet, file not found:";
+    }
+    else   {
+        f.open(QFile::ReadOnly | QFile::Text);
+        QTextStream ts(&f);
+        setStyleSheet(ts.readAll());
+    }
 
     // init db
     if (0 == mDbInterface->countDbTables())

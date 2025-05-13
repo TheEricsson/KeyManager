@@ -42,7 +42,9 @@ namespace Gui
         Edit,
         Print,
         TakePicture,
-        Save
+        Save,
+        DeleteImage,
+        NewImageFromCam
     };
 }
 

@@ -21,6 +21,7 @@
 #include <QSqlRelationalTableModel>
 #include "codegeneratorview.h"
 #include "cameraview.h"
+#include "imageview.h"
 
 KeychainStatusView::KeychainStatusView(QWidget *parent)
     : WinSubmenu {parent}
@@ -32,6 +33,7 @@ KeychainStatusView::KeychainStatusView(QWidget *parent)
     //mFilteredKeychainModel = 0;
     mViewData = 0;
     mCameraView = 0;
+    mImageView = 0;
 
     //setHeader("Informationen zum Schlüsselbund");
 
@@ -68,18 +70,6 @@ KeychainStatusView::KeychainStatusView(QWidget *parent)
     keychainData->addItem(spacerItem, 0, 3, 1, 1);
     keychainData->addWidget(mKeysImgPreview, 0, 4, 5, 1, Qt::AlignLeft);
 
-    //layout()->addItem(keychainData);
-
-    //mKeychain = new QTableView (this);
-
-    //layout()->addWidget(mKeychain);
-
-    // mKeysImgPreview = new QPushButton ("Bild hinzufügen...", this);
-    // mKeysImgPreview->setMinimumHeight(100);
-    // mKeysImgPreview->setMinimumWidth(100);
-    // mKeysImgPreview->setSizePolicy(QSizePolicy::MinimumExpanding, QSizePolicy::MinimumExpanding);
-    // layout()->addWidget(mKeysImgPreview);
-
     QLabel *keysHeader = new QLabel ("Hinterlegte Schlüssel", this);
     keychainData->addWidget(keysHeader, 5, 0, 1, 5);
     //layout()->addWidget(keysHeader);
@@ -97,7 +87,6 @@ KeychainStatusView::KeychainStatusView(QWidget *parent)
     keychainData->addWidget(mHistory, 8, 0, 1, 5);
 
     QSpacerItem *spacer = new QSpacerItem (0, 0, QSizePolicy::Expanding, QSizePolicy::Expanding);
-    //layout()->addItem(spacer);
     keychainData->addItem(spacer, 9, 0, 1, 4);
 
     setCentralLayout(keychainData);
@@ -107,11 +96,6 @@ KeychainStatusView::KeychainStatusView(QWidget *parent)
     menuButtons.append(Gui::MainMenu);
     menuButtons.append(Gui::Next);
     setMenuButtons(menuButtons);
-
-    // mKeychainModel = new QSqlRelationalTableModel ();
-    // mFilteredKeychainModel = new QSortFilterProxyModel ();
-    // mFilteredKeychainModel->setSourceModel(mKeychainModel);
-    // mKeychain->setModel(mFilteredKeychainModel);
 
     mKeyModel = new QSqlRelationalTableModel ();
     mFilteredKeyModel= new QSortFilterProxyModel ();
@@ -123,7 +107,6 @@ KeychainStatusView::KeychainStatusView(QWidget *parent)
     mFilteredHistoryModel->setSourceModel(mHistoryModel);
     mHistory->setModel(mFilteredHistoryModel);
 
-    //connect (keyCodeBtn, SIGNAL(clicked()), this, SLOT (keyCodeBtnClicked()));
     connect (mKeysImgPreview, SIGNAL(clicked()), this, SLOT (keyImgBtnClicked()));
 }
 
@@ -140,24 +123,12 @@ void KeychainStatusView::showEvent(QShowEvent *)
 
     filter = "id = ";
     filter.append(barcodeAsString);
-    // ioInterface()->initKeychainModel(mKeychainModel, filter);
-    // setKeychainModel(mKeychainModel);
-    // mKeys->update ();
 
     filter = "keychainId = ";
     filter.append(barcodeAsString);
     ioInterface()->initKeychainHistoryModel(mHistoryModel, filter);
     setKeychainHistoryModel(mHistoryModel);
     mHistory->update ();
-
-    // mFilteredKeychainModel->setFilterKeyColumn(0);
-    // mFilteredKeychainModel->setFilterWildcard(QString::number(barcode));
-    // mKeychain->update();
-
-    // mFilteredKeyModel->setFilterKeyColumn(1);
-    // //mFilteredKeyModel->setFilterWildcard(QString::number(barcode));
-    // mFilteredKeyModel->setFilterWildcard("JKKSJFKSJF");
-    // mKeys->update();
 
     update ();
 
@@ -207,53 +178,6 @@ void KeychainStatusView::setNextBtnText ()
             setButtonText(2, "Ausgabe");
     }
 }
-
-// bool KeychainStatusView::setKeychainModel (QSqlRelationalTableModel* model)
-// {
-//     if (model)
-//     {
-//         model->setHeaderData(0, Qt::Horizontal, tr("Barcode"), Qt::DisplayRole);
-//         model->setHeaderData(1, Qt::Horizontal, tr("Ausgabestatus"), Qt::DisplayRole);
-//         model->setHeaderData(2, Qt::Horizontal, tr("Schlüsselhaken"), Qt::DisplayRole);
-//         model->setHeaderData(3, Qt::Horizontal, tr("Straße"), Qt::DisplayRole);
-//         model->setHeaderData(4, Qt::Horizontal, tr("Hausnummer"), Qt::DisplayRole);
-//         model->setHeaderData(5, Qt::Horizontal, tr("PLZ"), Qt::DisplayRole);
-//         model->setHeaderData(6, Qt::Horizontal, tr("Ort"), Qt::DisplayRole);
-
-//         if (!mFilteredKeychainModel)
-//             return false;
-
-//         if (mKeychain)
-//         {
-//             mFilteredKeychainModel->setSourceModel(model);
-//             mKeychain->hideColumn(7); // hide image column
-//             mKeychain->setEditTriggers(QTableView::NoEditTriggers);
-//             mKeychain->setSelectionMode(QTableView::NoSelection);
-//             mKeychain->verticalHeader()->hide();
-
-//             mKeychain->show();
-
-//             mKeychain->setSizeAdjustPolicy(QAbstractScrollArea::AdjustToContents);
-//             mKeychain->setSizePolicy(QSizePolicy::Preferred, QSizePolicy::Maximum);
-
-//             mKeychain->resizeColumnsToContents();
-
-//             //barcode must be unique
-//             if (mKeychain->model()->rowCount() > 1)
-//             {
-//                 QMessageBox::critical(0, "Datenbankfehler",
-//                                       "Barcode nicht eindeutig, Tabelle enthält Duplikate. \n"
-//                                       "Überprüfung der Datenbank notwendig. Fortfahren nicht möglich.", QMessageBox::Ok);
-//                 //prevent user to proceed to next step
-//                 return false;
-//             }
-
-//             return true;
-//         }
-//         return false;
-//     }
-//     return false;
-// }
 
 bool KeychainStatusView::setKeysModel (QSqlRelationalTableModel* model)
 {
@@ -355,15 +279,19 @@ void KeychainStatusView::keyCodeBtnClicked()
 
 void KeychainStatusView::keyImgBtnClicked()
 {
-    qDebug () << "KeychainStatusView::keyImgBtnClicked()";
+    QImage keychainImage;
+    ioInterface()->getKeychainImg(dataInterface()->getScannedCode(), keychainImage);
 
-    if (!mCameraView)
+    if (!mImageView)
     {
-        mCameraView = new CameraView();
-        connect (mCameraView, SIGNAL(menuButtonClicked(Gui::MenuButton)), this, SLOT(onCameraViewButtonClicked(Gui::MenuButton)));
+        mImageView = new ImageView();
+        connect (mImageView, SIGNAL(menuButtonClicked(Gui::MenuButton)), this, SLOT(onImageViewButtonClicked(Gui::MenuButton)));
     }
 
-    mCameraView->show();
+    mImageView->show();
+
+    if (!keychainImage.isNull())
+        mImageView->setImage(keychainImage);
 }
 
 void KeychainStatusView::onCameraViewButtonClicked(Gui::MenuButton btn)
@@ -397,12 +325,60 @@ void KeychainStatusView::onCameraViewButtonClicked(Gui::MenuButton btn)
     }
 }
 
+void KeychainStatusView::onImageViewButtonClicked(Gui::MenuButton btn)
+{
+    // create empty image (delete image)
+    QImage img;
+    unsigned int keyCode = dataInterface()->getScannedCode();
+
+    switch (btn)
+    {
+        case Gui::TakePicture:
+            if (mImageView)
+            {
+                delete mImageView;
+                mImageView = 0;
+            }
+
+            if (!mCameraView)
+            {
+                mCameraView = new CameraView();
+                connect (mCameraView, SIGNAL(menuButtonClicked(Gui::MenuButton)), this, SLOT(onCameraViewButtonClicked(Gui::MenuButton)));
+            }
+
+            mCameraView->show();
+            break;
+        case Gui::DeleteImage:
+            if (mImageView)
+            {
+                delete mImageView;
+                mImageView = 0;
+            }
+
+            //insert empty image
+            ioInterface()->dbInsertKeychainImg(keyCode, img);
+
+            //read back image from db and set in gui
+            ioInterface()->getKeychainImg(keyCode, img);
+            setKeychainImage(img);
+            break;
+        default:
+            break;
+    }
+}
+
 KeychainStatusView::~KeychainStatusView ()
 {
     if (mCameraView)
     {
         delete mCameraView;
         mCameraView = 0;
+    }
+
+    if (mImageView)
+    {
+        delete mImageView;
+        mImageView = 0;
     }
 
     // if (mKeyOverview)

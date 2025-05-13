@@ -93,9 +93,9 @@ void EditKeyView::onMenuBtnClicked (Gui::MenuButton btnType)
                 mAddKeyView = new AddKeyView();
                 mAddKeyView->setDataInterface (dataInterface());
                 mAddKeyView->setIOInterface (ioInterface());
-                mAddKeyView->show();
                 connect (mAddKeyView, SIGNAL(menuButtonClicked(Gui::MenuButton)), this, SLOT(onAddKeyMenuButtonClicked(Gui::MenuButton)));
             }
+            mAddKeyView->show();
             break;
 
         // no catch, emit signal

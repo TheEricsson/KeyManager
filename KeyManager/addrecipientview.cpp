@@ -81,7 +81,7 @@ AddRecipientView::AddRecipientView (QWidget *parent)
     gridLayout->addWidget(city, 6, 0, 1, 1);
     gridLayout->addWidget(mCityEdit, 6, 1, 1, 1);
 
-    QSpacerItem *spacer = new QSpacerItem (0, 0, QSizePolicy::Expanding, QSizePolicy::Expanding);
+    QSpacerItem *spacer = new QSpacerItem (0, 0, QSizePolicy::Maximum, QSizePolicy::Maximum);
     gridLayout->addItem(spacer, 7, 0, 0);
 
     setCentralLayout(gridLayout);
