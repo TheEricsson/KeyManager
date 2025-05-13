@@ -27,6 +27,7 @@ SearchView::SearchView (QWidget *parent)
 
 void SearchView::showEvent(QShowEvent *)
 {
+    mStandardModel->clear();
     setTreeData();
 
     /*
@@ -49,34 +50,82 @@ void SearchView::setTreeData()
 
     QList keychainColumnId = ioInterface()->getTableColumn ("keychains", "id");
 
-    for (int i = 0; i < keychainColumnId.size(); i++)
+    if (0 < keychainColumnId.size())
     {
-        unsigned int id = keychainColumnId.at(i).toUInt();
-        KeychainStatus::Value status = ioInterface()->getKeychainStatusId(id);
-        unsigned int internalLoc = ioInterface()->getKeychainInternalLocation(id);
-        unsigned int addressId = ioInterface()->getKeychainAddressId(id);
+        //add row
+        unsigned int id = 0;
+        KeychainStatus::Value status = KeychainStatus::Undefined;
+        unsigned int internalLoc = 0;
+        unsigned int addressId = 0;
 
-        QString addressStreet = ioInterface()->getAddressStreet(addressId);
-        QString addressStreetNr = ioInterface()->getAddressStreetNumber(addressId);
-        QString addressAreaCode = QString::number(ioInterface()->getAddressAreaCode(addressId));
-        QString addressCity = ioInterface()->getAddressCity(addressId);
+        QString addressStreet ("");
+        QString addressStreetNr ("");
+        QString addressAreaCode ("");
+        QString addressCity ("");
 
-        QString statusText = ioInterface()->getKeychainStatusText(status);
-        QString readableId = Database::normaliseKeycode(id);
-        QString internalLocString = QString::number(internalLoc);
+        QString statusText ("");
+        QString readableId ("");
+        QString internalLocString ("");
 
-        QList<QStandardItem*> rowItems;
-        rowItems << new QStandardItem(readableId);
-        rowItems << new QStandardItem(internalLocString);
-        rowItems << new QStandardItem(addressStreet);
-        rowItems << new QStandardItem(addressStreetNr);
-        rowItems << new QStandardItem(addressAreaCode);
-        rowItems << new QStandardItem(addressCity);
-        rowItems << new QStandardItem(statusText);
+        for (int i = 0; i < keychainColumnId.size(); i++)
+        {
+            id = keychainColumnId.at(i).toUInt();
+            status = ioInterface()->getKeychainStatusId(id);
+            internalLoc = ioInterface()->getKeychainInternalLocation(id);
+            addressId = ioInterface()->getKeychainAddressId(id);
 
-        QStandardItem *item = mStandardModel->invisibleRootItem();
-        // adding a row to the invisible root item produces a root element
-        item->appendRow(rowItems);
+            addressStreet = ioInterface()->getAddressStreet(addressId);
+            addressStreetNr = ioInterface()->getAddressStreetNumber(addressId);
+            addressAreaCode = QString::number(ioInterface()->getAddressAreaCode(addressId));
+            addressCity = ioInterface()->getAddressCity(addressId);
+
+            statusText = ioInterface()->getKeychainStatusText(status);
+            readableId = Database::normaliseKeycode(id);
+            internalLocString = QString::number(internalLoc);
+
+            QList<QStandardItem*> rowItems;
+            rowItems << new QStandardItem(readableId);
+            rowItems << new QStandardItem(internalLocString);
+            rowItems << new QStandardItem(addressStreet);
+            rowItems << new QStandardItem(addressStreetNr);
+            rowItems << new QStandardItem(addressAreaCode);
+            rowItems << new QStandardItem(addressCity);
+            rowItems << new QStandardItem(statusText);
+
+            QStandardItem *item = mStandardModel->invisibleRootItem();
+            // adding a row to the invisible root item produces a root element
+            item->appendRow(rowItems);
+
+            //add row child items (keys)
+            QList keys = ioInterface()->getKeyIdsByKeycode(id);
+            unsigned int keyCatId = 0;
+            unsigned int keyStatusId = 0;
+            QString keyDescription ("");
+            unsigned int currentKeyId = 0;
+
+            for (unsigned j = 0; j < keys.size(); j++)
+            {
+                currentKeyId = keys.at(j).toUInt();
+                qDebug() << "current key id: " << currentKeyId;
+                keyCatId = ioInterface()->getKeyCategoryId(currentKeyId);
+                keyStatusId = ioInterface()->getKeyStatusId(currentKeyId);
+                keyDescription = ioInterface()->getKeyDescription(currentKeyId);
+
+                //set key infos
+                QPixmap logo (":/images/key.png");
+                QIcon iconPic(logo);
+                QStandardItem *keyIcon = new QStandardItem();
+                keyIcon->setIcon(iconPic);
+
+                QList<QStandardItem*> childItems;
+                childItems << keyIcon; //new QStandardItem("Schlüssel");
+                childItems << new QStandardItem(QString::number(keyCatId));
+                childItems << new QStandardItem(QString::number(keyStatusId));
+                childItems << new QStandardItem(keyDescription);
+
+                rowItems.first()->appendRow(childItems);
+            }
+        }
     }
 }
 

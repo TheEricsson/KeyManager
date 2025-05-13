@@ -18,6 +18,10 @@ class IOInterfaceSQLITE : public IOInterface
         bool initFirstStart();
         bool addKey (const IOInterface::keyData *data);
         bool findKeyCode(unsigned int code);
+        QList<QVariant> getKeyIdsByKeycode(unsigned int keyCode);
+        unsigned int getKeyCategoryId(unsigned int keyId);
+        unsigned int getKeyStatusId(unsigned int keyId);
+        QString getKeyDescription(unsigned int keyId);
         KeychainStatus::Value getKeychainStatusId (const int& keyCode);
         const QString getKeychainStatusText (int statusId);
         int getKeychainInternalLocation (const int& keyCode);

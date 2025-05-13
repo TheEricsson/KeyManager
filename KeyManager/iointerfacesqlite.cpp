@@ -417,6 +417,69 @@ bool IOInterfaceSQLITE::findKeyCode(unsigned int code)
     return false;
 }
 
+QList<QVariant> IOInterfaceSQLITE::getKeyIdsByKeycode(unsigned int keyCode)
+{
+    QSqlQuery query;
+    query.prepare("SELECT id FROM keys WHERE keychainId = ?");
+    query.bindValue(0, keyCode);
+    query.setForwardOnly(true);
+    query.exec();
+
+    QList<QVariant> tableEntries;
+
+    while (query.next())
+    {
+        tableEntries << query.value(0).toUInt();
+    }
+
+    return tableEntries;
+}
+
+unsigned int IOInterfaceSQLITE::getKeyCategoryId(unsigned int keyId)
+{
+    QSqlQuery query;
+    query.prepare("SELECT categoryId FROM keys WHERE id = ?");
+    query.bindValue(0, keyId);
+    query.exec();
+
+    if (query.next())
+    {
+        return query.value(0).toUInt();
+    }
+    else
+        return 0;
+}
+
+unsigned int IOInterfaceSQLITE::getKeyStatusId(unsigned int keyId)
+{
+    QSqlQuery query;
+    query.prepare("SELECT statusId FROM keys WHERE id = ?");
+    query.bindValue(0, keyId);
+    query.exec();
+
+    if (query.next())
+    {
+        return query.value(0).toUInt();
+    }
+    else
+        return 0;
+}
+
+QString IOInterfaceSQLITE::getKeyDescription(unsigned int keyId)
+{
+    QSqlQuery query;
+    query.prepare("SELECT description FROM keys WHERE id = ?");
+    query.bindValue(0, keyId);
+    query.exec();
+
+    if (query.next())
+    {
+        return query.value(0).toString();
+    }
+    else
+        return "";
+}
+
 //keychain data
 KeychainStatus::Value IOInterfaceSQLITE::getKeychainStatusId (const int& keyCode)
 {
