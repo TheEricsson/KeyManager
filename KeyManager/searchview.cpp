@@ -15,6 +15,7 @@ SearchView::SearchView (QWidget *parent)
 
     mStandardModel = new QStandardItemModel (this);
     mDataView->setModel(mStandardModel);
+    mDataView->setSortingEnabled(true);
 
     QVBoxLayout *centralLayout = new QVBoxLayout();
     centralLayout->addWidget(mDataView);

@@ -1,19 +1,19 @@
-#include "toolsview.h"
+#include "toolsviewcodegenerator.h"
 #include "winsubmenu.h"
 #include "codegeneratorview.h"
 #include "globals.h"
 #include <QGridLayout>
 #include <QPushButton>
 
-ToolsView::ToolsView(QWidget *parent)
+ToolsViewCodeGenerator::ToolsViewCodeGenerator(QWidget *parent)
     : WinSubmenu{parent}
 {
     mCodeGeneratorView = 0;
 
-    //setHeader("Tools");
+    setHeader("Code-Generator");
 
     QGridLayout *gridLayout = new QGridLayout();
-    QPushButton *encoderBtn = new QPushButton("Codegenerator", this);
+    QPushButton *encoderBtn = new QPushButton("Neue Codes\ngenerieren", this);
     encoderBtn->setMinimumSize(QSize(Gui::buttonHeight,Gui::buttonWidth));
 
     QSpacerItem *spacer = new QSpacerItem (0, 0, QSizePolicy::Expanding, QSizePolicy::Expanding);
@@ -31,7 +31,7 @@ ToolsView::ToolsView(QWidget *parent)
     connect (encoderBtn, SIGNAL (clicked()), this, SLOT(onEncoderSettingsClicked()));
 }
 
-void ToolsView::onEncoderSettingsClicked()
+void ToolsViewCodeGenerator::onEncoderSettingsClicked()
 {
     if (!mCodeGeneratorView)
     {
@@ -42,7 +42,7 @@ void ToolsView::onEncoderSettingsClicked()
     mCodeGeneratorView->show();
 }
 
-void ToolsView::onBtnClicked_CodeGenerator (Gui::MenuButton btn)
+void ToolsViewCodeGenerator::onBtnClicked_CodeGenerator (Gui::MenuButton btn)
 {
     switch (btn)
     {
@@ -60,4 +60,10 @@ void ToolsView::onBtnClicked_CodeGenerator (Gui::MenuButton btn)
         default:
             break;
     }
+}
+
+ToolsViewCodeGenerator::~ToolsViewCodeGenerator()
+{
+    if (mCodeGeneratorView)
+        delete mCodeGeneratorView;
 }

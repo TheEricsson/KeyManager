@@ -16,6 +16,10 @@ class IOInterfaceSQLITE : public IOInterface
         ~IOInterfaceSQLITE();
         int countDbTables();
         bool initFirstStart();
+        const QString getDatabaseLocation();
+        bool openDatabase();
+        bool closeDatabase();
+        bool doDbBackup(const QString& fileName);
         bool addKey (const IOInterface::keyData *data);
         bool findKeyCode(unsigned int code);
         QList<QVariant> getKeyIdsByKeycode(unsigned int keyCode);
@@ -63,6 +67,7 @@ class IOInterfaceSQLITE : public IOInterface
         QByteArray imageToByteArray (QImage img);
 
         QSqlDatabase mDb;
+        QString mDbLocation;
 
         int mAdressId;
         int mKeychainId;

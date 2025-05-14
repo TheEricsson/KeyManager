@@ -29,9 +29,11 @@
 #include "addkeychainview.h"
 #include "editkeyview.h"
 #include "iointerfacesqlite.h"
-#include "toolsview.h"
+#include "toolsviewcodegenerator.h"
 #include "returndateview.h"
 #include "searchview.h"
+#include "settingsviewdb.h"
+#include "toolsviewdataadministration.h"
 
 #ifndef GMANDANTID
     #define GMANDANTID 1
@@ -51,6 +53,9 @@ MainWindow::MainWindow(QWidget *parent)
     mAddKeychainView = 0;
     mEditKeyView = 0;
     mViewStack = 0;
+    mSettingsViewDb = 0;
+    mToolsViewCodegenerator = 0;
+    mToolsViewDataAdministration = 0;
 }
 
 void MainWindow::setDataInterface (DataInterface *dataInterface)
@@ -82,8 +87,10 @@ void MainWindow::init()
     mAnnotationView = new AnnotationView (this);
     mAddKeychainView = new AddKeychainView (this);
     mEditKeyView = new EditKeyView (this);
-    mToolsView = new ToolsView (this);
+    mToolsViewCodegenerator = new ToolsViewCodeGenerator (this);
     mReturnDateView = new ReturnDateView (this);
+    mSettingsViewDb = new SettingsViewDb (this);
+    mToolsViewDataAdministration = new ToolsViewDataAdministration (this);
 
     registerView (mHomeView);
     registerView (mScanView);
@@ -95,8 +102,10 @@ void MainWindow::init()
     registerView (mAnnotationView);
     registerView (mAddKeychainView);
     registerView (mEditKeyView);
-    registerView (mToolsView);
+    registerView (mToolsViewCodegenerator);
     registerView (mReturnDateView);
+    registerView (mSettingsViewDb);
+    registerView (mToolsViewDataAdministration);
 
     mViewStack->setCurrentWidget(mHomeView);
 
@@ -115,8 +124,12 @@ void MainWindow::init()
     mViewStackManager->addNode(ViewStackManager::NewCodeScanned, mAddKeychainView);
     mViewStackManager->addNode(ViewStackManager::NewCodeScanned, mEditKeyView);
 
+    // views in the section 'tools'
+    mViewStackManager->addNode(ViewStackManager::Tools, mToolsViewCodegenerator);
+    mViewStackManager->addNode(ViewStackManager::Tools, mToolsViewDataAdministration);
+
     // views in the section 'settings'
-    mViewStackManager->addNode(ViewStackManager::Settings, mToolsView);
+    mViewStackManager->addNode(ViewStackManager::Settings, mSettingsViewDb);
 
     // views in the section 'search'
     mViewStackManager->addNode(ViewStackManager::Search, mSearchView);
@@ -200,13 +213,20 @@ void MainWindow::onMenuBtnClicked (Gui::MenuButton btnType)
                 mViewStackManager->setCurrentStackId(ViewStackManager::Settings);
                 nextWidget = mViewStackManager->begin();
                 break;
+            case (Gui::Tools):
+                mViewStackManager->setCurrentStackId(ViewStackManager::Tools);
+                nextWidget = mViewStackManager->begin();
+                break;
             case (Gui::Search):
                 mViewStackManager->setCurrentStackId(ViewStackManager::Search);
                 nextWidget = mViewStackManager->begin();
                 break;
             case (Gui::Exit):
                 if (reallyQuit())
+                {
+                    doBackup();
                     qApp->quit();
+                }
                 break;
             default:
                 qDebug () << "MainWindow::onMenuBtnClicked. Button not catched: " << btnType;
@@ -225,23 +245,20 @@ void MainWindow::onMenuBtnClicked (Gui::MenuButton btnType)
     //}
 }
 
-// void MainWindow::playSound ()
-// {
-//     QMediaPlayer player;
-//     QAudioOutput audioOut;
-//     player.setAudioOutput(&audioOut);
-//     QUrl filelocation ("qrc:/sounds/scanner_beep.mp3");
-//     player.setSource(filelocation);
-//     audioOut.setVolume(100);
-//     player.play();
-// }
-
 void MainWindow::setView (QWidget* view)
 {
     if (!view)
         return;
 
     mViewStack->setCurrentWidget(view);
+}
+
+void MainWindow::doBackup()
+{
+    QDateTime currentTime = QDateTime::currentDateTime();
+    QString fileName = currentTime.toString("yyyyMMdd_hhmmss");
+    fileName.append(".sqlite");
+    mDbInterface->doDbBackup(fileName);
 }
 
 bool MainWindow::reallyQuit()
@@ -257,14 +274,14 @@ bool MainWindow::reallyQuit()
 
     switch (selection)
     {
-    case QMessageBox::Abort:
-        ok = false;
-        break;
-    case QMessageBox::Ok:
-        ok = true;
-        break;
-    default:
-        break;
+        case QMessageBox::Abort:
+            ok = false;
+            break;
+        case QMessageBox::Ok:
+            ok = true;
+            break;
+        default:
+            break;
     }
     return ok;
 }

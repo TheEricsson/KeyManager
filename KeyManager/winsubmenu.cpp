@@ -11,7 +11,6 @@
 #include <QPainter>
 
 #include "globals.h"
-#include "dataobject.h"
 #include "menubutton.h"
 #include "datainterface.h"
 #include "iointerface.h"
@@ -19,7 +18,6 @@
 WinSubmenu::WinSubmenu(QWidget *parent)
     : QWidget{parent}
 {
-    mButtonsSet = false;
     mDataInterface = 0;
     mIOInterface = 0;
     mBottomLayout = 0;
@@ -175,20 +173,6 @@ void  WinSubmenu::onMenuBtnClicked (Gui::MenuButton btnType)
 
 void WinSubmenu::setMenuButtons (const QList<Gui::MenuButton> &buttons)
 {
-    // this method shall only be called once by now
-    if (mButtonsSet)
-        return;
-
-    // // delete menu buttons, if already set before
-    // for (int i = 0; i < mLayout->count(); i++)
-    // {
-    //     MenuButton *menuBtn = dynamic_cast<MenuButton*>(mLayout->itemAt(i));
-    //     if (menuBtn != nullptr)
-    //     {
-    //         mLayout->removeWidget(menuBtn);
-    //     }
-    // }
-
     int itemCnt = buttons.size();
 
     if (0 == itemCnt)
@@ -262,7 +246,7 @@ void WinSubmenu::setMenuButtons (const QList<Gui::MenuButton> &buttons)
                 menuBtn->setButtonText("Hauptmenü");
                 break;
             case (Gui::AddCustomer):
-                //menuBtn->setIcon(QIcon(":/images/TODO"));
+                menuBtn->setIcon(QIcon(":/images/menu_add_recipient.jpeg"));
                 menuBtn->setButtonText("Kunde anlegen");
                 break;
             case (Gui::Edit):
@@ -281,6 +265,27 @@ void WinSubmenu::setMenuButtons (const QList<Gui::MenuButton> &buttons)
                 //menuBtn->setIcon(QIcon(":/images/TODO"));
                 menuBtn->setButtonText("Neues Bild\naufnehmen");
                 break;
+            case (Gui::Tools):
+                //menuBtn->setIcon(QIcon(":/images/TODO"));
+                menuBtn->setButtonText("Tools");
+                break;
+            case (Gui::AddKey):
+                //menuBtn->setIcon(QIcon(":/images/TODO"));
+                menuBtn->setButtonText("Schlüssel\nhinzufügen");
+                break;
+            case (Gui::TakePicture):
+                //menuBtn->setIcon(QIcon(":/images/TODO"));
+                menuBtn->setButtonText("Foto\naufnehmen");
+                break;
+            case (Gui::Save):
+                //menuBtn->setIcon(QIcon(":/images/TODO"));
+                menuBtn->setButtonText("Bild\nspeichern");
+                break;
+            case (Gui::NewCodeScanned):
+                //menuBtn->setIcon(QIcon(":/images/TODO"));
+                menuBtn->setButtonText("Schlüssel\nanlegen");
+                break;
+
             default:
                 break;
         }
@@ -289,7 +294,6 @@ void WinSubmenu::setMenuButtons (const QList<Gui::MenuButton> &buttons)
     }
 
     setBottomLayout(btnLayout);
-    mButtonsSet = true;
 }
 
 void WinSubmenu::setButtonText (int column, const QString &btnText)

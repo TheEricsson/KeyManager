@@ -10,8 +10,6 @@
 #include <QPermission>
 #include <QApplication>
 #include <QTimer>
-#include <QMediaPlayer>
-#include <QAudioOutput>
 #include <QScreenCapture>
 #include <QLineEdit>
 #include <QKeyEvent>
@@ -141,24 +139,17 @@ bool ScannerView::codeIsValid(const unsigned int code)
 
 void ScannerView::playSound()
 {
-    //test this->
-    QApplication::beep();
-    return;
-
-    //not working :/
     const auto devices = QMediaDevices::audioOutputs();
     for (const QAudioDevice &device : devices)
         qDebug() << "Device: " << device.description();
 
-    QMediaPlayer player;
-    QAudioOutput audioOut;
-    audioOut.setDevice(QMediaDevices::defaultAudioOutput());
-    audioOut.setMuted(false);
-    audioOut.setVolume(100);
+    mAudioOut.setDevice(QMediaDevices::defaultAudioOutput());
+    mAudioOut.setMuted(false);
+    mAudioOut.setVolume(100);
     QUrl filelocation ("qrc:/sounds/scanner_beep.mp3");
-    player.setSource(filelocation);
-    player.setAudioOutput(&audioOut);
-    player.play();
+    mPlayer.setSource(filelocation);
+    mPlayer.setAudioOutput(&mAudioOut);
+    mPlayer.play();
 }
 
 void ScannerView::keyReleaseEvent(QKeyEvent *event)

@@ -25,9 +25,11 @@ class AddKeychainView;
 class EditKeyView;
 class IOInterfaceSQLITE;
 class IOInterface;
-class ToolsView;
+class ToolsViewCodeGenerator;
 class ReturnDateView;
 class ViewStack;
+class SettingsViewDb;
+class ToolsViewDataAdministration;
 
 class MainWindow : public QMainWindow
 {
@@ -47,6 +49,7 @@ private slots:
 private:
     void registerView (WinSubmenu *view);
     void setView (QWidget* view);
+    void doBackup();
 
     QPushButton* btnScan;
     QPushButton* btnSearch;
@@ -69,8 +72,12 @@ private:
     EditKeyView *mEditKeyView;
     ReturnDateView *mReturnDateView;
 
-    // views in the section settings+tools
-    ToolsView *mToolsView;
+    // views in the section tools
+    ToolsViewCodeGenerator *mToolsViewCodegenerator;
+    ToolsViewDataAdministration *mToolsViewDataAdministration;
+
+    // views in the section settings
+    SettingsViewDb *mSettingsViewDb;
 
     DataInterface *mDataInterface;
     IOInterface *mDbInterface;

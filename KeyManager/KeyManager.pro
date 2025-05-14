@@ -42,10 +42,12 @@ SOURCES += \
     returndateview.cpp \
     scannerview.cpp \
     searchview.cpp \
+    settingsviewdb.cpp \
     signaturepad.cpp \
     tableview.cpp \
     tests/qrencodertest.cpp \
-    toolsview.cpp \
+    toolsviewcodegenerator.cpp \
+    toolsviewdataadministration.cpp \
     viewdataannotation.cpp \
     viewdatahandover.cpp \
     viewdatakeychain.cpp \
@@ -90,10 +92,12 @@ HEADERS += \
     returndateview.h \
     scannerview.h \
     searchview.h \
+    settingsviewdb.h \
     signaturepad.h \
     tableview.h \
     tests/qrencodertest.h \
-    toolsview.h \
+    toolsviewcodegenerator.h \
+    toolsviewdataadministration.h \
     viewdataannotation.h \
     viewdatahandover.h \
     viewdatakeychain.h \

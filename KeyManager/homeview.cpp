@@ -34,6 +34,7 @@ HomeView::HomeView(QWidget *parent)
     QList <Gui::MenuButton> menuButtons;
     menuButtons.append(Gui::MenuButton::Scanner);
     menuButtons.append(Gui::MenuButton::Search);
+    menuButtons.append(Gui::MenuButton::Tools);
     menuButtons.append(Gui::MenuButton::Settings);
     menuButtons.append(Gui::MenuButton::Exit);
 

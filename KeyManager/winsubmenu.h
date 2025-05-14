@@ -61,7 +61,6 @@ private:
     virtual void keyReleaseEvent (QKeyEvent *event);
     QList <QPushButton*> mMenuButtons;
     QLabel *mHeaderLabel;
-    bool mButtonsSet;
 
     QBoxLayout *mBaseLayout;
     QBoxLayout *mTopLayout;

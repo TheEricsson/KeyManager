@@ -44,7 +44,8 @@ namespace Gui
         TakePicture,
         Save,
         DeleteImage,
-        NewImageFromCam
+        NewImageFromCam,
+        Tools
     };
 }
 

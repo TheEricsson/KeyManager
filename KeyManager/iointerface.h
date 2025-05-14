@@ -45,6 +45,10 @@ public:
     //general
     virtual int countDbTables()                                                                 {return _UNDEFINED;};
     virtual bool initFirstStart()                                                               {return false;};
+    virtual const QString getDatabaseLocation()                                                 {return "";};
+    virtual bool openDatabase()                                                                 {return false;};
+    virtual bool closeDatabase()                                                                {return false;};
+    virtual bool doDbBackup(const QString& fileName)                                            {Q_UNUSED(fileName);};
 
     virtual int getNumberOfEntries (const QString &tableName)                                   {Q_UNUSED(tableName); return _UNDEFINED;};
     virtual QVariant getValue (const QString &tableName, const QString& columnName, int index)  {Q_UNUSED(tableName); Q_UNUSED(columnName); Q_UNUSED(index); return _UNDEFINED;};

@@ -25,7 +25,8 @@ class ViewStackManager
             Search = 2,
             Settings = 3,
             Scan = 4,
-            HandoverIn = 5
+            HandoverIn = 5,
+            Tools = 6
         };
 
     private:

@@ -21,8 +21,6 @@ CodeGeneratorView::CodeGeneratorView(QWidget *parent) : WinSubmenu {parent}
     mBorderCheckState = Qt::Checked;
     mFoldableCheckState = Qt::Checked;
 
-    //setHeader("Codegenerator");
-
     QLabel *numberOfCodes = new QLabel ("Anzahl gewünschter Codes:", this);
     QLineEdit *numberOfCodesEdit = new QLineEdit(this);
     numberOfCodesEdit->setValidator(new QRegularExpressionValidator(QRegularExpression("\\d\\d"), numberOfCodesEdit));

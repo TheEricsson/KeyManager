@@ -38,20 +38,21 @@ IOInterfaceSQLITE::IOInterfaceSQLITE()
     mDb = QSqlDatabase::addDatabase("QSQLITE");
 
 #ifdef Q_OS_ANDROID
-    QString dbLocation = QStandardPaths::writableLocation(QStandardPaths::GenericDataLocation);
-    dbLocation.append("/db.sqlite");
+    mDbLocation = QStandardPaths::writableLocation(QStandardPaths::GenericDataLocation);
+    mDbLocation.append("/db.sqlite");
 
-    qDebug () << "dbLocation: " << dbLocation;
+    qDebug () << "mDbLocation: " << mDbLocation;
 
     if (!checkPermission())
         qDebug () << "IOInterfaceSQLITE::checkPermissions failed!";
 
 #endif
 #ifdef Q_OS_WIN64
-    QString dbLocation = "db.sqlite";
+    //mDbLocation = "db.sqlite";
+    mDbLocation = "C:/QtProjekte/KeyManager/build/Desktop_Qt_6_8_2_MinGW_64_bit-Debug/db.sqlite";
 #endif
 
-    mDb.setDatabaseName(dbLocation);
+    mDb.setDatabaseName(mDbLocation);
 
     bool ok = mDb.open ();
 
@@ -129,6 +130,46 @@ bool IOInterfaceSQLITE::initFirstStart ()
         return false;
 
     return true;
+}
+
+const QString IOInterfaceSQLITE::getDatabaseLocation()
+{
+    qDebug () << "IOInterfaceSQLITE::getDatabaseLocation()" << mDbLocation;
+    return mDbLocation;
+}
+
+bool IOInterfaceSQLITE::openDatabase()
+{
+    return mDb.open();
+}
+
+bool IOInterfaceSQLITE::closeDatabase()
+{
+    bool retVal = false;
+
+    if (mDb.isOpen())
+    {
+        mDb.close();
+        retVal = true;
+    }
+
+    return retVal;
+}
+
+bool IOInterfaceSQLITE::doDbBackup(const QString& fileName)
+{
+    QString dbLocation = getDatabaseLocation();
+    QString backupLocation = dbLocation + "_" + fileName;
+
+    if (QFile::exists(backupLocation))
+    {
+        QFile::remove(backupLocation);
+    }
+    qDebug () << "IOInterfaceSQLITE::doDbBackup";
+    qDebug () << "dbLocation: " << dbLocation;
+    qDebug () << "backupLocation: " << backupLocation;
+
+    return QFile::copy(dbLocation, backupLocation);
 }
 
 bool IOInterfaceSQLITE::initTables()

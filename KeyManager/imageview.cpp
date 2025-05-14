@@ -23,9 +23,9 @@ ImageView::ImageView(QWidget *parent) : WinSubmenu {parent}
     setCentralLayout(centralLayout);
 
     QList <Gui::MenuButton> menuButtons;
+    menuButtons.append(Gui::Back);
     menuButtons.append(Gui::TakePicture);
     menuButtons.append(Gui::DeleteImage);
-    menuButtons.append(Gui::Exit);
 
     setMenuButtons(menuButtons);
 }

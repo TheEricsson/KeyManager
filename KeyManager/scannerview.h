@@ -2,6 +2,8 @@
 #define SCANNERVIEW_H
 
 #include <QWidget>
+#include <QMediaPlayer>
+#include <QAudioOutput>
 #include "winsubmenu.h"
 #include "QZXing.h"
 
@@ -57,6 +59,8 @@ class ScannerView : public WinSubmenu
         QLabel *mKeyLabel;
 
         ViewDataScanner *mScannerData;
+        QMediaPlayer mPlayer;
+        QAudioOutput mAudioOut;
 
         QZXing decoder;
 };

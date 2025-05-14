@@ -1,16 +1,17 @@
-#ifndef TOOLSVIEW_H
-#define TOOLSVIEW_H
+#ifndef TOOLSVIEWCODEGENERATOR_H
+#define TOOLSVIEWCODEGENERATOR_H
 
 #include <QWidget>
 #include "winsubmenu.h"
 
 class CodeGeneratorView;
 
-class ToolsView : public WinSubmenu
+class ToolsViewCodeGenerator : public WinSubmenu
 {
     Q_OBJECT
     public:
-        explicit ToolsView(QWidget *parent = nullptr);
+        explicit ToolsViewCodeGenerator(QWidget *parent = nullptr);
+        ~ToolsViewCodeGenerator();
 
     signals:
     private slots:
@@ -20,4 +21,4 @@ class ToolsView : public WinSubmenu
         CodeGeneratorView *mCodeGeneratorView;
 };
 
-#endif // TOOLSVIEW_H
+#endif // TOOLSVIEWCODEGENERATOR_H
