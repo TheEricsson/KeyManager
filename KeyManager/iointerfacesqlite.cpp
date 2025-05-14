@@ -521,6 +521,36 @@ QString IOInterfaceSQLITE::getKeyDescription(unsigned int keyId)
         return "";
 }
 
+const QString IOInterfaceSQLITE::getKeyCategoryString(unsigned int keyCategoryId)
+{
+    QSqlQuery query;
+    query.prepare("SELECT category FROM keyCategories WHERE id = ?");
+    query.bindValue(0, keyCategoryId);
+    query.exec();
+
+    if (query.next())
+    {
+        return query.value(0).toString();
+    }
+    else
+        return "";
+}
+
+const QString IOInterfaceSQLITE::getKeyStatusString(unsigned int keyStatusId)
+{
+    QSqlQuery query;
+    query.prepare("SELECT status FROM keyStates WHERE id = ?");
+    query.bindValue(0, keyStatusId);
+    query.exec();
+
+    if (query.next())
+    {
+        return query.value(0).toString();
+    }
+    else
+        return "";
+}
+
 //keychain data
 KeychainStatus::Value IOInterfaceSQLITE::getKeychainStatusId (const int& keyCode)
 {

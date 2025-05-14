@@ -80,6 +80,8 @@ public:
     virtual unsigned int getKeyCategoryId(unsigned int keyId)                                   {Q_UNUSED(keyId); return 0;};
     virtual unsigned int getKeyStatusId(unsigned int keyId)                                     {Q_UNUSED(keyId); return 0;};
     virtual QString getKeyDescription(unsigned int keyId)                                       {Q_UNUSED(keyId); return "";};
+    virtual const QString getKeyCategoryString(unsigned int keyCategoryId)                      {Q_UNUSED(keyCategoryId); return "";};
+    virtual const QString getKeyStatusString(unsigned int keyStatusId)                          {Q_UNUSED(keyStatusId); return "";};
 
     //addresses
     virtual const QString getAddressStreet (const int& addressId)                               {Q_UNUSED(addressId); return "IOInterface::getAddressStreet - not implemented.";};

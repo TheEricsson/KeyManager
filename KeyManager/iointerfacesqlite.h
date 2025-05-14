@@ -20,12 +20,16 @@ class IOInterfaceSQLITE : public IOInterface
         bool openDatabase();
         bool closeDatabase();
         bool doDbBackup(const QString& fileName);
+
         bool addKey (const IOInterface::keyData *data);
         bool findKeyCode(unsigned int code);
         QList<QVariant> getKeyIdsByKeycode(unsigned int keyCode);
         unsigned int getKeyCategoryId(unsigned int keyId);
         unsigned int getKeyStatusId(unsigned int keyId);
         QString getKeyDescription(unsigned int keyId);
+        const QString getKeyCategoryString(unsigned int keyCategoryId);
+        const QString getKeyStatusString(unsigned int keyStatusId);
+
         KeychainStatus::Value getKeychainStatusId (const int& keyCode);
         const QString getKeychainStatusText (int statusId);
         int getKeychainInternalLocation (const int& keyCode);
