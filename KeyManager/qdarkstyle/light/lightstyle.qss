@@ -1778,7 +1778,7 @@ https://doc.qt.io/qt-5/stylesheet-examples.html#customizing-qlistview
 https://doc.qt.io/qt-5/stylesheet-examples.html#customizing-qtableview
 
 --------------------------------------------------------------------------- */
-QTreeView:branch:selected, QTreeView:branch:hover {
+/*QTreeView:branch:selected, QTreeView:branch:hover {
   background: url(":/qss_icons/light/rc/transparent.png");
 }
 
@@ -1810,7 +1810,7 @@ QTreeView:branch:has-children:!has-siblings:closed:hover, QTreeView:branch:close
 
 QTreeView:branch:open:has-children:!has-siblings:hover, QTreeView:branch:open:has-children:has-siblings:hover {
   image: url(":/qss_icons/light/rc/branch_open_focus.png");
-}
+}*/
 
 QTreeView::indicator:checked,
 QListView::indicator:checked,

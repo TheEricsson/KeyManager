@@ -23,7 +23,7 @@ CodeGeneratorView::CodeGeneratorView(QWidget *parent) : WinSubmenu {parent}
 
     QLabel *numberOfCodes = new QLabel ("Anzahl gewünschter Codes:", this);
     QLineEdit *numberOfCodesEdit = new QLineEdit(this);
-    numberOfCodesEdit->setValidator(new QRegularExpressionValidator(QRegularExpression("\\d\\d"), numberOfCodesEdit));
+    numberOfCodesEdit->setValidator(new QRegularExpressionValidator(QRegularExpression("\\d\\d\\d"), numberOfCodesEdit));
     numberOfCodesEdit->setText(mNumberOfCodes);
 
     QLabel *printHeight = new QLabel ("Sichtfenster Höhe in mm:", this);
@@ -146,7 +146,7 @@ bool CodeGeneratorView::checkValues()
 void CodeGeneratorView::generatePDF ()
 {
     QImage codeImg;
-    unsigned int lockerId = 1;
+    unsigned int lockerId = 1; //hardcoded right now - todo: should be a user defined value, stored in db
     unsigned int freeCode = ioInterface()->getFreeKeycode(lockerId);
     PrinterInterface *pdfPrinter = new PrinterInterfacePdf ();
 

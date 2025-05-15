@@ -20,6 +20,7 @@
         <file>radiobutton_checked.png</file>
         <file>radiobutton_unchecked.png</file>
         <file>key.png</file>
+        <file>keyRing.png</file>
     </qresource>
     <qresource prefix="/sounds">
         <file>scanner_beep.mp3</file>

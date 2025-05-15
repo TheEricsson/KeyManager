@@ -807,12 +807,19 @@ QVariant IOInterfaceSQLITE::getValue (const QString &tableName, const QString& c
     return _UNDEFINED;
 }
 
-QList<QVariant> IOInterfaceSQLITE::getTableColumn (const QString &tableName, const QString& columnName)
+QList<QVariant> IOInterfaceSQLITE::getTableColumn (const QString &tableName, const QString& columnName, const QString& filter)
 {
     QString queryString = "SELECT ";
     queryString.append(columnName);
     queryString.append(" FROM ");
     queryString.append(tableName);
+
+    // a filter is set
+    if ("" != filter)
+    {
+        queryString.append(" WHERE ");
+        queryString.append(filter);
+    }
 
     QSqlQuery query;
     query.setForwardOnly(true);
@@ -824,6 +831,28 @@ QList<QVariant> IOInterfaceSQLITE::getTableColumn (const QString &tableName, con
     while (query.next())
     {
         tableItems << query.value(0);
+    }
+
+    return tableItems;
+}
+
+QStringList IOInterfaceSQLITE::getTableColumnStringList (const QString &tableName, const QString& columnName)
+{
+    QString queryString = "SELECT ";
+    queryString.append(columnName);
+    queryString.append(" FROM ");
+    queryString.append(tableName);
+
+    QSqlQuery query;
+    query.setForwardOnly(true);
+    query.prepare(queryString);
+    query.exec();
+
+    QStringList tableItems;
+
+    while (query.next())
+    {
+        tableItems << query.value(0).toString();
     }
 
     return tableItems;

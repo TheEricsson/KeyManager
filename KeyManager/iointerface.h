@@ -52,7 +52,10 @@ public:
 
     virtual int getNumberOfEntries (const QString &tableName)                                   {Q_UNUSED(tableName); return _UNDEFINED;};
     virtual QVariant getValue (const QString &tableName, const QString& columnName, int index)  {Q_UNUSED(tableName); Q_UNUSED(columnName); Q_UNUSED(index); return _UNDEFINED;};
-    virtual QList<QVariant> getTableColumn (const QString &tableName, const QString& columnName){Q_UNUSED(tableName); Q_UNUSED(columnName);};
+    virtual QList<QVariant> getTableColumn (const QString &tableName, \
+                                            const QString& columnName, \
+                                            const QString& filter = "")                         {Q_UNUSED(tableName); Q_UNUSED(columnName);};
+    virtual QStringList getTableColumnStringList (const QString &tableName, const QString& columnName)    {Q_UNUSED(tableName); Q_UNUSED(columnName);};
     virtual bool dbCleanupTable (const QString& tablename, \
                                 const QString& filter, \
                                 const int numberOfEntriesToKeep)                                {Q_UNUSED(tablename); Q_UNUSED(filter); Q_UNUSED(numberOfEntriesToKeep); return false;};

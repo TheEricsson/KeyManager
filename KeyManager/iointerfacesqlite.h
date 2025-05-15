@@ -41,7 +41,8 @@ class IOInterfaceSQLITE : public IOInterface
         bool setKeychainData (ViewDataKeychain* data, const int& keyCode);
         int getNumberOfEntries (const QString &tableName);
         QVariant getValue (const QString &tableName, const QString& columnName, int index);
-        QList<QVariant> getTableColumn (const QString &tableName, const QString& columnName);
+        QList<QVariant> getTableColumn (const QString &tableName, const QString& columnName, const QString& filter = "");
+        QStringList getTableColumnStringList (const QString &tableName, const QString& columnName);
         bool initKeyOverviewModel (QSqlRelationalTableModel *model, const QString &filter);
         bool initKeychainModel (QSqlRelationalTableModel *model, const QString &filter);
         bool initKeychainHistoryModel (QSqlRelationalTableModel *model, const QString &filter = "");
