@@ -554,7 +554,7 @@ https://doc.qt.io/qt-5/stylesheet-examples.html#customizing-qscrollbar
 
 --------------------------------------------------------------------------- */
 QScrollBar:horizontal {
-  height: 16px;
+  height: 30px;
   margin: 2px 16px 2px 16px;
   border: 1px solid #C0C4C8;
   border-radius: 4px;
@@ -563,7 +563,7 @@ QScrollBar:horizontal {
 
 QScrollBar:vertical {
   background-color: #FAFAFA;
-  width: 16px;
+  width: 30px;
   margin: 16px 2px 16px 2px;
   border: 1px solid #C0C4C8;
   border-radius: 4px;

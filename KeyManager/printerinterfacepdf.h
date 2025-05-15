@@ -9,7 +9,7 @@ class PrinterInterfacePdf : public PrinterInterface
 {
     public:
         PrinterInterfacePdf();
-        void saveAsFile();
+        bool saveAsFile();
         const QString getFilePath();
         void print();
         //void add (const QImage& img, QRect size, QRect margin, bool foldable, PrinterInterface::BorderStyle borderstyle);

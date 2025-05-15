@@ -49,6 +49,9 @@ private slots:
 private:
     void registerView (WinSubmenu *view);
     void setView (QWidget* view);
+/*#if defined(Q_OS_ANDROID)
+    void accessAllFiles();
+#endif*/
     void doBackup();
 
     QPushButton* btnScan;

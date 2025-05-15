@@ -30,15 +30,24 @@ PrinterInterfacePdf::PrinterInterfacePdf()
     mFilePath = "";
 }
 
-void PrinterInterfacePdf::saveAsFile()
-{
+bool PrinterInterfacePdf::saveAsFile()
+{  
+    bool retVal = false;
+
     // open file dialog and let user set location + file name
     mFilePath = QFileDialog::getSaveFileName((QWidget* )0, "Export PDF", QString(), "*.pdf");
-    if (QFileInfo(mFilePath).suffix().isEmpty())
+
+    if (mFilePath != "")
     {
-        mFilePath.append(".pdf");
+        if (QFileInfo(mFilePath).suffix().isEmpty())
+        {
+            mFilePath.append(".pdf");
+        }
+        mPrinter.setOutputFileName(mFilePath);
+        retVal = true;
     }
-    mPrinter.setOutputFileName(mFilePath);
+    // dialog not accepted
+    return retVal;
 }
 
 const QString PrinterInterfacePdf::getFilePath()

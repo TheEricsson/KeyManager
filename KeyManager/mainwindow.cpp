@@ -14,6 +14,12 @@
 #include <QStackedWidget>
 #include <QDockWidget>
 #include <QStatusBar>
+
+#if defined(Q_OS_ANDROID)
+#include <QtCore/private/qandroidextras_p.h>
+#include <QOperatingSystemVersion>
+#endif
+
 #include "homeview.h"
 #include "tableview.h"
 #include "keychainstatusview.h"
@@ -149,6 +155,10 @@ void MainWindow::init()
         setStyleSheet(ts.readAll());
     }
 
+/*#if defined(Q_OS_ANDROID)
+    accessAllFiles();
+#endif*/
+
     // init db
     if (0 == mDbInterface->countDbTables())
     {
@@ -252,6 +262,31 @@ void MainWindow::setView (QWidget* view)
 
     mViewStack->setCurrentWidget(view);
 }
+
+/*#if defined(Q_OS_ANDROID)
+void MainWindow::accessAllFiles()
+{
+    if(QOperatingSystemVersion::current() < QOperatingSystemVersion(QOperatingSystemVersion::Android, 11)) {
+        qDebug() << "OS is Android 10 or earlier - ALL FILES permission isn't possible!";
+        return;
+    }
+
+#define PACKAGE_NAME "package:de.hva.schluesselverwaltung"
+
+    jboolean value = QJniObject::callStaticMethod<jboolean>("android/os/Environment", "isExternalStorageManager");
+    if(value == false) {
+        qDebug() << "requesting ACTION_MANAGE_APP_ALL_FILES_ACCESS_PERMISSION";
+        QJniObject ACTION_MANAGE_APP_ALL_FILES_ACCESS_PERMISSION = QJniObject::getStaticObjectField( "android/provider/Settings", "ACTION_MANAGE_APP_ALL_FILES_ACCESS_PERMISSION","Ljava/lang/String;" );
+        QJniObject intent("android/content/Intent", "(Ljava/lang/String;)V", ACTION_MANAGE_APP_ALL_FILES_ACCESS_PERMISSION.object());
+        QJniObject jniPath = QJniObject::fromString(PACKAGE_NAME);
+        QJniObject jniUri = QJniObject::callStaticObjectMethod("android/net/Uri", "parse", "(Ljava/lang/String;)Landroid/net/Uri;", jniPath.object<jstring>());
+        QJniObject jniResult = intent.callObjectMethod("setData", "(Landroid/net/Uri;)Landroid/content/Intent;", jniUri.object<jobject>() );
+        QtAndroidPrivate::startActivity(intent, 0);
+    } else {
+        qDebug() << "SUCCESS ACTION_MANAGE_APP_ALL_FILES_ACCESS_PERMISSION";
+    }
+}
+#endif*/
 
 void MainWindow::doBackup()
 {

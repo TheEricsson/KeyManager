@@ -150,39 +150,41 @@ void CodeGeneratorView::generatePDF ()
     unsigned int freeCode = ioInterface()->getFreeKeycode(lockerId);
     PrinterInterface *pdfPrinter = new PrinterInterfacePdf ();
 
-    pdfPrinter->saveAsFile();
-    pdfPrinter->begin();
-
-    QString lockerCode = QString::number(lockerId);
-
-    //add leading zeros to locker code
-    while (lockerCode.length() < 4)
-        lockerCode.prepend("0");
-
-    QString qrCode ("");
-
-    Qt::PenStyle borderPen = Qt::NoPen;
-    if (mBorderCheckState)
-        borderPen = Qt::DotLine;
-
-    for (int i = 0; i < mNumberOfCodes.toInt(); i++)
+    if (pdfPrinter->saveAsFile())
     {
-        qrCode = QString::number(freeCode);
+        pdfPrinter->begin();
 
-        // insert leading 0 so we have 4 digits for the code
-        while (qrCode.length() < 4)
-            qrCode.prepend("0");
+        QString lockerCode = QString::number(lockerId);
 
-        qrCode.prepend("-");
-        qrCode.prepend(lockerCode);
+        //add leading zeros to locker code
+        while (lockerCode.length() < 4)
+            lockerCode.prepend("0");
 
-        codeImg = decoder.encodeData (qrCode, QZXing::EncoderFormat_QR_CODE, QSize (300,300), QZXing::EncodeErrorCorrectionLevel_M, true, false);
+        QString qrCode ("");
 
-        pdfPrinter->drawQRCode(codeImg, mPrintHeight.toInt(), mPrintWidth.toInt(), mFoldableCheckState, borderPen);
+        Qt::PenStyle borderPen = Qt::NoPen;
+        if (mBorderCheckState)
+            borderPen = Qt::DotLine;
 
-        freeCode++;
+        for (int i = 0; i < mNumberOfCodes.toInt(); i++)
+        {
+            qrCode = QString::number(freeCode);
+
+            // insert leading 0 so we have 4 digits for the code
+            while (qrCode.length() < 4)
+                qrCode.prepend("0");
+
+            qrCode.prepend("-");
+            qrCode.prepend(lockerCode);
+
+            codeImg = decoder.encodeData (qrCode, QZXing::EncoderFormat_QR_CODE, QSize (300,300), QZXing::EncodeErrorCorrectionLevel_M, true, false);
+
+            pdfPrinter->drawQRCode(codeImg, mPrintHeight.toInt(), mPrintWidth.toInt(), mFoldableCheckState, borderPen);
+
+            freeCode++;
+        }
+        pdfPrinter->finish();
     }
-    pdfPrinter->finish();
 
     delete pdfPrinter;
 }

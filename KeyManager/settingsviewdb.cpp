@@ -15,8 +15,8 @@ SettingsViewDb::SettingsViewDb(QWidget *parent) : WinSubmenu {parent}
     // not supported right now. Android file access permission failure...:
     // "...requires that you obtain access using ACTION_OPEN_DOCUMENT or related APIs"
 
-    QPushButton *saveDbBtn = new QPushButton("Datenbank-Backup erstellen (n/a)", this);
-    saveDbBtn->setDisabled(true);
+    QPushButton *saveDbBtn = new QPushButton("Datenbank-Backup erstellen", this);
+    //saveDbBtn->setDisabled(true);
     saveDbBtn->setMinimumSize(QSize(Gui::buttonHeight,Gui::buttonWidth));
 
     QPushButton *readDbBtn = new QPushButton("Datenbank-Backup\neinlesen", this);
