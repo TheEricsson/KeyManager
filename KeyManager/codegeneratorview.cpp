@@ -9,6 +9,7 @@
 #include <QPainter>
 #include <QFileDialog>
 #include <QCheckBox>
+#include <QDesktopServices>
 #include "iointerface.h"
 #include "printerinterface.h"
 #include "printerinterfacepdf.h"
@@ -36,24 +37,27 @@ CodeGeneratorView::CodeGeneratorView(QWidget *parent) : WinSubmenu {parent}
 
     QCheckBox *borders = new QCheckBox("Rahmen drucken?", this);
     borders->setCheckState(Qt::Checked);
+
     QCheckBox *foldable = new QCheckBox("Druck mit Rückseitenbeschriftung?", this);
     foldable->setCheckState(Qt::Checked);
+
+    QCheckBox *openPdfAfterCreation = new QCheckBox("PDF nach Erstellung anzeigen?", this);
+    openPdfAfterCreation->setCheckState(Qt::Checked);
+    mShowPdfFile = true;
+
+    QSpacerItem *spacer = new QSpacerItem (0, 0, QSizePolicy::Expanding, QSizePolicy::Expanding);
 
     QGridLayout *viewLayout = new QGridLayout();
     viewLayout->addWidget(numberOfCodes, 0, 0);
     viewLayout->addWidget(numberOfCodesEdit, 0, 1);
-
     viewLayout->addWidget(printHeight, 1, 0);
     viewLayout->addWidget(printHeightEdit, 1, 1);
-
     viewLayout->addWidget(printWidth, 2, 0);
     viewLayout->addWidget(printWidthEdit, 2, 1);
-
     viewLayout->addWidget(borders, 3, 0);
     viewLayout->addWidget(foldable, 4, 0);
-
-    QSpacerItem *spacer = new QSpacerItem (0, 0, QSizePolicy::Expanding, QSizePolicy::Expanding);
-    viewLayout->addItem(spacer, 5, 0);
+    viewLayout->addWidget(openPdfAfterCreation, 5, 0);
+    viewLayout->addItem(spacer, 6, 0);
 
     setCentralLayout(viewLayout);
 
@@ -67,6 +71,7 @@ CodeGeneratorView::CodeGeneratorView(QWidget *parent) : WinSubmenu {parent}
     connect (printWidthEdit, SIGNAL(textChanged(QString)), this, SLOT(onprintWidthChanged(QString)));
     connect (borders, SIGNAL(checkStateChanged(Qt::CheckState)), this, SLOT(onBorderCheckStateChanged(Qt::CheckState)));
     connect (foldable, SIGNAL(checkStateChanged(Qt::CheckState)), this, SLOT(onFoldableCheckStateChanged(Qt::CheckState)));
+    connect (openPdfAfterCreation, SIGNAL(checkStateChanged(Qt::CheckState)), this, SLOT(onOpenPdfCheckStateChanged(Qt::CheckState)));
 }
 
 void CodeGeneratorView::onMenuBtnClicked (Gui::MenuButton btnType)
@@ -91,32 +96,32 @@ void CodeGeneratorView::onMenuBtnClicked (Gui::MenuButton btnType)
 
 void CodeGeneratorView::onNumberOfCodesChanged(QString text)
 {
-    update ();
     mNumberOfCodes = text;
 }
 
 void CodeGeneratorView::onprintHeightChanged(QString value)
 {
-    update ();
     mPrintHeight = value;
 }
 
 void CodeGeneratorView::onprintWidthChanged(QString value)
 {
-    update ();
     mPrintWidth = value;
 }
 
 void CodeGeneratorView::onBorderCheckStateChanged(Qt::CheckState value)
 {
-    update ();
     mBorderCheckState = value;
 }
 
 void CodeGeneratorView::onFoldableCheckStateChanged(Qt::CheckState value)
 {
-    update ();
     mFoldableCheckState = value;
+}
+
+void CodeGeneratorView::onOpenPdfCheckStateChanged(Qt::CheckState value)
+{
+    mShowPdfFile = value;
 }
 
 bool CodeGeneratorView::checkValues()
@@ -184,6 +189,13 @@ void CodeGeneratorView::generatePDF ()
             freeCode++;
         }
         pdfPrinter->finish();
+
+        // open pdf after creation?
+        if (mShowPdfFile)
+        {
+            //open file with the default app
+            QDesktopServices::openUrl(QUrl(pdfPrinter->getFilePath()));
+        }
     }
 
     delete pdfPrinter;

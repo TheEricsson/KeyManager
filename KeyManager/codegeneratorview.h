@@ -17,6 +17,7 @@ class CodeGeneratorView : public WinSubmenu
         void onprintWidthChanged(QString value);
         void onBorderCheckStateChanged(Qt::CheckState value);
         void onFoldableCheckStateChanged(Qt::CheckState value);
+        void onOpenPdfCheckStateChanged(Qt::CheckState value);
 
     private:
         bool checkValues();
@@ -28,6 +29,8 @@ class CodeGeneratorView : public WinSubmenu
         QString mPrintWidth;
         Qt::CheckState mBorderCheckState;
         Qt::CheckState mFoldableCheckState;
+
+        bool mShowPdfFile;
 };
 
 #endif // CODEGENERATORVIEW_H
