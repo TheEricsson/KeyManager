@@ -87,7 +87,7 @@ void PrinterInterfacePdf::drawQRCode (QImage &img, int codeDim, int labelWidth, 
     int nextPosY = mPosY + printSize + 5;
 
     // ... and check, if page break is needed
-    if (nextPosY >= mPixelPerPageY)
+    if (nextPosY >= (mPixelPerPageY - mPageMargin))
     {
         mCurrentPage += 1;
         mPosY = 0;

@@ -46,7 +46,6 @@ SOURCES += \
     signaturepad.cpp \
     tableview.cpp \
     tests/qrencodertest.cpp \
-    toolsviewcodegenerator.cpp \
     toolsviewdataadministration.cpp \
     viewdataannotation.cpp \
     viewdatahandover.cpp \
@@ -96,7 +95,6 @@ HEADERS += \
     signaturepad.h \
     tableview.h \
     tests/qrencodertest.h \
-    toolsviewcodegenerator.h \
     toolsviewdataadministration.h \
     viewdataannotation.h \
     viewdatahandover.h \

@@ -21,25 +21,22 @@
 #endif
 
 #include "homeview.h"
-#include "tableview.h"
 #include "keychainstatusview.h"
 #include "recipientview.h"
 #include "addrecipientview.h"
 #include "handoverview.h"
 #include "returndateview.h"
-//#include "handoutsummaryview.h"
 #include "annotationview.h"
 #include "viewstackmanager.h"
 #include "datainterface.h"
 #include "scannerview.h"
 #include "addkeychainview.h"
 #include "editkeyview.h"
-#include "iointerfacesqlite.h"
-#include "toolsviewcodegenerator.h"
 #include "returndateview.h"
 #include "searchview.h"
 #include "settingsviewdb.h"
 #include "toolsviewdataadministration.h"
+#include "iointerface.h"
 
 #ifndef GMANDANTID
     #define GMANDANTID 1
@@ -60,7 +57,6 @@ MainWindow::MainWindow(QWidget *parent)
     mEditKeyView = 0;
     mViewStack = 0;
     mSettingsViewDb = 0;
-    mToolsViewCodegenerator = 0;
     mToolsViewDataAdministration = 0;
 }
 
@@ -93,10 +89,9 @@ void MainWindow::init()
     mAnnotationView = new AnnotationView (this);
     mAddKeychainView = new AddKeychainView (this);
     mEditKeyView = new EditKeyView (this);
-    mToolsViewCodegenerator = new ToolsViewCodeGenerator (this);
+    mToolsViewDataAdministration = new ToolsViewDataAdministration (this);
     mReturnDateView = new ReturnDateView (this);
     mSettingsViewDb = new SettingsViewDb (this);
-    mToolsViewDataAdministration = new ToolsViewDataAdministration (this);
 
     registerView (mHomeView);
     registerView (mScanView);
@@ -108,7 +103,6 @@ void MainWindow::init()
     registerView (mAnnotationView);
     registerView (mAddKeychainView);
     registerView (mEditKeyView);
-    registerView (mToolsViewCodegenerator);
     registerView (mReturnDateView);
     registerView (mSettingsViewDb);
     registerView (mToolsViewDataAdministration);
@@ -131,7 +125,6 @@ void MainWindow::init()
     mViewStackManager->addNode(ViewStackManager::NewCodeScanned, mEditKeyView);
 
     // views in the section 'tools'
-    mViewStackManager->addNode(ViewStackManager::Tools, mToolsViewCodegenerator);
     mViewStackManager->addNode(ViewStackManager::Tools, mToolsViewDataAdministration);
 
     // views in the section 'settings'

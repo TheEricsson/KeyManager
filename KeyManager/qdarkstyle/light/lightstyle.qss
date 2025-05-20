@@ -894,6 +894,11 @@ QLabel:disabled {
   color: #9DA9B5;
 }
 
+/* does not work, maybe because the label is created while the app is running (not at start)
+WinSubMenu#headerWinSubMenu {
+  background-color: #e0ffff; color: black; font: bold 30px; border-style: solid; border-width: 1px; border-radius: 5px; border-color: #A9A9A9;
+}*/
+
 /* QTextBrowser -----------------------------------------------------------
 
 https://doc.qt.io/qt-5/stylesheet-examples.html#customizing-qabstractscrollarea
