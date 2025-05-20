@@ -4,6 +4,13 @@
 #include <QTreeView>
 #include <QStandardItem>
 #include <QStandardItemModel>
+#include <QGroupBox>
+#include <QFormLayout>
+#include <QLineEdit>
+#include <QPushButton>
+#include <QSortFilterProxyModel>
+#include <QRegularExpression>
+
 #include "iointerfacesqlite.h"
 #include "qheaderview.h"
 
@@ -18,21 +25,72 @@ SearchView::SearchView (QWidget *parent)
     mDataView->setIndentation(30);
     mDataView->setAnimated(true);
     mDataView->setWordWrap(true);
+    mDataView->setDragEnabled(false);
 
     mStandardModel = new QStandardItemModel (this);
-    mDataView->setModel(mStandardModel);
+
+    //filter for each line edit -> these are chained one by another
+    mFilterProperty = new QSortFilterProxyModel(this);
+    mFilterProperty->setSourceModel(mStandardModel);
+
+    mFilterQrCode  = new QSortFilterProxyModel(this);
+    mFilterQrCode->setSourceModel(mFilterProperty);
+
+    mFilterKeyPosition  = new QSortFilterProxyModel(this);
+    mFilterKeyPosition->setSourceModel(mFilterQrCode);
+
+    mFilterStatus = new QSortFilterProxyModel(this);
+    mFilterStatus->setSourceModel(mFilterKeyPosition);
+
+    mFilterInfo  = new QSortFilterProxyModel(this);
+    mFilterInfo->setSourceModel(mFilterStatus);
+
+    mFilterInfo->setRecursiveFilteringEnabled(true);
+    mDataView->setModel(mFilterInfo);
+
+    // line edits for filters
+    mPropertyLineEdit = new QLineEdit();
+    mQrCodeLineEdit = new QLineEdit();
+    mKeyPositionLineEdit = new QLineEdit();
+    mKeyStatusLineEdit = new QLineEdit();
+    mKeyInfoLineEdit = new QLineEdit();
+
+    QGroupBox *filters = new QGroupBox(tr("Suchfilter"));
+    QFormLayout *formLayout = new QFormLayout();
+    QPushButton *resetFilters = new QPushButton (tr("Alle Filter zurücksetzen"));
+
+    formLayout->addRow(tr("&Liegenschaft:"), mPropertyLineEdit);
+    formLayout->addRow(tr("&QR-Code:"), mQrCodeLineEdit);
+    formLayout->addRow(tr("&Schlüsselhaken:"), mKeyPositionLineEdit);
+    formLayout->addRow(tr("&Status:"), mKeyStatusLineEdit);
+    formLayout->addRow(tr("&Schlüssel Zusatzinfo:"), mKeyInfoLineEdit);
+    formLayout->setRowWrapPolicy(QFormLayout::WrapLongRows);
+
+    filters->setLayout(formLayout);
 
     QVBoxLayout *centralLayout = new QVBoxLayout();
     centralLayout->addWidget(mDataView, Qt::AlignCenter);
+    centralLayout->addWidget(filters);
+    centralLayout->addWidget(resetFilters);
     setCentralLayout(centralLayout);
 
     QList<Gui::MenuButton> menuButtons;
     menuButtons.append(Gui::Back);
     setMenuButtons(menuButtons);
+
+    //signals+slots
+    connect (mPropertyLineEdit, SIGNAL(textChanged(QString)), this, SLOT(onPropertyFilterSet(QString)));
+    connect (mQrCodeLineEdit, SIGNAL(textChanged(QString)), this, SLOT(onKeycodeFilterSet(QString)));
+    connect (mKeyPositionLineEdit, SIGNAL(textChanged(QString)), this, SLOT(onKeyPositionFilterSet(QString)));
+    connect (mKeyStatusLineEdit, SIGNAL(textChanged(QString)), this, SLOT(onKeyStatusFilterSet(QString)));
+    connect (mKeyInfoLineEdit, SIGNAL(textChanged(QString)), this, SLOT(onKeyInfoFilterSet(QString)));
+    connect (resetFilters, SIGNAL(clicked()), this, SLOT(onResetFiltersCLicked()));
 }
 
 void SearchView::showEvent(QShowEvent *)
 {
+    resetFilters();
+
     //as suggested in QTreeView help, sorting should be enabled after inserting tree data
     mDataView->setSortingEnabled(false);
 
@@ -47,9 +105,54 @@ void SearchView::showEvent(QShowEvent *)
     //set data from db
     //setTreeData();
     setTreeAddressData();
+    resizeTreeColumnsToContent();
 
     //as suggested in QTreeView help, sorting should be enabled after inserting tree data
     mDataView->setSortingEnabled(true);
+}
+
+void SearchView::onPropertyFilterSet(QString txt)
+{
+    mFilterProperty->setFilterRegularExpression(QRegularExpression(txt, QRegularExpression::CaseInsensitiveOption));
+    mFilterProperty->setFilterKeyColumn(0);
+}
+
+void SearchView::onKeycodeFilterSet(QString txt)
+{
+    mFilterQrCode->setFilterRegularExpression(QRegularExpression(txt, QRegularExpression::CaseInsensitiveOption));
+    mFilterQrCode->setFilterKeyColumn(1);
+}
+
+void SearchView::onKeyPositionFilterSet(QString txt)
+{
+    mFilterKeyPosition->setFilterRegularExpression(QRegularExpression(txt, QRegularExpression::CaseInsensitiveOption));
+    mFilterKeyPosition->setFilterKeyColumn(2);
+}
+
+void SearchView::onKeyStatusFilterSet(QString txt)
+{
+    mFilterStatus->setFilterRegularExpression(QRegularExpression(txt, QRegularExpression::CaseInsensitiveOption));
+    mFilterStatus->setFilterKeyColumn(3);
+}
+
+void SearchView::onKeyInfoFilterSet(QString txt)
+{
+    mFilterInfo->setFilterRegularExpression(QRegularExpression(txt, QRegularExpression::CaseInsensitiveOption));
+    mFilterInfo->setFilterKeyColumn(6);
+}
+
+void SearchView::onResetFiltersCLicked()
+{
+    resetFilters();
+}
+
+void SearchView::resetFilters()
+{
+    mPropertyLineEdit->setText("");
+    mQrCodeLineEdit->setText("");
+    mKeyPositionLineEdit->setText("");
+    mKeyStatusLineEdit->setText("");
+    mKeyInfoLineEdit->setText("");
 }
 
 void SearchView::setTreeAddressData()
@@ -89,13 +192,9 @@ void SearchView::setTreeAddressData()
             addressAreaCode = QString::number(ioInterface()->getAddressAreaCode(addressIds.at(i).toUInt()));
             addressCity = ioInterface()->getAddressCity(addressIds.at(i).toUInt());
 
-            QList<QStandardItem*> rowItems;
-
-            rowItems << new QStandardItem(addressStreet + " " + addressStreetNr + ", " + addressAreaCode + " " + addressCity);
-
             QStandardItem *item = mStandardModel->invisibleRootItem();
             // adding a row to the invisible root item produces a root element
-            item->appendRow(rowItems);
+            //item->appendRow(rowItems);
 
             //add keychains to address, as child items
             QString filter = "addressId = ";
@@ -103,6 +202,9 @@ void SearchView::setTreeAddressData()
             QList keychainsCurrentAddress = ioInterface()->getTableColumn ("keychains", "id", filter);
             for (int j=0; j < keychainsCurrentAddress.size(); j++)
             {
+                QList<QStandardItem*> rowItems;
+                rowItems << new QStandardItem(addressStreet + " " + addressStreetNr + ", " + addressAreaCode + " " + addressCity);
+
                 //add a nice key icon
                 QPixmap logo (":/images/keyRing.png");
                 QIcon iconPic(logo);
@@ -115,11 +217,12 @@ void SearchView::setTreeAddressData()
                 QString internalLocation = QString::number(ioInterface()->getKeychainInternalLocation(keyCode));
 
                 QList<QStandardItem*> childItems;
-                childItems << keyIcon;
+                childItems << rowItems;
                 childItems << new QStandardItem(keyCodeReadable);
                 childItems << new QStandardItem(internalLocation);
                 childItems << new QStandardItem(keyChainStatusString);
-                rowItems.first()->appendRow(childItems);
+                //rowItems.first()->appendRow(childItems);
+                item->appendRow(childItems);
 
                 // add keys to keychain, as child items
                 QList keys = ioInterface()->getKeyIdsByKeycode(keyCode);
@@ -245,16 +348,10 @@ void SearchView::setTreeData()
     }
 }
 
-//test...
-QList<QStandardItem *> SearchView::prepareRow(const QString &first,
-                                              const QString &second,
-                                              const QString &third)
+void SearchView::resizeTreeColumnsToContent()
 {
-    QList<QStandardItem *> rowItems;
-    rowItems << new QStandardItem(first);
-    rowItems << new QStandardItem(second);
-    rowItems << new QStandardItem(third);
-    return rowItems;
+    for (int i = 0; i < mDataView->model()->columnCount(); i++)
+        mDataView->resizeColumnToContents(i);
 }
 
 SearchView::~SearchView()

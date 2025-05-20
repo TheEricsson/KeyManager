@@ -159,10 +159,10 @@ QLayout* WinSubmenu::getBottomLayout ()
 void WinSubmenu::setHeader (const QString& label)
 {
     QHBoxLayout *layout = new QHBoxLayout();
-    QLabel *header = new QLabel (label);
-    layout->addWidget(header,0,Qt::AlignCenter);
+    QLabel *headerWinSubMenu = new QLabel (label);
+
+    layout->addWidget(headerWinSubMenu,0,Qt::AlignCenter);
     setTopLayout(layout);
-    //mHeaderLabel->setText(label);
 }
 
 void  WinSubmenu::onMenuBtnClicked (Gui::MenuButton btnType)
