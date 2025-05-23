@@ -8,6 +8,8 @@
 ToolsViewDataAdministration::ToolsViewDataAdministration(QWidget *parent)
     : WinSubmenu{parent}
 {
+    mCodeGeneratorView = 0;
+
     setHeader("Tools");
 
     //code administration

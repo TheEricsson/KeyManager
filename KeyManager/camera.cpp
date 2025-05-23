@@ -18,13 +18,14 @@ Camera::Camera ()
     mCamera = 0;
     mImageCapture = 0;
     mVideoWidget = 0;
+    mCurrentCameraDevice = QMediaDevices::defaultVideoInput();
 
     init ();
 }
 
 void Camera::reset ()
 {
-    setCamera(QMediaDevices::defaultVideoInput());
+    setCamera(mCurrentCameraDevice);
     initCaptureSession ();
 }
 
@@ -57,8 +58,7 @@ void Camera::init ()
 {
     checkPermissions();
     checkAvailableCams ();
-    setCamera(QMediaDevices::defaultVideoInput());
-    initCaptureSession ();
+    setCamera(mCurrentCameraDevice);
 }
 
 void Camera::checkPermissions ()
@@ -82,13 +82,13 @@ void Camera::checkPermissions ()
 
 void Camera::checkAvailableCams ()
 {
-    const QList<QCameraDevice> cameras = QMediaDevices::videoInputs();
+    mAvailableCams = QMediaDevices::videoInputs();
 
     qDebug () << "Checking cams";
 
-    for (const QCameraDevice &cameraDevice : cameras)
+    for (int i = 0; i < mAvailableCams.size(); i++)
     {
-        qDebug() << "Kamera gefunden: " << cameraDevice.description();
+        qDebug() << "Kamera gefunden: " << mAvailableCams.at(i).description();
     }
 }
 
@@ -107,6 +107,8 @@ void Camera::setCamera (const QCameraDevice &cameraDevice)
     mCamera->setAutoExposureTime();
     mCamera->setWhiteBalanceMode(QCamera::WhiteBalanceAuto);
     mCamera->setFocusMode(QCamera::FocusModeAuto);
+
+    initCaptureSession ();
 }
 
 void Camera::initCaptureSession ()
@@ -155,7 +157,13 @@ void Camera::setVideoOutput (QVideoWidget* videoOutput)
 
 QImage Camera::getImageFromVideoframe ()
 {
-    return mVideoWidget->videoSink()->videoFrame().toImage();
+    QImage img;
+
+    if (mVideoWidget)
+    {
+        img = mVideoWidget->videoSink()->videoFrame().toImage();
+    }
+    return img;
 }
 
 void Camera::processCapturedImage (int requestId, const QImage &img)
@@ -171,6 +179,30 @@ QCamera* Camera::getCamera ()
     else
         qFatal () << "Camera::getCamera ():" << "mCamera is Null";
     return 0;
+}
+
+const QList<QCameraDevice> Camera::getAvailableCameraDevices()
+{
+    return mAvailableCams;
+}
+
+const QList<int> Camera::getAvailableCameraIds()
+{
+    QList<int> ids;
+
+    for (int i = 0; i < mAvailableCams.size(); i++)
+    {
+        ids.insert(i,i);
+    }
+
+    return ids;
+}
+
+void Camera::setCameraDevice(int camId)
+{
+    QCameraDevice cam = mAvailableCams.value(camId);
+    mCurrentCameraDevice = cam;
+    setCamera(mCurrentCameraDevice);
 }
 
 Camera::~Camera()

@@ -86,70 +86,49 @@ void SettingsViewDb::showSuccessWindow(SettingsViewDb::DbOption messageType, boo
 
 void SettingsViewDb::onSaveDbBtnClicked()
 {
+    bool success = false;
+
     // open file dialog and let user set location + file name
     QString dbLocation = ioInterface()->getDatabaseLocation();
-    // ioInterface()->checkPermission();
 
-    // // open file dialog and let user set location + file name
-    // QString saveLocation = QFileDialog::getSaveFileName((QWidget* )0, "Datenbank exportieren", QString(), "*.sqlite");
+    QUrl saveLocation = QFileDialog::getSaveFileUrl(nullptr,QString(),QUrl(),"Backup (*.sqlite)",nullptr,QFileDialog::Options(),QStringList());
+    QString filename = saveLocation.toDisplayString();
 
-    // bool ok = false;
-
-    // //check: file name set in dialog? + save location is not the current db location?
-    // if (saveLocation != "" && saveLocation != dbLocation)
-    //     ok = true;
-
-    QUrl test = QFileDialog::getSaveFileUrl();
-    QString filename = test.toDisplayString();
+    //new file to save backup to
     QFile dbSaveFile(filename);
+    //database file to read from
+    QFile dbFile (dbLocation);
 
     if(!dbSaveFile.open(QIODevice::WriteOnly | QFile::Truncate))
     {
         qDebug() << dbSaveFile.errorString();
-        return;
+        success = false;
     }
     else
     {
-        //database file to read from
-        QFile dbFile (dbLocation);
-        dbFile.open(QFile::ReadOnly);
-        QByteArray fileContents = dbFile.readAll();
+        if (dbFile.open(QFile::ReadOnly))
+        {
+            QByteArray fileContents = dbFile.readAll();
 
-        //write db data to new file
-        dbSaveFile.write(fileContents);
+            //write db data to new file
+            dbSaveFile.write(fileContents);
+            success = true;
+        }
+        else
+        {
+            qDebug() << dbFile.errorString();
+            success = false;
+        }
+    }
 
-        //close file handles
+    // close file handles
+    if (dbSaveFile.isOpen())
         dbSaveFile.close();
+
+    if (dbFile.isOpen())
         dbFile.close();
 
-    }
-
-    /*if (ok)
-    {
-        if (QFileInfo(saveLocation).suffix().isEmpty())
-        {
-            saveLocation.append(".sqlite");
-        }
-
-        QFile db(dbLocation);
-        db.open(QFile::ReadOnly);
-
-        if (QFile::exists(saveLocation))
-        {
-            QFile::remove(saveLocation);
-        }
-
-        QFile saveDb(saveLocation);
-        saveDb.open(QFile::WriteOnly);
-
-        saveDb.write(db.readAll());
-        saveDb.close();
-    }
-
-    qDebug() << "SettingsViewDb::onSaveDbBtnClicked() - dbLocation: " << dbLocation;
-    qDebug() << "SettingsViewDb::onSaveDbBtnClicked() - saveLocation: " << saveLocation;
-
-    showSuccessWindow (SettingsViewDb::dbBackup, ok);*/
+    showSuccessWindow (SettingsViewDb::dbBackup, success);
 }
 
 void SettingsViewDb::onReadDbBtnClicked()

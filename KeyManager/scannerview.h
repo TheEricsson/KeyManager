@@ -12,6 +12,9 @@ class QLabel;
 class QPushButton;
 class Camera;
 class ViewDataScanner;
+class QButtonGroup;
+class QFormLayout;
+class CheckBoxArray;
 
 class ScannerView : public WinSubmenu
 {
@@ -41,6 +44,7 @@ class ScannerView : public WinSubmenu
 
     private slots:
         virtual void onMenuBtnClicked (Gui::MenuButton btnType);
+        void onCameraChanged();
         void decodeFromVideoFrame ();
 
     private:
@@ -48,8 +52,12 @@ class ScannerView : public WinSubmenu
         void stopScanner();
         bool codeIsValid(const unsigned int code);
         void playSound();
+        void setAvailableCams();
         void keyReleaseEvent(QKeyEvent *event);
 
+        QFormLayout *mCamSettingsLayout;
+        CheckBoxArray *mAvailableCameras;
+        QList <int> mCameraIds;
         Camera *mCameraInstance;
         QTimer *mGrabTimer;
         ScannerState mScannerState;
@@ -57,6 +65,8 @@ class ScannerView : public WinSubmenu
         QLabel *mCodeLabel;
         QLabel *mGroupLabel;
         QLabel *mKeyLabel;
+
+        bool mCameraInitDone;
 
         ViewDataScanner *mScannerData;
         QMediaPlayer mPlayer;

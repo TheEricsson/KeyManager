@@ -25,7 +25,6 @@ CameraView::CameraView(QWidget *parent)
     menuButtons.append(Gui::TakePicture);
     menuButtons.append(Gui::Save);
     setMenuButtons(menuButtons);
-    //hideButton(2, true);
 }
 
 QImage CameraView::getImage()

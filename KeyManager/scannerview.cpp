@@ -14,6 +14,12 @@
 #include <QLineEdit>
 #include <QKeyEvent>
 #include <QAudioDevice>
+#include <QGroupBox>
+#include <QFormLayout>
+#include <QComboBox>
+#include <QRadioButton>
+#include <QButtonGroup>
+#include "checkboxarray.h"
 #include "winsubmenu.h"
 #include "camera.h"
 #include "dataobject.h"
@@ -31,6 +37,8 @@ ScannerView::ScannerView(QWidget *parent)
     mCameraInstance = 0;
     mGrabTimer = 0;
     mScannerData = 0;
+    mAvailableCameras = 0;
+    mCameraInitDone = false;
 
     decoder.setDecoder(QZXing::DecoderFormat_QR_CODE);
     //optional settings
@@ -61,14 +69,21 @@ ScannerView::ScannerView(QWidget *parent)
     QLabel *keyDescr = new QLabel ("Schlüsselnummer", this);
     mKeyLabel = new QLabel (this);
 
+    // camera settings
+    QGroupBox *camera = new QGroupBox(tr("Einstellungen"));
+    mCamSettingsLayout = new QFormLayout();
+    camera->setLayout(mCamSettingsLayout);
+
+    // central layout of the view
     QGridLayout* centralLayout = new QGridLayout();
     centralLayout->addWidget(m_viewfinder, 0, 0, 1, 2);
-    centralLayout->addWidget (codeDescr, 1, 0);
-    centralLayout->addWidget(mCodeLabel, 1, 1);
-    centralLayout->addWidget (groupDescr, 2, 0);
-    centralLayout->addWidget(mGroupLabel, 2, 1);
-    centralLayout->addWidget (keyDescr, 3, 0);
-    centralLayout->addWidget(mKeyLabel, 3, 1);
+    centralLayout->addWidget(camera, 1, 0, 1, 2);
+    centralLayout->addWidget (codeDescr, 2, 0);
+    centralLayout->addWidget(mCodeLabel, 2, 1);
+    centralLayout->addWidget (groupDescr, 3, 0);
+    centralLayout->addWidget(mGroupLabel, 3, 1);
+    centralLayout->addWidget (keyDescr, 4, 0);
+    centralLayout->addWidget(mKeyLabel, 4, 1);
 
     setCentralLayout(centralLayout);
 
@@ -84,7 +99,12 @@ ScannerView::ScannerView(QWidget *parent)
 
 void ScannerView::showEvent(QShowEvent *)
 {
-    startScanner ();
+    //do camera init only one time at runtime
+    if (!mCameraInitDone)
+    {
+        setAvailableCams();
+    }
+    startScanner();
 }
 
 void ScannerView::hideEvent(QHideEvent *)
@@ -94,21 +114,23 @@ void ScannerView::hideEvent(QHideEvent *)
 
 void ScannerView::startScanner ()
 {
-    if (!mCameraInstance)
+    if (mCameraInstance)
     {
-        mCameraInstance = new Camera ();
+        if (mAvailableCameras)
+        {
+            mCameraInstance->setCameraDevice(mAvailableCameras->getCheckedButtonIndex());
+            mCameraInstance->reset();
+            mCameraInstance->setVideoOutput(getViewfinder());
+            mCameraInstance->startCamera();
+        }
     }
-    mCameraInstance->reset();
-    mCameraInstance->setVideoOutput(getViewfinder());
 
     if (!mGrabTimer)
     {
         mGrabTimer = new QTimer (this);
-        mGrabTimer->setInterval(500);
+        mGrabTimer->setInterval(250);
         connect (mGrabTimer, SIGNAL(timeout()), this, SLOT(decodeFromVideoFrame()));
     }
-
-    mCameraInstance->startCamera();
     mGrabTimer->start();
 
     setScannerState (ScannerState::SCANNING);
@@ -120,11 +142,7 @@ void ScannerView::stopScanner ()
         mGrabTimer->stop();
 
     if (mCameraInstance)
-    {
         mCameraInstance->stopCamera();
-        delete mCameraInstance;
-        mCameraInstance = 0;
-    }
 
     setScannerState (ScannerState::READY);
 }
@@ -150,6 +168,74 @@ void ScannerView::playSound()
     mPlayer.setSource(filelocation);
     mPlayer.setAudioOutput(&mAudioOut);
     mPlayer.play();
+}
+
+void ScannerView::setAvailableCams()
+{
+    qDebug() << "ScannerView::setAvailableCams()";
+
+    QList<QCameraDevice> cams;
+
+    if (!mCameraInstance)
+    {
+        mCameraInstance = new Camera ();
+    }
+
+    if (mCameraInstance)
+        cams = mCameraInstance->getAvailableCameraDevices();
+
+    if (mCamSettingsLayout)
+    {
+        // clear layout
+        while(mCamSettingsLayout->count() > 0)
+        {
+            QLayoutItem *item = mCamSettingsLayout->takeAt(0);
+            delete item->widget();
+            delete item;
+        }
+
+        // at least one cam available
+        if (0 < cams.size())
+        {
+            QVariant camId;
+            QStringList camList;
+
+            for (int i = 0; i < cams.size(); i++)
+            {
+                qDebug() << cams.value(i).description();
+                camList.append(cams.value(i).description());
+            }
+
+            if(mAvailableCameras)
+            {
+                delete mAvailableCameras;
+            }
+            mAvailableCameras = new CheckBoxArray();
+            mAvailableCameras->init(camList);
+
+            for (unsigned int j = 0; j < mAvailableCameras->count(); j++)
+            {
+                qDebug() << "ScannerView::setAvailableCams() - add button...";
+                QRadioButton *btn = mAvailableCameras->getButtonAt(j);
+                if (btn)
+                {
+                    if (j==0)
+                    {
+                        btn->setChecked(true);
+                    }
+                    mCamSettingsLayout->addWidget(btn);
+                    connect(mAvailableCameras, SIGNAL(radioBtnToggled()), this, SLOT(onCameraChanged()));
+                }
+            }
+        }
+        // no cam found
+        else
+        {
+            QLabel* noCam = new QLabel(tr("Keine Kamera verfügbar"));
+            mCamSettingsLayout->addWidget(noCam);
+        }
+    }
+    mCameraInitDone = true;
 }
 
 void ScannerView::keyReleaseEvent(QKeyEvent *event)
@@ -181,6 +267,12 @@ void ScannerView::onMenuBtnClicked (Gui::MenuButton btnType)
             emit menuButtonClicked(btnType);
             break;
     }
+}
+
+void ScannerView::onCameraChanged()
+{
+    stopScanner();
+    startScanner();
 }
 
 void ScannerView::decodeFromVideoFrame ()

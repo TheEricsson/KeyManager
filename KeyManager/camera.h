@@ -4,6 +4,7 @@
 #include <QWidget>
 #include <QMediaCaptureSession>
 #include <QImage>
+#include <QCameraDevice>
 
 class QCameraDevice;
 class QCamera;
@@ -18,6 +19,9 @@ public:
     void reset ();
     ~Camera();
     QCamera* getCamera ();
+    const QList<QCameraDevice> getAvailableCameraDevices();
+    const QList<int> getAvailableCameraIds();
+    void setCameraDevice(int camId);
     QImageCapture* getImageCapture ();
     void startCamera ();
     void stopCamera ();
@@ -41,6 +45,8 @@ private:
     QMediaCaptureSession mCaptureSession;
     QImageCapture *mImageCapture;
     QVideoWidget* mVideoWidget;
+    QList<QCameraDevice> mAvailableCams;
+    QCameraDevice mCurrentCameraDevice;
 
     QCamera *mCamera;
 };
