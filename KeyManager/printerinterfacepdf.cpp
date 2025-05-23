@@ -37,6 +37,8 @@ bool PrinterInterfacePdf::saveAsFile()
     // open file dialog and let user set location + file name
     mFilePath = QFileDialog::getSaveFileName((QWidget* )0, "Export PDF", QString(), "*.pdf");
 
+    qDebug()<< "mFilePath: " << mFilePath;
+
     if (mFilePath != "")
     {
         if (QFileInfo(mFilePath).suffix().isEmpty())
