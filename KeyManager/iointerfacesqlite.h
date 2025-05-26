@@ -63,6 +63,19 @@ class IOInterfaceSQLITE : public IOInterface
         const QString dbGetLastError();
         void byteArrayToImage (QByteArray imgBa, QImage& img);
 
+        //app settings
+        bool setDefaultCameraId(int id);
+        bool setCompanyNameFirstLine(const QString value);
+        bool setCompanyNameSecondLine(const QString value);
+        bool setCompanyNameThirdLine(const QString value);
+        bool setKeyhookDuplicatesAllowed(bool value);
+
+        int getDefaultCameraId();
+        const QString getCompanyNameFirstLine();
+        const QString getCompanyNameSecondLine();
+        const QString getCompanyNameThirdLine();
+        bool keyhookDuplicatesAllowed();
+
     private:
 #ifdef Q_OS_ANDROID
         bool checkPermission ();

@@ -356,6 +356,6 @@ void SearchView::resizeTreeColumnsToContent()
 
 SearchView::~SearchView()
 {
-    if (0 != mStandardModel)
-        delete mStandardModel;
+    /*if (0 != mStandardModel)
+        delete mStandardModel;*/
 }

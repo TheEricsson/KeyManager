@@ -107,6 +107,21 @@ public:
     virtual bool dbInsertHandover (DataInterface *data)                                         {Q_UNUSED(data); return false;};
     virtual unsigned int getLastHandoverId()                                                    {return 0;};
 
+    //app settings
+    virtual bool setDefaultCameraId(int id)                                                     {Q_UNUSED(id); return false;};
+    virtual bool setCompanyNameFirstLine(const QString value)                                   {Q_UNUSED(value); return false;};
+    virtual bool setCompanyNameSecondLine(const QString value)                                  {Q_UNUSED(value); return false;};
+    virtual bool setCompanyNameThirdLine(const QString value)                                   {Q_UNUSED(value); return false;};
+    virtual bool setKeyhookDuplicatesAllowed(bool value)                                        {Q_UNUSED(value); return false;};
+
+    virtual int getDefaultCameraId()                                                            {return -1;};
+    virtual const QString getCompanyNameFirstLine()                                             {return "IOInterface: not implemented!";};
+    virtual const QString getCompanyNameSecondLine()                                            {return "IOInterface: not implemented!";};
+    virtual const QString getCompanyNameThirdLine()                                             {return "IOInterface: not implemented!";};
+    virtual bool keyhookDuplicatesAllowed()                                                     {return false;};
+
+
+
 #ifdef Q_OS_ANDROID
     virtual bool checkPermission()                                                              {return false;};
 #endif

@@ -56,6 +56,7 @@ class ScannerView : public WinSubmenu
         void playSound();
         void setAvailableCams();
         void keyReleaseEvent(QKeyEvent *event);
+        void updateDefaultCamSetting();
 
         QFormLayout *mCamSettingsLayout;
         CheckBoxArray *mAvailableCameras;

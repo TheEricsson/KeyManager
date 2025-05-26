@@ -56,7 +56,12 @@ bool CheckBoxArray::init (const QStringList items)
 
 QRadioButton* CheckBoxArray::getButtonAt (unsigned int index)
 {
-    return mRadioButtonList[index].second;
+    QRadioButton *btn = 0;
+
+    if (index <= mRadioButtonList.size() && index >= 0)
+        btn = mRadioButtonList[index].second;
+
+    return btn;
 }
 
 unsigned int CheckBoxArray::count()
