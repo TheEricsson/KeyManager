@@ -15,6 +15,7 @@ class ViewDataScanner;
 class QButtonGroup;
 class QFormLayout;
 class CheckBoxArray;
+class QZXing;
 
 class ScannerView : public WinSubmenu
 {
@@ -73,7 +74,7 @@ class ScannerView : public WinSubmenu
         QMediaPlayer mPlayer;
         QAudioOutput mAudioOut;
 
-        QZXing decoder;
+        QZXing *mDecoder;
 };
 
 #endif // SCANNERVIEW_H

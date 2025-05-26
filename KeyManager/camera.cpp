@@ -13,7 +13,7 @@
     #include <QPermission>
 #endif
 
-Camera::Camera ()
+Camera::Camera (QObject *parent) : QObject(parent)
 {
     mCamera = 0;
     mImageCapture = 0;

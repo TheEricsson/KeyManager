@@ -39,11 +39,7 @@ ScannerView::ScannerView(QWidget *parent)
     mScannerData = 0;
     mAvailableCameras = 0;
     mCameraInitDone = false;
-
-    decoder.setDecoder(QZXing::DecoderFormat_QR_CODE);
-    //optional settings
-    decoder.setSourceFilterType(QZXing::SourceFilter_ImageNormal);
-    decoder.setTryHarderBehaviour(QZXing::TryHarderBehaviour_ThoroughScanning | QZXing::TryHarderBehaviour_Rotate);
+    mDecoder = 0;
 
     //setHeader("Scannen Sie einen Barcode");
 
@@ -111,6 +107,16 @@ void ScannerView::showEvent(QShowEvent *)
     if (!mCameraInitDone)
     {
         setAvailableCams();
+    }
+    // init decoder once
+
+    if (!mDecoder)
+    {
+        mDecoder = new QZXing(this);
+        mDecoder->setDecoder(QZXing::DecoderFormat_QR_CODE);
+        //optional settings
+        mDecoder->setSourceFilterType(QZXing::SourceFilter_ImageNormal);
+        mDecoder->setTryHarderBehaviour(QZXing::TryHarderBehaviour_ThoroughScanning | QZXing::TryHarderBehaviour_Rotate);
     }
     // reset view labels and scanner data
     reset();
@@ -192,7 +198,7 @@ void ScannerView::setAvailableCams()
 
     if (!mCameraInstance)
     {
-        mCameraInstance = new Camera ();
+        mCameraInstance = new Camera (this);
     }
 
     if (mCameraInstance)
@@ -427,15 +433,15 @@ const QString ScannerView::getKeyLabel()
 
 ScannerView::~ScannerView()
 {
-    if (m_viewfinder)
+    /*if (m_viewfinder)
     {
         delete m_viewfinder;
         m_viewfinder = 0;
-    }
+    }*/
 
-    if (mCameraInstance)
+    /*if (mCameraInstance)
     {
         delete mCameraInstance;
         mCameraInstance = 0;
-    }
+    }*/
 }

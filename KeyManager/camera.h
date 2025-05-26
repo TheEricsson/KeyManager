@@ -15,7 +15,7 @@ class Camera : public QObject
 {
     Q_OBJECT
 public:
-    explicit Camera();
+    Camera (QObject *parent = Q_NULLPTR);
     void reset ();
     ~Camera();
     QCamera* getCamera ();
