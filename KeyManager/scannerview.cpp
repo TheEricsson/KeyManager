@@ -97,13 +97,24 @@ ScannerView::ScannerView(QWidget *parent)
     setScannerState (ScannerState::READY);
 }
 
+void ScannerView::reset()
+{
+    mCodeLabel->setText("");
+    setCustomerLabel("");
+    setKeyLabel("");
+    dataInterface()->resetScannerData();
+}
+
 void ScannerView::showEvent(QShowEvent *)
 {
-    //do camera init only one time at runtime
+    // do camera init only one time at runtime
     if (!mCameraInitDone)
     {
         setAvailableCams();
     }
+    // reset view labels and scanner data
+    reset();
+    // start scanning
     startScanner();
 }
 
@@ -131,7 +142,10 @@ void ScannerView::startScanner ()
         mGrabTimer->setInterval(250);
         connect (mGrabTimer, SIGNAL(timeout()), this, SLOT(decodeFromVideoFrame()));
     }
-    mGrabTimer->start();
+
+    // wait half a second before capturing first frame
+    // -> otherwise it may happen, that the old video frame is read (from the previous scan)
+    mGrabTimer->start(500);
 
     setScannerState (ScannerState::SCANNING);
 }
@@ -190,8 +204,15 @@ void ScannerView::setAvailableCams()
         while(mCamSettingsLayout->count() > 0)
         {
             QLayoutItem *item = mCamSettingsLayout->takeAt(0);
-            delete item->widget();
-            delete item;
+
+            if (item)
+            {
+                if (item->widget())
+                {
+                    delete item->widget();
+                    delete item;
+                }
+            }
         }
 
         // at least one cam available
@@ -381,8 +402,6 @@ QSize ScannerView::getViewfinderSize ()
 
 QVideoWidget* ScannerView::getViewfinder ()
 {
-    if (!m_viewfinder)
-        return 0;
     return m_viewfinder;
 }
 

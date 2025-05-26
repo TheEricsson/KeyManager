@@ -28,6 +28,7 @@ class ScannerView : public WinSubmenu
         };
 
         explicit ScannerView(QWidget *parent = nullptr);
+        void reset();
         virtual void showEvent(QShowEvent *);
         virtual void hideEvent(QHideEvent *);
         void setScannerState (ScannerState aStatus);

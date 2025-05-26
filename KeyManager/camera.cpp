@@ -145,14 +145,20 @@ void Camera::stopCamera()
 
 void Camera::setVideoOutput (QVideoWidget* videoOutput)
 {
-    if (!videoOutput)
-        return;
+    if (0 != videoOutput)
+    {
+        qDebug () << "Camera::setVideoOutput:" << "ok";
 
-    qDebug () << "Camera::setVideoOutput:" << "ok";
+        mCaptureSession.setVideoOutput(videoOutput);
 
-    mCaptureSession.setVideoOutput(videoOutput);
-
-    mVideoWidget = videoOutput;
+        //the following code leads to crash on mobile device... wtf?!
+        /*if (0 != mVideoWidget)
+        {
+            delete mVideoWidget;
+            mVideoWidget = 0;
+        }*/
+        mVideoWidget = videoOutput;
+    }
 }
 
 QImage Camera::getImageFromVideoframe ()
@@ -207,9 +213,15 @@ void Camera::setCameraDevice(int camId)
 
 Camera::~Camera()
 {
-    if (mCamera)
+    if (0 != mCamera)
     {
         delete mCamera;
         mCamera = 0;
+    }
+
+    if (0 != mVideoWidget)
+    {
+        delete mVideoWidget;
+        mVideoWidget = 0;
     }
 }

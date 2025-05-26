@@ -262,7 +262,10 @@ bool DataInterface::setScannedCode (const int keyCode)
 void DataInterface::resetRecipientData ()
 {
     if (mDataRecipient)
+    {
         delete mDataRecipient;
+        mDataRecipient = 0;
+    }
 
     mDataRecipient = new ViewDataRecipient();
 }
@@ -270,7 +273,10 @@ void DataInterface::resetRecipientData ()
 void DataInterface::resetAnnotationData ()
 {
     if (mDataAnnotation)
+    {
         delete mDataAnnotation;
+        mDataAnnotation = 0;
+    }
 
     mDataAnnotation = new ViewDataAnnotation();
 }
@@ -278,7 +284,10 @@ void DataInterface::resetAnnotationData ()
 void DataInterface::resetHandoverData ()
 {
     if (mDataHandover)
+    {
         delete mDataHandover;
+        mDataHandover = 0;
+    }
 
     mDataHandover = new ViewDataHandover();
 }
@@ -286,7 +295,10 @@ void DataInterface::resetHandoverData ()
 void DataInterface::resetKeychainData ()
 {
     if (mDataKeychain)
+    {
         delete mDataKeychain;
+        mDataKeychain = 0;
+    }
 
     mDataKeychain = new ViewDataKeychain();
 }
@@ -294,7 +306,10 @@ void DataInterface::resetKeychainData ()
 void DataInterface::resetReturnDateData ()
 {
     if (mDataReturnDate)
+    {
         delete mDataReturnDate;
+        mDataReturnDate = 0;
+    }
 
     mDataReturnDate = new ViewDataReturnDate();
 }
@@ -302,7 +317,10 @@ void DataInterface::resetReturnDateData ()
 void DataInterface::resetScannerData ()
 {
     if (mDataScanner)
+    {
         delete mDataScanner;
+        mDataScanner = 0;
+    }
 
     mDataScanner = new ViewDataScanner();
 }
@@ -322,32 +340,68 @@ int DataInterface::getScannedCode ()
 
 void DataInterface::setData (ViewDataAnnotation* data)
 {
-    mDataAnnotation = data;
+    if (0 != data)
+    {
+        if (0 != mDataAnnotation)
+            delete mDataAnnotation;
+
+        mDataAnnotation = data;
+    }
 }
 
 void DataInterface::setData (ViewDataHandover* data)
 {
-    mDataHandover = data;
+    if (0 != data)
+    {
+        if (0 != mDataHandover)
+            delete mDataHandover;
+
+        mDataHandover = data;
+    }
 }
 
 void DataInterface::setData (ViewDataKeychain* data)
 {
-    mDataKeychain = data;
+    if (0 != data)
+    {
+        if (0 != mDataKeychain)
+            delete mDataKeychain;
+
+        mDataKeychain = data;
+    }
 }
 
 void DataInterface::setData (ViewDataRecipient* data)
 {
-    mDataRecipient = data;
+    if (0 != data)
+    {
+        if (0 != mDataRecipient)
+            delete mDataRecipient;
+
+        mDataRecipient = data;
+    }
 }
 
 void DataInterface::setData (ViewDataReturnDate* data)
 {
-    mDataReturnDate = data;
+    if (0 != data)
+    {
+        if (0 != mDataReturnDate)
+            delete mDataReturnDate;
+
+        mDataReturnDate = data;
+    }
 }
 
 void DataInterface::setData (ViewDataScanner* data)
 {
-    mDataScanner = data;
+    if (0 != data)
+    {
+        if (0 != mDataScanner)
+            delete mDataScanner;
+
+        mDataScanner = data;
+    }
 }
 
 DataInterface::~DataInterface()
