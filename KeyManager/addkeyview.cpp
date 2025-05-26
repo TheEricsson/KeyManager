@@ -41,7 +41,10 @@ void AddKeyView::onMenuBtnClicked (Gui::MenuButton btnType)
                     // add new key in database
                     IOInterface::keyData *data = new IOInterface::keyData();
                     data->keychainId = keyCode;
-                    data->categoryId = mKeyCategories->getCheckedButtonIndex();
+
+                    //db index is starting with '1'
+                    int categoryIdDb = mKeyCategories->getCheckedButtonIndex() + 1;
+                    data->categoryId = categoryIdDb;
                     data->statusId = (int)KeyStatus::Ok;//mKeyStates->getCheckedButtonIndex();
                     data->description = mKeyDescription->toPlainText();
                     ioInterface()->addKey (data);
@@ -101,7 +104,7 @@ void AddKeyView::reset ()
 
     setCentralLayout(centralLayout);
 
-    connect (mKeyCategories, SIGNAL(radioBtnToggled()), this, SLOT(onRadioBtnToggled()));
+    //connect (mKeyCategories, SIGNAL(radioBtnToggled()), this, SLOT(onRadioBtnToggled()));
 }
 
 bool AddKeyView::checkSelections ()

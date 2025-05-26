@@ -138,7 +138,6 @@ void EditKeyView::onAddKeyMenuButtonClicked (Gui::MenuButton btn)
             setFocus();
             mKeys->update();
             mKeys->resizeRowsToContents();
-            update();
             break;
         default:
             break;
