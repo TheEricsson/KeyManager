@@ -5,15 +5,15 @@
 #include <QLayout>
 #include <QRadioButton>
 
-CheckBoxArray::CheckBoxArray(QObject *parent)
-    : QObject {parent}
+CheckBoxArray::CheckBoxArray(QWidget *parent)
+    : QWidget {parent}
 {
     mRadioButtonList.clear();
 }
 
 bool CheckBoxArray::init (IOInterface *ioInterface, const QString &tableName, const QString &valueColumn)
 {
-    clear();
+    //clear();
 
     bool ok = false;
 
@@ -24,7 +24,7 @@ bool CheckBoxArray::init (IOInterface *ioInterface, const QString &tableName, co
         int dbIndex = 1;
         for (int i = 0; i < count; i++)
         {
-            QRadioButton *checkBox = new QRadioButton ();
+            QRadioButton *checkBox = new QRadioButton (this);
             checkBox->setText(ioInterface->getValue(tableName, valueColumn, dbIndex).toString());
             checkBox->setChecked(false);
             registerButton (checkBox,i);
@@ -39,13 +39,13 @@ bool CheckBoxArray::init (const QStringList items)
 {
     qDebug() << "CheckBoxArray::init";
 
-    clear();
+    //clear();
 
     qDebug()<<"ok";
     for (int i = 0; i < items.count(); i++)
     {
         qDebug()<<"ok";
-        QRadioButton *checkBox = new QRadioButton ();
+        QRadioButton *checkBox = new QRadioButton (this);
         checkBox->setText(items.at(i));
         checkBox->setChecked(false);
         registerButton (checkBox,i);
@@ -91,22 +91,6 @@ int CheckBoxArray::getCheckedButtonIndex ()
     return retVal;
 }
 
-void CheckBoxArray::clear()
-{
-    // delete active radio buttons
-    if (!mRadioButtonList.empty())
-    {
-        for (int i = 0; i < mRadioButtonList.count (); i++)
-        {
-            QRadioButton *item = mRadioButtonList[i].second;
-            if (nullptr != item)
-                delete item;
-        }
-
-        mRadioButtonList.clear();
-    }
-}
-
 void CheckBoxArray::registerButton (QRadioButton* btn, int index)
 {
     connect (btn, SIGNAL(clicked()), this, SLOT(onRadioBtnClicked()));
@@ -125,15 +109,17 @@ void CheckBoxArray::onRadioBtnClicked()
 CheckBoxArray::~CheckBoxArray()
 {
     // delete active radio buttons
-    if (!mRadioButtonList.empty())
+    /*if (!mRadioButtonList.empty())
     {
         for (int i = 0; i < mRadioButtonList.count (); i++)
         {
             QRadioButton *item = mRadioButtonList[i].second;
             if (nullptr != item)
-                delete item;
+            {
+                item->deleteLater();
+            }
         }
 
         mRadioButtonList.clear();
-    }
+    }*/
 }

@@ -256,7 +256,6 @@ HandoverView::~HandoverView()
 {
     if (mSigPad)
     {
-        delete mSigPad;
-        mSigPad = 0;
+        mSigPad->deleteLater();
     }
 }

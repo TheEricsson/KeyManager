@@ -89,5 +89,5 @@ void ToolsViewDataAdministration::onBtnClicked_CodeGenerator (Gui::MenuButton bt
 ToolsViewDataAdministration::~ToolsViewDataAdministration()
 {
     if (mCodeGeneratorView)
-        delete mCodeGeneratorView;
+        mCodeGeneratorView->deleteLater();
 }

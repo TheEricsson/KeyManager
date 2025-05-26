@@ -36,7 +36,7 @@ void CameraView::showEvent(QShowEvent *)
 {
     if (!mCamera)
     {
-        mCamera = new Camera ();
+        mCamera = new Camera (this);
         mCamera->setVideoOutput(mViewfinder);
     }
     mCamera->startCamera();
@@ -50,9 +50,4 @@ void CameraView::hideEvent(QHideEvent *)
 
 CameraView::~CameraView ()
 {
-    if (mViewfinder)
-    {
-        delete mViewfinder;
-        mViewfinder = 0;
-    }
 }

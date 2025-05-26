@@ -114,50 +114,38 @@ void Camera::setCamera (const QCameraDevice &cameraDevice)
 
 void Camera::initCaptureSession ()
 {
-    if (mImageCapture)
-        delete mImageCapture;
-
-    mImageCapture = new QImageCapture ();
+    if (!mImageCapture)
+    {
+        mImageCapture = new QImageCapture (this);
+        connect(mImageCapture, &QImageCapture::imageCaptured, this, &Camera::processCapturedImage);
+    }
 
     mImageCapture->setQuality(QImageCapture::HighQuality);
     mImageCapture->setFileFormat(QImageCapture::JPEG);
+
     mCaptureSession.setImageCapture(mImageCapture);
 
-    mCaptureSession.setCamera(mCamera);
-
-    connect(mImageCapture, &QImageCapture::imageCaptured, this, &Camera::processCapturedImage);
+    if (mCamera)
+        mCaptureSession.setCamera(mCamera);
 }
 
 void Camera::startCamera ()
 {
     if (mCamera)
         mCamera->start();
-    else
-        qFatal () << "Camera::startCamera ():" << "mCamera is Null";
 }
 
 void Camera::stopCamera()
 {
     if (mCamera)
         mCamera->stop();
-    else
-        qFatal () << "Camera::stopCamera ():" << "mCamera is Null";
 }
 
 void Camera::setVideoOutput (QVideoWidget* videoOutput)
 {
     if (0 != videoOutput)
     {
-        qDebug () << "Camera::setVideoOutput:" << "ok";
-
         mCaptureSession.setVideoOutput(videoOutput);
-
-        //the following code leads to crash on mobile device... wtf?!
-        /*if (0 != mVideoWidget)
-        {
-            delete mVideoWidget;
-            mVideoWidget = 0;
-        }*/
         mVideoWidget = videoOutput;
     }
 }
@@ -181,11 +169,7 @@ void Camera::processCapturedImage (int requestId, const QImage &img)
 
 QCamera* Camera::getCamera ()
 {
-    if (mCamera)
-        return mCamera;
-    else
-        qFatal () << "Camera::getCamera ():" << "mCamera is Null";
-    return 0;
+    return mCamera;
 }
 
 const QList<QCameraDevice> Camera::getAvailableCameraDevices()
@@ -207,22 +191,17 @@ const QList<int> Camera::getAvailableCameraIds()
 
 void Camera::setCameraDevice(int camId)
 {
-    QCameraDevice cam = mAvailableCams.value(camId);
-    mCurrentCameraDevice = cam;
-    setCamera(mCurrentCameraDevice);
+    if (camId >= 0)
+    {
+        if (mAvailableCams.size() >= camId)
+        {
+        mCurrentCameraDevice = mAvailableCams.value(camId);
+        //setCamera(mCurrentCameraDevice);
+        initCaptureSession ();
+        }
+    }
 }
 
 Camera::~Camera()
 {
-    // if (0 != mCamera)
-    // {
-    //     delete mCamera;
-    //     mCamera = 0;
-    // }
-
-    /*if (0 != mVideoWidget)
-    {
-        delete mVideoWidget;
-        mVideoWidget = 0;
-    }*/
 }

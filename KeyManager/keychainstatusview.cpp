@@ -97,13 +97,13 @@ KeychainStatusView::KeychainStatusView(QWidget *parent)
     menuButtons.append(Gui::Next);
     setMenuButtons(menuButtons);
 
-    mKeyModel = new QSqlRelationalTableModel ();
-    mFilteredKeyModel= new QSortFilterProxyModel ();
+    mKeyModel = new QSqlRelationalTableModel (this);
+    mFilteredKeyModel= new QSortFilterProxyModel (this);
     mFilteredKeyModel->setSourceModel(mKeyModel);
     mKeys->setModel(mFilteredKeyModel);
 
-    mHistoryModel = new QSqlRelationalTableModel ();
-    mFilteredHistoryModel = new QSortFilterProxyModel ();
+    mHistoryModel = new QSqlRelationalTableModel (this);
+    mFilteredHistoryModel = new QSortFilterProxyModel (this);
     mFilteredHistoryModel->setSourceModel(mHistoryModel);
     mHistory->setModel(mFilteredHistoryModel);
 
@@ -313,7 +313,6 @@ void KeychainStatusView::onCameraViewButtonClicked(Gui::MenuButton btn)
         case Gui::Back:
             if (mCameraView)
             {
-                mCameraView->hide();
                 delete mCameraView;
                 mCameraView = 0;
                 setFocus();
@@ -371,37 +370,11 @@ KeychainStatusView::~KeychainStatusView ()
 {
     if (mCameraView)
     {
-        delete mCameraView;
-        mCameraView = 0;
+        mCameraView->deleteLater();
     }
 
     if (mImageView)
     {
-        delete mImageView;
-        mImageView = 0;
+        mImageView->deleteLater();
     }
-
-    // if (mKeyOverview)
-    // {
-    //     delete mKeyOverview;
-    //     mKeyOverview = 0;
-    // }
-
-    if (mFilteredKeyModel)
-    {
-        delete mFilteredKeyModel;
-        mFilteredKeyModel = 0;
-    }
-
-    // if (mFilteredKeychainModel)
-    // {
-    //     delete mFilteredKeychainModel;
-    //     mFilteredKeychainModel = 0;
-    // }
-
-    // if (mKeychainModel)
-    // {
-    //     delete mKeychainModel;
-    //     mKeychainModel = 0;
-    // }
 }

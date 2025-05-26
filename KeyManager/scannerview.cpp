@@ -40,6 +40,8 @@ ScannerView::ScannerView(QWidget *parent)
     mAvailableCameras = 0;
     mCameraInitDone = false;
     mDecoder = 0;
+    mPlayer = 0;
+    mAudioOut = 0;
 
     //setHeader("Scannen Sie einen Barcode");
 
@@ -116,13 +118,13 @@ void ScannerView::reset()
 
 void ScannerView::showEvent(QShowEvent *)
 {
-    // do camera init only one time at runtime
+    // init camera at first show event
     if (!mCameraInitDone)
     {
         setAvailableCams();
     }
-    // init decoder once
 
+    // init decoder at first show event
     if (!mDecoder)
     {
         mDecoder = new QZXing(this);
@@ -131,6 +133,29 @@ void ScannerView::showEvent(QShowEvent *)
         mDecoder->setSourceFilterType(QZXing::SourceFilter_ImageNormal);
         mDecoder->setTryHarderBehaviour(QZXing::TryHarderBehaviour_ThoroughScanning | QZXing::TryHarderBehaviour_Rotate);
     }
+
+    // init sound player and output device on first show event
+    if (!mAudioOut)
+    {
+        mAudioOut = new QAudioOutput (this);
+
+        const auto devices = QMediaDevices::audioOutputs();
+        for (const QAudioDevice &device : devices)
+            qDebug() << "Device: " << device.description();
+
+        mAudioOut->setDevice(QMediaDevices::defaultAudioOutput());
+        mAudioOut->setMuted(false);
+        mAudioOut->setVolume(100);
+    }
+    if (!mPlayer)
+    {
+        mPlayer = new QMediaPlayer (this);
+
+        QUrl filelocation ("qrc:/sounds/scanner_beep.mp3");
+        mPlayer->setSource(filelocation);
+        mPlayer->setAudioOutput(mAudioOut);
+    }
+
     // reset view labels and scanner data
     reset();
     // start scanning
@@ -171,10 +196,10 @@ void ScannerView::startScanner ()
 
 void ScannerView::stopScanner ()
 {
-    if (mGrabTimer)
+    if (0 != mGrabTimer)
         mGrabTimer->stop();
 
-    if (mCameraInstance)
+    if (0 != mCameraInstance)
         mCameraInstance->stopCamera();
 
     setScannerState (ScannerState::READY);
@@ -190,17 +215,10 @@ bool ScannerView::codeIsValid(const unsigned int code)
 
 void ScannerView::playSound()
 {
-    const auto devices = QMediaDevices::audioOutputs();
-    for (const QAudioDevice &device : devices)
-        qDebug() << "Device: " << device.description();
-
-    mAudioOut.setDevice(QMediaDevices::defaultAudioOutput());
-    mAudioOut.setMuted(false);
-    mAudioOut.setVolume(100);
-    QUrl filelocation ("qrc:/sounds/scanner_beep.mp3");
-    mPlayer.setSource(filelocation);
-    mPlayer.setAudioOutput(&mAudioOut);
-    mPlayer.play();
+    if (mPlayer)
+    {
+        mPlayer->play();
+    }
 }
 
 void ScannerView::setAvailableCams()
@@ -319,14 +337,23 @@ void ScannerView::onCameraChanged()
 
 void ScannerView::decodeFromVideoFrame ()
 {
-    QImage capture = mCameraInstance->getImageFromVideoframe ();
+    QImage capture;
+    if (0 != mCameraInstance)
+    {
+        capture = mCameraInstance->getImageFromVideoframe ();
+    }
+
 #ifdef Q_OS_WIN64
     // no cam on windows pc -> use test image with barcode
     //QImage testCode (":/images/barcode00010150.png");
     QImage testCode (":/images/qrcode_0001-0001.png");
-    QString decodedString = decoder.decodeImage(testCode);
+    QString decodedString = mDecoder->decodeImage(testCode);
 #else
-    QString decodedString = decoder.decodeImage(capture);
+    QString decodedString ("");
+    if (0 != mDecoder)
+    {
+        decodedString = mDecoder->decodeImage(capture);
+    }
 #endif
 
     QString barcodeAsNumber = decodedString.mid (0, 4);
@@ -340,15 +367,21 @@ void ScannerView::decodeFromVideoFrame ()
         qDebug () << "barcodeAsInt: = " << barcodeAsInt;
     }
 
-    mCodeLabel->setText(decodedString);
+    if (0 != mCodeLabel)
+    {
+        mCodeLabel->setText(decodedString);
+    }
 
     QString customerId = decodedString.mid (0, 4);
     QString keyId = decodedString.mid (5, 4);
 
     if  (codeIsValid(barcodeAsInt))
     {
-        mGrabTimer->stop ();
-        mCameraInstance->stopCamera();
+        if (0 != mGrabTimer)
+            mGrabTimer->stop ();
+
+        if (0 != mCameraInstance)
+            mCameraInstance->stopCamera();
 
         // code recognized: play a supermarket beep sound :)
         playSound ();
@@ -365,7 +398,11 @@ void ScannerView::decodeFromVideoFrame ()
     else
     {
         QString codeLabelWAppendix = decodedString + " (ungültig)";
-        mCodeLabel->setText(codeLabelWAppendix);
+
+        if (0 != mCodeLabel)
+        {
+            mCodeLabel->setText(codeLabelWAppendix);
+        }
     }
 }
 

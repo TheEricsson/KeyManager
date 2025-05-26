@@ -173,7 +173,6 @@ EditKeyView::~EditKeyView()
 {
     if (mAddKeyView)
     {
-        delete mAddKeyView;
-        mAddKeyView = 0;
+        mAddKeyView->deleteLater();
     }
 }

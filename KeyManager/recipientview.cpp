@@ -358,7 +358,6 @@ RecipientView::~RecipientView()
 {
     if (mAddRecipientView)
     {
-        delete mAddRecipientView;
-        mAddRecipientView = 0;
+        mAddRecipientView->deleteLater();
     }
 }

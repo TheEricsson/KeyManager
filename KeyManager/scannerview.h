@@ -72,8 +72,8 @@ class ScannerView : public WinSubmenu
         bool mCameraInitDone;
 
         ViewDataScanner *mScannerData;
-        QMediaPlayer mPlayer;
-        QAudioOutput mAudioOut;
+        QMediaPlayer *mPlayer;
+        QAudioOutput *mAudioOut;
 
         QZXing *mDecoder;
 };
