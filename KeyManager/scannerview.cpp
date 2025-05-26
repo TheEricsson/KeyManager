@@ -103,6 +103,19 @@ void ScannerView::reset()
     setCustomerLabel("");
     setKeyLabel("");
     dataInterface()->resetScannerData();
+
+    // if (0 != mAvailableCameras)
+    // {
+    //     if (0 != ioInterface())
+    //     {
+    //         int camId = ioInterface()->getDefaultCameraId();
+    //         QRadioButton *btn = mAvailableCameras->getButtonAt(camId);
+    //         if (0 != btn)
+    //         {
+    //             btn->setChecked(true);
+    //         }
+    //     }
+    // }
 }
 
 void ScannerView::showEvent(QShowEvent *)
@@ -227,20 +240,21 @@ void ScannerView::setAvailableCams()
                 camList.append(cams.value(i).description());
             }
 
-            if(mAvailableCameras)
+            if(!mAvailableCameras)
             {
-                delete mAvailableCameras;
+                mAvailableCameras = new CheckBoxArray(this);
+                mAvailableCameras->init(camList);
             }
-            mAvailableCameras = new CheckBoxArray();
-            mAvailableCameras->init(camList);
+
+            int defaultCamId = ioInterface()->getDefaultCameraId();
 
             for (unsigned int j = 0; j < mAvailableCameras->count(); j++)
             {
-                qDebug() << "ScannerView::setAvailableCams() - add button...";
                 QRadioButton *btn = mAvailableCameras->getButtonAt(j);
                 if (btn)
                 {
-                    if (j==0)
+                    //set default cam gui button checked
+                    if (j == defaultCamId)
                     {
                         btn->setChecked(true);
                     }
@@ -292,6 +306,7 @@ void ScannerView::onMenuBtnClicked (Gui::MenuButton btnType)
 
 void ScannerView::onCameraChanged()
 {
+    updateDefaultCamSetting();
     stopScanner();
     startScanner();
 }
@@ -425,13 +440,28 @@ const QString ScannerView::getKeyLabel()
     return mKeyLabel->text();
 }
 
+void ScannerView::updateDefaultCamSetting()
+{
+    qDebug() << "ScannerView::updateDefaultCamSetting()";
+
+    //update db setting, default value will always be the last selected cam
+    if (mAvailableCameras)
+    {
+        if (ioInterface())
+        {
+            int selectedCamId = mAvailableCameras->getCheckedButtonIndex();
+            ioInterface()->setDefaultCameraId(selectedCamId);
+        }
+    }
+}
+
 ScannerView::~ScannerView()
 {
-    if (m_viewfinder)
+    /*if (m_viewfinder)
     {
         delete m_viewfinder;
         m_viewfinder = 0;
-    }
+    }*/
 
     if (mCameraInstance)
     {

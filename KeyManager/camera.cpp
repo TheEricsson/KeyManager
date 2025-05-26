@@ -94,13 +94,14 @@ void Camera::checkAvailableCams ()
 
 void Camera::setCamera (const QCameraDevice &cameraDevice)
 {
-    if (0 != mCamera)
+    if (!mCamera)
     {
-        delete mCamera;
-        mCamera = 0;
+        mCamera = new QCamera(cameraDevice, this);
     }
-
-    mCamera = new QCamera(cameraDevice);
+    else
+    {
+        mCamera->setCameraDevice(cameraDevice);
+    }
 
     mCamera->setExposureMode(QCamera::ExposureAuto);
     mCamera->setAutoIsoSensitivity();
@@ -213,15 +214,15 @@ void Camera::setCameraDevice(int camId)
 
 Camera::~Camera()
 {
-    if (0 != mCamera)
-    {
-        delete mCamera;
-        mCamera = 0;
-    }
+    // if (0 != mCamera)
+    // {
+    //     delete mCamera;
+    //     mCamera = 0;
+    // }
 
-    if (0 != mVideoWidget)
+    /*if (0 != mVideoWidget)
     {
         delete mVideoWidget;
         mVideoWidget = 0;
-    }
+    }*/
 }

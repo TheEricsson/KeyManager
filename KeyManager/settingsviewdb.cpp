@@ -11,10 +11,11 @@ SettingsViewDb::SettingsViewDb(QWidget *parent) : WinSubmenu {parent}
 {
     QGridLayout *gridLayout = new QGridLayout();
 
-    setHeader("Datenbank-Einstellungen");
+    setHeader("App-Einstellungen");
 
-    // not supported right now. Android file access permission failure...:
-    // "...requires that you obtain access using ACTION_OPEN_DOCUMENT or related APIs"
+    //general settings
+
+    //database stuff
 
     QPushButton *saveDbBtn = new QPushButton("Datenbank-Backup erstellen", this);
     //saveDbBtn->setDisabled(true);

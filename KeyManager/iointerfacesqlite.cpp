@@ -282,14 +282,23 @@ bool IOInterfaceSQLITE::initTables()
                      description TEXT)");
     query.finish();
 
+    retVal = query.exec ("CREATE TABLE appSettings (\
+        id                     INTEGER PRIMARY KEY AUTOINCREMENT\
+        UNIQUE\
+        NOT NULL,\
+        cameraId               INTEGER,\
+        companyNameFirstLine   TEXT,\
+        companyNameSecondLine  TEXT,\
+        companyNameThirdLine   TEXT,\
+        allowKeyhookDuplicates INTEGER)");
+    query.finish();
+
     return retVal;
 }
 
 bool IOInterfaceSQLITE::initDefaultValues()
 {
     QSqlQuery query;
-
-    bool retVal = false;
 
     //key categories
     QList <QString> values;
@@ -315,105 +324,62 @@ bool IOInterfaceSQLITE::initDefaultValues()
     }
 
      //keychain states
+    values.clear();
+    values.append("Verfügbar");
+    values.append("Temporär ausgegeben");
+    values.append("Dauerhaft ausgegeben");
+    values.append("Abgabe zum Verwaltungsende");
+    values.append("Verloren");
 
-    query.prepare("INSERT INTO keychainStates (status) \
-                  VALUES ('Verfügbar')");
-    retVal = query.exec();
-    query.finish();
-
-    if(!retVal)
-        return false;
-
-    query.prepare("INSERT INTO keychainStates (status) \
-                  VALUES ('Temporär ausgegeben')");
-    retVal = query.exec();
-    query.finish();
-
-    if(!retVal)
-        return false;
-
-    query.prepare("INSERT INTO keychainStates (status) \
-                  VALUES ('Dauerhaft ausgegeben')");
-    retVal = query.exec();
-    query.finish();
-
-    if(!retVal)
-        return false;
-
-    query.prepare("INSERT INTO keychainStates (status) \
-                  VALUES ('Abgabe zum Verwaltungsende')");
-    retVal = query.exec();
-    query.finish();
-
-    if(!retVal)
-        return false;
-
-    query.prepare("INSERT INTO keychainStates (status) \
-                  VALUES ('Verloren')");
-    retVal = query.exec();
-    query.finish();
-
-    if(!retVal)
-        return false;
+    for (int i = 0; i < values.count(); i++)
+    {
+        query.prepare ("INSERT INTO keychainStates (status) VALUES (?)");
+        query.bindValue(0, values.at(i));
+        query.exec();
+        query.finish();
+    }
 
     //key states
+    values.clear();
+    values.append("In Ordnung");
+    values.append("Passt nicht");
+    values.append("Defekt");
+    values.append("Verloren");
 
-    query.prepare("INSERT INTO keyStates (status) \
-                  VALUES ('In Ordnung')");
-    retVal = query.exec();
-    query.finish();
-
-    if(!retVal)
-        return false;
-
-    query.prepare("INSERT INTO keyStates (status) \
-                  VALUES ('Passt nicht')");
-    retVal = query.exec();
-    query.finish();
-
-    if(!retVal)
-        return false;
-
-    query.prepare("INSERT INTO keyStates (status) \
-                  VALUES ('Defekt')");
-    retVal = query.exec();
-    query.finish();
-
-    if(!retVal)
-        return false;
-
-    query.prepare("INSERT INTO keyStates (status) \
-                  VALUES ('Verloren')");
-    retVal = query.exec();
-    query.finish();
-
-    if(!retVal)
-        return false;
+    for (int i = 0; i < values.count(); i++)
+    {
+        query.prepare ("INSERT INTO keyStates (status) VALUES (?)");
+        query.bindValue(0, values.at(i));
+        query.exec();
+        query.finish();
+    }
 
     //recipient types
+    values.clear();
+    values.append("Unternehmen");
+    values.append("Mitarbeiter");
+    values.append("Privatperson");
 
-    query.prepare("INSERT INTO recipientTypes (type) \
-                VALUES ('Unternehmen')");
-    retVal = query.exec();
-    query.finish();
+    for (int i = 0; i < values.count(); i++)
+    {
+        query.prepare ("INSERT INTO recipientTypes (type) VALUES (?)");
+        query.bindValue(0, values.at(i));
+        query.exec();
+        query.finish();
+    }
 
-    if(!retVal)
-        return false;
+    //app settings
+    query.prepare("INSERT INTO appSettings (cameraId, companyNameFirstLine, companyNameSecondLine, companyNameThirdLine, allowKeyhookDuplicates) VALUES (?, ?, ?, ?, ?)");
+    query.bindValue(0, -1);
+    query.bindValue(1, "Musterfirma Name");
+    query.bindValue(2, "Musterfirma Straße");
+    query.bindValue(3, "Musterfirma PLZ Ort");
+    query.bindValue(4, false);
 
-    query.prepare("INSERT INTO recipientTypes (type) \
-                  VALUES ('Mitarbeiter')");
-    retVal = query.exec();
-    query.finish();
+    query.exec();
 
-    if(!retVal)
-        return false;
-
-    query.prepare("INSERT INTO recipientTypes (type) \
-                  VALUES ('Privatperson')");
-    retVal = query.exec();
-    query.finish();
-
-    return retVal;
+    //todo: catch db query failures instead of returning true everytime
+    return true;
 }
 
 QByteArray IOInterfaceSQLITE::imageToByteArray (QImage img)
@@ -1257,6 +1223,158 @@ const QString IOInterfaceSQLITE::dbGetLastError()
 void IOInterfaceSQLITE::byteArrayToImage (QByteArray imgBa, QImage& img)
 {
     img = QImage::fromData(imgBa, "jpg");
+}
+
+bool IOInterfaceSQLITE::setDefaultCameraId(int id)
+{
+    QSqlQuery query;
+
+    qDebug () << "IOInterfaceSQLITE::setDefaultCameraId - ID: " << id;
+
+    // update setting
+    query.prepare("UPDATE appSettings SET cameraId = ? WHERE id = 1");
+    query.bindValue(0, id);
+
+    bool queryOk = query.exec();
+
+    qDebug () << "queryOk: " << queryOk;
+
+    return queryOk;
+}
+
+bool IOInterfaceSQLITE::setCompanyNameFirstLine(const QString value)
+{
+    QSqlQuery query;
+
+    // insert new keychain entry
+    query.prepare("UPDATE appSettings SET companyNameFirstLine = ? WHERE id = 1");
+
+    query.bindValue(0, value);
+
+    bool queryOk = query.exec();
+
+    return queryOk;
+}
+
+bool IOInterfaceSQLITE::setCompanyNameSecondLine(const QString value)
+{
+    QSqlQuery query;
+
+    // insert new keychain entry
+    query.prepare("UPDATE appSettings SET companyNameSecondLine = ? WHERE id = 1");
+
+    query.bindValue(0, value);
+
+    bool queryOk = query.exec();
+
+    return queryOk;
+}
+
+bool IOInterfaceSQLITE::setCompanyNameThirdLine(const QString value)
+{
+    QSqlQuery query;
+
+    // insert new keychain entry
+    query.prepare("UPDATE appSettings SET companyNameThirdLine = ? WHERE id = 1");
+
+    query.bindValue(0, value);
+
+    bool queryOk = query.exec();
+
+    return queryOk;
+}
+
+bool IOInterfaceSQLITE::setKeyhookDuplicatesAllowed(bool value)
+{
+    QSqlQuery query;
+
+    // insert new keychain entry
+    query.prepare("UPDATE appSettings SET allowKeyhookDuplicates = ? WHERE id = 1");
+
+    query.bindValue(0, value);
+
+    bool queryOk = query.exec();
+
+    return queryOk;
+}
+
+int IOInterfaceSQLITE::getDefaultCameraId()
+{
+    QSqlQuery query;
+    int returnValue = 0;
+
+    qDebug () << "IOInterfaceSQLITE::getDefaultCameraId()";
+
+    query.prepare("SELECT cameraId FROM appSettings WHERE id = 1");
+
+    if(query.exec())
+    {
+        returnValue = query.value(0).toInt();
+        qDebug () << "query ok, cam id value: " << returnValue;
+    }
+    qDebug () << "query Nok";
+
+    return returnValue;
+}
+
+const QString IOInterfaceSQLITE::getCompanyNameFirstLine()
+{
+    QSqlQuery query;
+    QString returnValue = "";
+
+    query.prepare("SELECT companyFirstLine FROM appSettings WHERE id = 1");
+
+    if(query.exec())
+    {
+        returnValue = query.value(0).toString();
+    }
+
+    return returnValue;
+}
+
+const QString IOInterfaceSQLITE::getCompanyNameSecondLine()
+{
+    QSqlQuery query;
+    QString returnValue = "";
+
+    query.prepare("SELECT companySecondLine FROM appSettings WHERE id = 1");
+
+    if(query.exec())
+    {
+        returnValue = query.value(0).toString();
+    }
+
+    return returnValue;
+}
+
+const QString IOInterfaceSQLITE::getCompanyNameThirdLine()
+{
+    QSqlQuery query;
+    QString returnValue = "";
+
+    query.prepare("SELECT companyThirdLine FROM appSettings WHERE id = 1");
+
+    if(query.exec())
+    {
+        returnValue = query.value(0).toString();
+    }
+
+    return returnValue;
+}
+
+bool IOInterfaceSQLITE::keyhookDuplicatesAllowed()
+{
+    QSqlQuery query;
+    bool returnValue = false;
+
+    query.prepare("SELECT allowKeyhookDuplicates FROM appSettings WHERE id = 1");
+
+    if(query.exec())
+    {
+        returnValue = query.value(0).toBool();
+    }
+
+    return returnValue;
 }
 
 IOInterfaceSQLITE::~IOInterfaceSQLITE()
