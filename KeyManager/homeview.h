@@ -10,8 +10,12 @@ class QGridLayout;
 class HomeView : public WinSubmenu
 {
     Q_OBJECT
-public:
-    explicit HomeView(QWidget *parent = nullptr);
+    public:
+        explicit HomeView(QWidget *parent = nullptr);
+    private:
+        void showEvent(QShowEvent *);
+        QLabel *mLogo;
+        bool mInitDone;
 };
 
 #endif // HOMEVIEW_H

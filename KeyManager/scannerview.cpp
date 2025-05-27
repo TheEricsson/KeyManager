@@ -43,7 +43,7 @@ ScannerView::ScannerView(QWidget *parent)
     mPlayer = 0;
     mAudioOut = 0;
 
-    //setHeader("Scannen Sie einen Barcode");
+    setHeader("Code-Scanner");
 
     m_viewfinder = 0;
 

@@ -45,7 +45,8 @@ namespace Gui
         Save,
         DeleteImage,
         NewImageFromCam,
-        Tools
+        Tools,
+        Shutter
     };
 }
 

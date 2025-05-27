@@ -36,6 +36,7 @@ protected:
     void resizeEvent(QResizeEvent *event) override;
 
 private:
+    void drawBackground ();
     void drawLineTo(const QPoint &endPoint);
     void resizeImage(QImage *image, const QSize &newSize);
 

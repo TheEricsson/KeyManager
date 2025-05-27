@@ -20,9 +20,7 @@ HandoverView::HandoverView (QWidget *parent)
 {
     mSigPad = 0;
 
-    //setHeader("Ausgabe abschließen");
-
-    //clear ();
+    setHeader("Zusammenfassung");
 
     QGridLayout *gridLayout = new QGridLayout ();
 

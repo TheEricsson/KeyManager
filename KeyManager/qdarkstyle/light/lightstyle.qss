@@ -789,9 +789,9 @@ QToolBar::separator:vertical {
 }
 
 QToolButton#qt_toolbar_ext_button {
-  background: #C0C4C8;
+  background: #FAFAFA;
   border: 0px;
-  color: #19232D;
+  color: #FAFAFA;
   image: url(":/qss_icons/light/rc/arrow_right.png");
 }
 
@@ -892,6 +892,11 @@ QLabel:disabled {
   background-color: #FAFAFA;
   border: 0px solid #C0C4C8;
   color: #9DA9B5;
+}
+
+QLabel#WinSubMenuHeader {
+  color: #1E88E5;
+  font: bold 30px;
 }
 
 /* does not work, maybe because the label is created while the app is running (not at start)
@@ -1076,26 +1081,25 @@ https://doc.qt.io/qt-5/stylesheet-examples.html#customizing-qtoolbutton
 
 --------------------------------------------------------------------------- */
 QToolButton {
-  background-color: #C0C4C8;
+  background-color: #FAFAFA;
   color: #19232D;
   border-radius: 4px;
   padding: 2px;
   outline: none;
-  border: none;
   /* The subcontrols below are used only in the DelayedPopup mode */
   /* The subcontrols below are used only in the MenuButtonPopup mode */
   /* The subcontrol below is used only in the InstantPopup or DelayedPopup mode */
 }
 
 QToolButton:disabled {
-  background-color: #C0C4C8;
+  background-color: #FAFAFA;
   color: #9DA9B5;
   border-radius: 4px;
   padding: 2px;
 }
 
 QToolButton:checked {
-  background-color: #ACB1B6;
+  background-color: #ECEFF1;
   border-radius: 4px;
   padding: 2px;
   outline: none;
@@ -1110,30 +1114,30 @@ QToolButton:checked:disabled {
 }
 
 QToolButton:checked:hover {
-  background-color: #B4B8BC;
+  background-color: #ECEFF1;
   color: #19232D;
 }
 
 QToolButton:checked:pressed {
-  background-color: #ACB1B6;
+  background-color: #ECEFF1;
 }
 
 QToolButton:checked:selected {
-  background: #ACB1B6;
+  background: #ECEFF1;
   color: #19232D;
 }
 
 QToolButton:hover {
-  background-color: #B4B8BC;
+  background-color: #ECEFF1;
   color: #19232D;
 }
 
 QToolButton:pressed {
-  background-color: #ACB1B6;
+  background-color: #ECEFF1;
 }
 
 QToolButton:selected {
-  background: #ACB1B6;
+  background: #ECEFF1;
   color: #19232D;
 }
 
@@ -2118,6 +2122,10 @@ https://stackoverflow.com/questions/14581498/qt-stylesheet-for-hline-vline-color
   max-width: 2px;
   border: none;
   background-color: #C0C4C8;
+}
+
+QFrame#WinSubMenuTopFrame {
+  background-color: #EEEEEE;
 }
 
 /* QSplitter --------------------------------------------------------------

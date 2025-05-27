@@ -22,14 +22,19 @@ CameraView::CameraView(QWidget *parent)
 
     QList<Gui::MenuButton> menuButtons;
     menuButtons.append(Gui::Back);
-    menuButtons.append(Gui::TakePicture);
-    menuButtons.append(Gui::Save);
+    menuButtons.append(Gui::Shutter);
     setMenuButtons(menuButtons);
 }
 
 QImage CameraView::getImage()
 {
-    return mCamera->getImageFromVideoframe();
+    QImage img;
+
+    if (mCamera)
+    {
+        img = mCamera->getImageFromVideoframe();
+    }
+    return img;
 }
 
 void CameraView::showEvent(QShowEvent *)

@@ -10,7 +10,7 @@ AnnotationView::AnnotationView (QWidget *parent)
 {
     mDataAnnotation = 0;
 
-    //setHeader("Zuätzliche Notizen");
+    setHeader("Zusätzliche Notizen");
     mTextEditor = new QTextEdit (this);
     mTextEditor->setSizePolicy(QSizePolicy::Policy::Expanding, QSizePolicy::Policy::Expanding);
 

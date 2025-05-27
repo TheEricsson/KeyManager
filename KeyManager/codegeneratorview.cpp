@@ -21,6 +21,7 @@ CodeGeneratorView::CodeGeneratorView(QWidget *parent) : WinSubmenu {parent}
     mPrintWidth = "";
     mBorderCheckState = Qt::Checked;
     mFoldableCheckState = Qt::Checked;
+    mShowPdfFile = true;
 
     QLabel *numberOfCodes = new QLabel ("Anzahl gewünschter Codes:", this);
     QLineEdit *numberOfCodesEdit = new QLineEdit(this);
@@ -43,7 +44,6 @@ CodeGeneratorView::CodeGeneratorView(QWidget *parent) : WinSubmenu {parent}
 
     QCheckBox *openPdfAfterCreation = new QCheckBox("PDF nach Erstellung anzeigen?", this);
     openPdfAfterCreation->setCheckState(Qt::Checked);
-    mShowPdfFile = true;
 
     QSpacerItem *spacer = new QSpacerItem (0, 0, QSizePolicy::Expanding, QSizePolicy::Expanding);
 

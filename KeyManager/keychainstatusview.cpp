@@ -26,6 +26,8 @@
 KeychainStatusView::KeychainStatusView(QWidget *parent)
     : WinSubmenu {parent}
 {
+    setHeader("Schlüsselbund-Daten");
+
     mKeys = 0;
     //mKeychain = 0;
     mKeysImgPreview = 0;
@@ -34,8 +36,6 @@ KeychainStatusView::KeychainStatusView(QWidget *parent)
     mViewData = 0;
     mCameraView = 0;
     mImageView = 0;
-
-    //setHeader("Informationen zum Schlüsselbund");
 
     QLabel* keychainKeycode = new QLabel ("Gescannter Code: ", this);
     QLabel* keychainStatus = new QLabel ("Aktueller Status: ", this);
@@ -112,6 +112,10 @@ KeychainStatusView::KeychainStatusView(QWidget *parent)
 
 void KeychainStatusView::showEvent(QShowEvent *)
 {
+    int screenWidth = size().width();
+    mKeys->setMaximumWidth(screenWidth);
+    mHistory->setMaximumWidth(screenWidth);
+
     int barcode = dataInterface()->getScannedCode();
     QString barcodeAsString = QString::number(barcode);
 
@@ -298,9 +302,10 @@ void KeychainStatusView::onCameraViewButtonClicked(Gui::MenuButton btn)
 {
     switch (btn)
     {
-        case Gui::Save:
+        case Gui::Shutter:
             if (mCameraView)
             {
+                showMessageWindow("Bild wurde gespeichert.");
                 ioInterface()->dbInsertKeychainImg(dataInterface()->getScannedCode(), mCameraView->getImage());
                 setKeychainImage(mCameraView->getImage());
                 mCameraView->hide();
@@ -335,10 +340,10 @@ void KeychainStatusView::onImageViewButtonClicked(Gui::MenuButton btn)
         case Gui::TakePicture:
             if (mImageView)
             {
+                mImageView->hide();
                 delete mImageView;
                 mImageView = 0;
             }
-
             if (!mCameraView)
             {
                 mCameraView = new CameraView();
@@ -350,6 +355,7 @@ void KeychainStatusView::onImageViewButtonClicked(Gui::MenuButton btn)
         case Gui::DeleteImage:
             if (mImageView)
             {
+                mImageView->hide();
                 delete mImageView;
                 mImageView = 0;
             }
@@ -360,10 +366,30 @@ void KeychainStatusView::onImageViewButtonClicked(Gui::MenuButton btn)
             //read back image from db and set in gui
             ioInterface()->getKeychainImg(keyCode, img);
             setKeychainImage(img);
+
+            //inform user about deleted image
+            showMessageWindow("Bild wurde gelöscht.");
+
+            break;
+        case Gui::Back:
+            if (mImageView)
+            {
+                mImageView->hide();
+                delete mImageView;
+                mImageView = 0;
+            }
             break;
         default:
             break;
     }
+}
+
+void KeychainStatusView::showMessageWindow(const QString& infoText)
+{
+    QMessageBox msgBox;
+    msgBox.setStandardButtons(QMessageBox::Ok);
+    msgBox.setInformativeText(infoText);
+    msgBox.exec();
 }
 
 KeychainStatusView::~KeychainStatusView ()

@@ -48,7 +48,7 @@ ToolsViewDataAdministration::ToolsViewDataAdministration(QWidget *parent)
     setCentralLayout(mainLayout);
 
     QList<Gui::MenuButton> menuButtons;
-    menuButtons.append(Gui::Exit);
+    menuButtons.append(Gui::Back);
     setMenuButtons(menuButtons);
 
     //signals

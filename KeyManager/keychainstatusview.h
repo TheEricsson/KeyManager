@@ -36,6 +36,8 @@ class KeychainStatusView : public WinSubmenu
 
     private:
         virtual void showEvent(QShowEvent *);
+        void showMessageWindow(const QString& infoText);
+
         QSqlRelationalTableModel *mKeyModel;
         //QSqlRelationalTableModel *mKeychainModel;
         QSqlRelationalTableModel *mHistoryModel;

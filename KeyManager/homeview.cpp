@@ -4,6 +4,7 @@
 #include <QPushButton>
 #include <QPixmap>
 #include <QLabel>
+#include <QMainWindow>
 
 #include "winsubmenu.h"
 #include "globals.h"
@@ -11,23 +12,18 @@
 HomeView::HomeView(QWidget *parent)
     : WinSubmenu {parent}
 {
-    setHeader("KEYMANAGER");
+    mInitDone = false;
 
-    // QPixmap logo (":/images/logo.png");
-    // QPixmap logo_scaled = logo.scaled(QSize(Gui::logoWidth, Gui::logoHeight), Qt::KeepAspectRatioByExpanding, Qt::SmoothTransformation);
-    // QLabel *label = new QLabel(this);
-    // label->setScaledContents(true);
-    // label->setMaximumHeight(Gui::logoHeight);
-    // label->setMaximumWidth(Gui::logoWidth);
-    // label->setContentsMargins(0,0,0,0);
-    // label->setPixmap(logo_scaled);
-    // label->setAlignment(Qt::AlignHCenter);
-    // label->setSizePolicy(QSizePolicy::MinimumExpanding, QSizePolicy::MinimumExpanding);
+    mLogo = new QLabel();
+    mLogo->setScaledContents(true);
+    mLogo->setContentsMargins(20,20,20,20);
+    mLogo->setAlignment(Qt::AlignCenter);
+    mLogo->setSizePolicy(QSizePolicy::MinimumExpanding, QSizePolicy::MinimumExpanding);
 
     QSpacerItem *spacer = new QSpacerItem (0, 0, QSizePolicy::Expanding, QSizePolicy::Expanding);
 
     QVBoxLayout *centralLayout = new QVBoxLayout();
-    //centralLayout->addWidget(label);
+    centralLayout->addWidget(mLogo);
     centralLayout->addItem(spacer);
     setCentralLayout(centralLayout);
 
@@ -39,4 +35,21 @@ HomeView::HomeView(QWidget *parent)
     menuButtons.append(Gui::MenuButton::Exit);
 
     setMenuButtons(menuButtons);
+}
+
+void HomeView::showEvent(QShowEvent *)
+{
+    //set logo once at first show event
+    if (!mInitDone)
+    {
+        if (mLogo)
+        {
+            int logo_width = size().width();
+            logo_width *= 0.75;
+
+            QPixmap logo (":/images/keymanager_logo.png");
+            QPixmap logo_scaled = logo.scaledToWidth(logo_width,Qt::SmoothTransformation);
+            mLogo->setPixmap(logo_scaled);
+        }
+    }
 }

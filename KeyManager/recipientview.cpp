@@ -25,6 +25,8 @@
 
 RecipientView::RecipientView(QWidget *parent) : WinSubmenu {parent}
 {
+    setHeader("Schlüsselempfänger");
+
     mRecipients = 0;
     mFilteredModel = 0;
     mRecipientsModel = 0;
@@ -32,8 +34,6 @@ RecipientView::RecipientView(QWidget *parent) : WinSubmenu {parent}
     mAddRecipientView = 0;
 
     mFilteredModel = new QSortFilterProxyModel (this);
-
-    //setHeader("Empfänger auswählen");
 
     QGridLayout* centralLayout = new QGridLayout();
 

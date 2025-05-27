@@ -17,6 +17,8 @@
 SearchView::SearchView (QWidget *parent)
     : WinSubmenu {parent}
 {
+    setHeader("Suche");
+
     mDataView = new QTreeView (this);
     mDataView->setSizePolicy(QSizePolicy::MinimumExpanding, QSizePolicy::MinimumExpanding);
     mDataView->setContentsMargins(0, 0, 0, 0);

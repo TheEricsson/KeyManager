@@ -82,6 +82,11 @@ void SignaturePad::resizeEvent(QResizeEvent *event)
     QWidget::resizeEvent(event);
 }
 
+void SignaturePad::drawBackground ()
+{
+
+}
+
 void SignaturePad::drawLineTo(const QPoint &endPoint)
 {
     QPainter painter(&image);

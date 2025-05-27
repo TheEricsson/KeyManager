@@ -84,7 +84,6 @@ void WinSubmenu::setTopLayout (QLayout *layout)
         layout->setSizeConstraint(QLayout::SetMinimumSize);
         mBaseLayout->insertLayout(0, layout);
     }
-    update();
 }
 
 void WinSubmenu::setCentralLayout (QLayout *layout)
@@ -100,9 +99,7 @@ void WinSubmenu::setCentralLayout (QLayout *layout)
     {
         layout->setSizeConstraint(QLayout::SetMaximumSize);
         mBaseLayout->insertLayout(1, layout);
-        mBaseLayout->update();
     }
-    update();
 }
 
 void WinSubmenu::setBottomLayout (QLayout *layout)
@@ -118,9 +115,7 @@ void WinSubmenu::setBottomLayout (QLayout *layout)
     {
         layout->setSizeConstraint(QLayout::SetMinimumSize);
         mBaseLayout->insertLayout(2, layout);
-        mBaseLayout->update();
     }
-    update();
 }
 
 QLayout* WinSubmenu::getTopLayout ()
@@ -158,10 +153,18 @@ QLayout* WinSubmenu::getBottomLayout ()
 
 void WinSubmenu::setHeader (const QString& label)
 {
-    QHBoxLayout *layout = new QHBoxLayout();
-    QLabel *headerWinSubMenu = new QLabel (label);
+    QVBoxLayout *layout = new QVBoxLayout();
 
-    layout->addWidget(headerWinSubMenu,0,Qt::AlignCenter);
+    // QFrame *frame = new QFrame (this);
+    // frame->setLayout(layout);
+    // frame->setSizePolicy(QSizePolicy::MinimumExpanding, QSizePolicy::MinimumExpanding);
+    // frame->setObjectName("WinSubMenuTopFrame");
+
+    QLabel *headerWinSubMenu = new QLabel (label);
+    headerWinSubMenu->setAlignment(Qt::AlignCenter);
+    headerWinSubMenu->setObjectName("WinSubMenuHeader");
+
+    layout->addWidget(headerWinSubMenu,0);
     setTopLayout(layout);
 }
 
@@ -182,110 +185,109 @@ void WinSubmenu::setMenuButtons (const QList<Gui::MenuButton> &buttons)
 
     for (int i = 0; i<buttons.count();i++)
     {
-        MenuButton *menuBtn = new MenuButton ();
+        MenuButton *menuBtn = new MenuButton (this);
         menuBtn->setButtonType(buttons[i]);
         menuBtn->setIconSize(QSize(Gui::buttonWidth,Gui::buttonHeight));
         menuBtn->setToolButtonStyle(Qt::ToolButtonTextUnderIcon);
 
-        QFont font("Roboto");
-        font.setStyleHint(QFont::SansSerif);
-        font.setPixelSize(12);
-        menuBtn->setFont(font);
+        // QFont font("Roboto");
+        // font.setStyleHint(QFont::SansSerif);
+        // font.setPixelSize(12);
+        // menuBtn->setFont(font);
 
         switch (buttons[i])
         {
             case (Gui::Back):
-                menuBtn->setIcon(QIcon(":/images/menu_back.png"));
-                menuBtn->setButtonText("Zurück");
+                menuBtn->setIcon(QIcon(":/images/google_material_design/arrow_back_48dp_5985E1_FILL0_wght400_GRAD0_opsz48.svg"));
+                //menuBtn->setButtonText("Zurück");
                 break;
             case (Gui::Pdf):
-                menuBtn->setIcon(QIcon(":/images/menu_pdf.png"));
-                menuBtn->setButtonText("PDF");
+                menuBtn->setIcon(QIcon(":/images/google_material_design/picture_as_pdf_48dp_5985E1_FILL0_wght400_GRAD0_opsz48.svg"));
+                //menuBtn->setButtonText("PDF");
                 break;
             case (Gui::Repeat):
-                menuBtn->setIcon(QIcon(":/images/menu_retry.png"));
-                menuBtn->setButtonText("Wiederholen");
+                menuBtn->setIcon(QIcon(":/images/google_material_design/redo_48dp_5985E1_FILL0_wght400_GRAD0_opsz48.svg"));
+                //menuBtn->setButtonText("Wiederholen");
                 break;
             case (Gui::Next):
-                menuBtn->setIcon(QIcon(":/images/menu_next.png"));
-                menuBtn->setButtonText("Weiter");
+                menuBtn->setIcon(QIcon(":/images/google_material_design/arrow_forward_48dp_5985E1_FILL0_wght400_GRAD0_opsz48.svg"));
+                //menuBtn->setButtonText("Weiter");
                 break;
             case (Gui::Ok):
-                menuBtn->setIcon(QIcon(":/images/menu_ok.png"));
+                menuBtn->setIcon(QIcon(":/images/google_material_design/check_48dp_5985E1_FILL0_wght400_GRAD0_opsz48.svg"));
                 break;
             case (Gui::AddRecipient):
-                menuBtn->setIcon(QIcon(":/images/menu_add_recipient.jpeg"));
-                menuBtn->setButtonText("Empfänger \nhinzufügen");
+                menuBtn->setIcon(QIcon(":/images/google_material_design/person_add_48dp_5985E1_FILL0_wght400_GRAD0_opsz48.svg"));
+                //menuBtn->setButtonText("Empfänger \nhinzufügen");
                 break;
             case (Gui::Handout):
-                menuBtn->setIcon(QIcon(":/images/menu_keyOut.png"));
-                menuBtn->setButtonText("Ausgabe");
+                menuBtn->setIcon(QIcon(":/images/google_material_design/logout_48dp_5985E1_FILL0_wght400_GRAD0_opsz48.svg"));
+                //menuBtn->setButtonText("Ausgabe");
                 break;
             case (Gui::TakeBack):
-                menuBtn->setIcon(QIcon(":/images/menu_keyBack.png"));
-                menuBtn->setButtonText("Rücknahme");
+                menuBtn->setIcon(QIcon(":/images/google_material_design/login_48dp_5985E1_FILL0_wght400_GRAD0_opsz48.svg"));
+                //menuBtn->setButtonText("Rücknahme");
                 break;
             case (Gui::Scanner):
-                menuBtn->setIcon(QIcon(":/images/menu_scan.png"));
-                menuBtn->setButtonText("Scannen");
+                menuBtn->setIcon(QIcon(":/images/google_material_design/qr_code_scanner_48dp_5985E1_FILL0_wght400_GRAD0_opsz48.svg"));
+                //menuBtn->setButtonText("Scannen");
                 break;
             case (Gui::Search):
-                menuBtn->setIcon(QIcon(":/images/menu_search.svg"));
-                menuBtn->setButtonText("Suche");
+                menuBtn->setIcon(QIcon(":/images/google_material_design/search_48dp_5985E1_FILL0_wght400_GRAD0_opsz48.svg"));
+                //menuBtn->setButtonText("Suche");
                 break;
             case (Gui::Settings):
-                menuBtn->setIcon(QIcon(":/images/menu_settings.svg"));
-                menuBtn->setButtonText("Einstellungen");
+                menuBtn->setIcon(QIcon(":/images/google_material_design/settings_48dp_5985E1_FILL0_wght400_GRAD0_opsz48.svg"));
+                //menuBtn->setButtonText("Einstellungen");
                 break;
             case (Gui::Exit):
-                menuBtn->setIcon(QIcon(":/images/menu_exit.svg"));
-                menuBtn->setButtonText("Verlassen");
+                menuBtn->setIcon(QIcon(":/images/google_material_design/exit_to_app_48dp_5985E1_FILL0_wght400_GRAD0_opsz48.svg"));
+                //menuBtn->setButtonText("Verlassen");
                 break;
             case (Gui::MainMenu):
-                //menuBtn->setIcon(QIcon(":/images/TODO"));
-                menuBtn->setButtonText("Hauptmenü");
+                menuBtn->setIcon(QIcon(":/images/google_material_design/home_app_logo_48dp_5985E1_FILL0_wght400_GRAD0_opsz48.svg"));
+                //menuBtn->setButtonText("Hauptmenü");
                 break;
             case (Gui::AddCustomer):
-                menuBtn->setIcon(QIcon(":/images/menu_add_recipient.jpeg"));
-                menuBtn->setButtonText("Kunde anlegen");
+                menuBtn->setIcon(QIcon(":/images/google_material_design/person_add_48dp_5985E1_FILL0_wght400_GRAD0_opsz48.svg"));
+                //menuBtn->setButtonText("Kunde anlegen");
                 break;
             case (Gui::Edit):
-                //menuBtn->setIcon(QIcon(":/images/TODO"));
-                menuBtn->setButtonText("Editieren");
+                menuBtn->setIcon(QIcon(":/images/google_material_design/edit_note_48dp_5985E1_FILL0_wght400_GRAD0_opsz48.svg"));
+                //menuBtn->setButtonText("Editieren");
                 break;
             case (Gui::Print):
-                //menuBtn->setIcon(QIcon(":/images/TODO"));
-                menuBtn->setButtonText("Drucken");
+                menuBtn->setIcon(QIcon(":/images/google_material_design/print_48dp_5985E1_FILL0_wght400_GRAD0_opsz48.svg"));
+                //menuBtn->setButtonText("Drucken");
                 break;
             case (Gui::DeleteImage):
-                //menuBtn->setIcon(QIcon(":/images/TODO"));
-                menuBtn->setButtonText("Bild\nLöschen");
+                menuBtn->setIcon(QIcon(":/images/google_material_design/delete_forever_48dp_5985E1_FILL0_wght400_GRAD0_opsz48.svg"));
+                //menuBtn->setButtonText("Bild\nLöschen");
                 break;
             case (Gui::NewImageFromCam):
-                //menuBtn->setIcon(QIcon(":/images/TODO"));
-                menuBtn->setButtonText("Neues Bild\naufnehmen");
+                menuBtn->setIcon(QIcon(":/images/google_material_design/photo_camera_48dp_5985E1_FILL0_wght400_GRAD0_opsz48.svg"));
+                //menuBtn->setButtonText("Neues Bild\naufnehmen");
                 break;
             case (Gui::Tools):
-                //menuBtn->setIcon(QIcon(":/images/TODO"));
-                menuBtn->setButtonText("Tools");
+                menuBtn->setIcon(QIcon(":/images/google_material_design/apps_48dp_5985E1_FILL0_wght400_GRAD0_opsz48.svg"));
+                //menuBtn->setButtonText("Tools");
                 break;
             case (Gui::AddKey):
-                //menuBtn->setIcon(QIcon(":/images/TODO"));
-                menuBtn->setButtonText("Schlüssel\nhinzufügen");
+                menuBtn->setIcon(QIcon(":/images/google_material_design/key_48dp_5985E1_FILL0_wght400_GRAD0_opsz48.svg"));
+                //menuBtn->setButtonText("Schlüssel\nhinzufügen");
                 break;
             case (Gui::TakePicture):
-                //menuBtn->setIcon(QIcon(":/images/TODO"));
-                menuBtn->setButtonText("Foto\naufnehmen");
+                menuBtn->setIcon(QIcon(":/images/google_material_design/photo_camera_48dp_5985E1_FILL0_wght400_GRAD0_opsz48.svg"));
+                //menuBtn->setButtonText("Foto\naufnehmen");
                 break;
             case (Gui::Save):
-                //menuBtn->setIcon(QIcon(":/images/TODO"));
-                menuBtn->setButtonText("Bild\nspeichern");
+                menuBtn->setIcon(QIcon(":/images/google_material_design/save_48dp_5985E1_FILL0_wght400_GRAD0_opsz48.svg"));
+                //menuBtn->setButtonText("Bild\nspeichern");
                 break;
-            case (Gui::NewCodeScanned):
-                //menuBtn->setIcon(QIcon(":/images/TODO"));
-                menuBtn->setButtonText("Schlüssel\nanlegen");
+            case (Gui::Shutter):
+                menuBtn->setIcon(QIcon(":/images/google_material_design/camera_48dp_5985E1_FILL0_wght400_GRAD0_opsz48.svg"));
+                //menuBtn->setButtonText("Bild\nspeichern");
                 break;
-
             default:
                 break;
         }
@@ -362,7 +364,10 @@ void WinSubmenu::keyReleaseEvent(QKeyEvent *event)
 
 WinSubmenu::~WinSubmenu ()
 {
-    QLayout *current = getBottomLayout();
+    /*uncommented:
+    base layout should remove all 'child' layouts itself, because they are all child items*/
+
+    /*QLayout *current = getBottomLayout();
     if (0 != current)
     {
         mBaseLayout->removeItem(current);
@@ -381,5 +386,5 @@ WinSubmenu::~WinSubmenu ()
     {
         mBaseLayout->removeItem(current);
         delete current;
-    }
+    }*/
 }

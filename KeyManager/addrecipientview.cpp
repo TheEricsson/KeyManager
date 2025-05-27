@@ -12,6 +12,8 @@
 AddRecipientView::AddRecipientView (QWidget *parent)
     : WinSubmenu {parent}
 {
+    setHeader("Neuer Empfänger");
+
     mIsCompany = 0;
     mLabelRecipientName = 0;
     mRecipientNameEdit = 0;
@@ -20,8 +22,6 @@ AddRecipientView::AddRecipientView (QWidget *parent)
     mAreaCodeEdit = 0;
     mCityEdit = 0;
     mRecipientType = RecipientType::Company; // usual case
-
-    //setHeader("Empfänger anlegen");
 
     QGridLayout* gridLayout = new QGridLayout ();
 

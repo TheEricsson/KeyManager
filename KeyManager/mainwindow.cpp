@@ -200,7 +200,10 @@ void MainWindow::onMenuBtnClicked (Gui::MenuButton btnType)
                 nextWidget = mViewStackManager->begin();
                 break;
             case (Gui::Back):
-                nextWidget = mViewStackManager->previous();
+                if (mHomeView != mViewStackManager->current())
+                {
+                    nextWidget = mViewStackManager->previous();
+                }
                 break;
             case (Gui::Next):
                 nextWidget = mViewStackManager->next();

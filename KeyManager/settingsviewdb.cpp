@@ -34,7 +34,6 @@ SettingsViewDb::SettingsViewDb(QWidget *parent) : WinSubmenu {parent}
 
     QList<Gui::MenuButton> menuButtons;
     menuButtons.append(Gui::Back);
-    menuButtons.append(Gui::Next);
     setMenuButtons(menuButtons);
 
     connect (saveDbBtn, SIGNAL(clicked()), this, SLOT(onSaveDbBtnClicked()));
