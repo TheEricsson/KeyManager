@@ -4,11 +4,13 @@
 #include <QCheckBox>
 #include <QLayout>
 #include <QRadioButton>
+#include <QVBoxLayout>
 
 CheckBoxArray::CheckBoxArray(QWidget *parent)
     : QWidget {parent}
 {
     mRadioButtonList.clear();
+    mLayout = new QVBoxLayout(this);
 }
 
 bool CheckBoxArray::init (IOInterface *ioInterface, const QString &tableName, const QString &valueColumn)
@@ -30,7 +32,7 @@ bool CheckBoxArray::init (IOInterface *ioInterface, const QString &tableName, co
             registerButton (checkBox,i);
             dbIndex++;
         }
-        ok = true;;
+        ok = true;
     }
     return ok;
 }
@@ -58,10 +60,28 @@ QRadioButton* CheckBoxArray::getButtonAt (unsigned int index)
 {
     QRadioButton *btn = 0;
 
-    if (index <= mRadioButtonList.size() && index >= 0)
+    if (index < mRadioButtonList.size())
         btn = mRadioButtonList[index].second;
 
     return btn;
+}
+
+bool CheckBoxArray::setButtonChecked (unsigned int index, bool check)
+{
+    bool retVal = false;
+
+    //index out of range?
+    if (index < mRadioButtonList.count())
+    {
+        QRadioButton *btn = mRadioButtonList[index].second;
+        if (btn)
+        {
+            btn->setChecked(check);
+            retVal = true;
+        }
+    }
+
+    return retVal;
 }
 
 unsigned int CheckBoxArray::count()
@@ -93,17 +113,26 @@ int CheckBoxArray::getCheckedButtonIndex ()
 
 void CheckBoxArray::registerButton (QRadioButton* btn, int index)
 {
-    connect (btn, SIGNAL(clicked()), this, SLOT(onRadioBtnClicked()));
+    if (0 != btn)
+    {
+        connect (btn, SIGNAL(clicked()), this, SLOT(onRadioBtnClicked()));
 
-    QPair <int, QRadioButton*> itemPair;
-    itemPair.first = index;
-    itemPair.second = btn;
-    mRadioButtonList.append(itemPair);
+        QPair <int, QRadioButton*> itemPair;
+        itemPair.first = index;
+        itemPair.second = btn;
+        mRadioButtonList.append(itemPair);
+
+        if (mLayout)
+        {
+            mLayout->addWidget(btn);
+        }
+    }
 }
 
 void CheckBoxArray::onRadioBtnClicked()
 {
-    emit radioBtnToggled();
+    int btnIndex = getCheckedButtonIndex();
+    emit radioBtnToggled(btnIndex);
 }
 
 CheckBoxArray::~CheckBoxArray()

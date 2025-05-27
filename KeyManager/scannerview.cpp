@@ -68,7 +68,7 @@ ScannerView::ScannerView(QWidget *parent)
     mKeyLabel = new QLabel (this);
 
     // camera settings
-    QGroupBox *camera = new QGroupBox(tr("Einstellungen"));
+    QGroupBox *camera = new QGroupBox(tr("Kamera"));
     mCamSettingsLayout = new QFormLayout();
     camera->setLayout(mCamSettingsLayout);
 
@@ -268,22 +268,13 @@ void ScannerView::setAvailableCams()
             {
                 mAvailableCameras = new CheckBoxArray(this);
                 mAvailableCameras->init(camList);
-            }
+                int defaultCamId = ioInterface()->getDefaultCameraId();
+                mAvailableCameras->setButtonChecked(defaultCamId, true);
+                connect(mAvailableCameras, SIGNAL(radioBtnToggled(int)), this, SLOT(onCameraChanged(int)));
 
-            int defaultCamId = ioInterface()->getDefaultCameraId();
-
-            for (unsigned int j = 0; j < mAvailableCameras->count(); j++)
-            {
-                QRadioButton *btn = mAvailableCameras->getButtonAt(j);
-                if (btn)
+                if (mCamSettingsLayout)
                 {
-                    //set default cam gui button checked
-                    if (j == defaultCamId)
-                    {
-                        btn->setChecked(true);
-                    }
-                    mCamSettingsLayout->addWidget(btn);
-                    connect(mAvailableCameras, SIGNAL(radioBtnToggled()), this, SLOT(onCameraChanged()));
+                    mCamSettingsLayout->addWidget(mAvailableCameras);
                 }
             }
         }
@@ -328,9 +319,9 @@ void ScannerView::onMenuBtnClicked (Gui::MenuButton btnType)
     }
 }
 
-void ScannerView::onCameraChanged()
+void ScannerView::onCameraChanged(int camId)
 {
-    updateDefaultCamSetting();
+    setDefaultCam(camId);
     stopScanner();
     startScanner();
 }
@@ -483,7 +474,7 @@ const QString ScannerView::getKeyLabel()
     return mKeyLabel->text();
 }
 
-void ScannerView::updateDefaultCamSetting()
+void ScannerView::setDefaultCam (int camId)
 {
     qDebug() << "ScannerView::updateDefaultCamSetting()";
 
@@ -492,8 +483,7 @@ void ScannerView::updateDefaultCamSetting()
     {
         if (ioInterface())
         {
-            int selectedCamId = mAvailableCameras->getCheckedButtonIndex();
-            ioInterface()->setDefaultCameraId(selectedCamId);
+            ioInterface()->setDefaultCameraId(camId);
         }
     }
 }

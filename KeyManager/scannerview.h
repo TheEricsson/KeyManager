@@ -46,7 +46,7 @@ class ScannerView : public WinSubmenu
 
     private slots:
         virtual void onMenuBtnClicked (Gui::MenuButton btnType);
-        void onCameraChanged();
+        void onCameraChanged(int camId);
         void decodeFromVideoFrame ();
 
     private:
@@ -56,7 +56,7 @@ class ScannerView : public WinSubmenu
         void playSound();
         void setAvailableCams();
         void keyReleaseEvent(QKeyEvent *event);
-        void updateDefaultCamSetting();
+        void setDefaultCam (int camId);
 
         QFormLayout *mCamSettingsLayout;
         CheckBoxArray *mAvailableCameras;

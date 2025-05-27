@@ -73,38 +73,28 @@ void AddKeyView::reset ()
     else
         mKeyDescription->clear();
 
-    if (mKeyCategories)
+    if (!mKeyCategories)
     {
-        delete mKeyCategories;
-    }
-    mKeyCategories = new CheckBoxArray (this);
+        mKeyCategories = new CheckBoxArray (this);
 
-    if (ioInterface())
-        mKeyCategories->init (ioInterface(), "keyCategories", "category");
-
-    QLabel *keyTypeHeader = new QLabel("Schlüsselkategorie");
-    QLabel *keyAdditionalInfoHeader = new QLabel ("Zusätzliche Angaben");
-    QSpacerItem *spacer = new QSpacerItem (0, 0, QSizePolicy::Expanding, QSizePolicy::Expanding);
-
-    QVBoxLayout *centralLayout = new QVBoxLayout();
-    centralLayout->addWidget(keyTypeHeader);
-
-    for (unsigned int i = 0; i < mKeyCategories->count(); i++)
-    {
-        QRadioButton *btn= mKeyCategories->getButtonAt(i);
-        if (0 != btn)
+        if (ioInterface())
         {
-            centralLayout->addWidget(btn);
+            mKeyCategories->init (ioInterface(), "keyCategories", "category");
+
+            QLabel *keyTypeHeader = new QLabel("Schlüsselkategorie");
+            QLabel *keyAdditionalInfoHeader = new QLabel ("Zusätzliche Angaben");
+            QSpacerItem *spacer = new QSpacerItem (0, 0, QSizePolicy::Expanding, QSizePolicy::Expanding);
+
+            QVBoxLayout *centralLayout = new QVBoxLayout();
+            centralLayout->addWidget(keyTypeHeader);
+            centralLayout->addWidget(mKeyCategories);
+            centralLayout->addWidget(keyAdditionalInfoHeader);
+            centralLayout->addWidget(mKeyDescription);
+            centralLayout->addItem(spacer);
+
+            setCentralLayout(centralLayout);
         }
     }
-    centralLayout->addWidget(keyAdditionalInfoHeader);
-    centralLayout->addWidget(mKeyDescription);
-    centralLayout->addItem(spacer);
-    centralLayout->update();
-
-    setCentralLayout(centralLayout);
-
-    //connect (mKeyCategories, SIGNAL(radioBtnToggled()), this, SLOT(onRadioBtnToggled()));
 }
 
 bool AddKeyView::checkSelections ()
