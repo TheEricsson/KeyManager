@@ -101,6 +101,7 @@
         <file>google_material_design/vpn_key_48dp_5985E1_FILL0_wght400_GRAD0_opsz48.svg</file>
         <file>google_material_design/apps_48dp_5985E1_FILL0_wght400_GRAD0_opsz48.svg</file>
         <file>keymanager_logo.png</file>
+        <file>google_material_design/key_add_48dp_5985E1_FILL0_wght400_GRAD0_opsz48.svg</file>
     </qresource>
     <qresource prefix="/sounds">
         <file>scanner_beep.mp3</file>

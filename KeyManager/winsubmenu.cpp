@@ -288,6 +288,10 @@ void WinSubmenu::setMenuButtons (const QList<Gui::MenuButton> &buttons)
                 menuBtn->setIcon(QIcon(":/images/google_material_design/camera_48dp_5985E1_FILL0_wght400_GRAD0_opsz48.svg"));
                 //menuBtn->setButtonText("Bild\nspeichern");
                 break;
+            case (Gui::NewCodeScanned):
+                menuBtn->setIcon(QIcon(":/images/google_material_design/key_add_48dp_5985E1_FILL0_wght400_GRAD0_opsz48.svg"));
+                //menuBtn->setButtonText("Bild\nspeichern");
+                break;
             default:
                 break;
         }
