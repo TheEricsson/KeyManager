@@ -4,11 +4,13 @@
 #include "toolsviewdataadministration.h"
 #include "winsubmenu.h"
 #include "codegeneratorview.h"
+#include "recipientview.h"
 
 ToolsViewDataAdministration::ToolsViewDataAdministration(QWidget *parent)
     : WinSubmenu{parent}
 {
     mCodeGeneratorView = 0;
+    mRecipientView = 0;
 
     setHeader("Tools");
 
@@ -53,6 +55,7 @@ ToolsViewDataAdministration::ToolsViewDataAdministration(QWidget *parent)
 
     //signals
     connect (encoderBtn, SIGNAL (clicked()), this, SLOT(onEncoderSettingsClicked()));
+    connect (btnRecipientData, SIGNAL (clicked()), this, SLOT(onRecipientDataClicked()));
 }
 
 void ToolsViewDataAdministration::onEncoderSettingsClicked()
@@ -64,6 +67,17 @@ void ToolsViewDataAdministration::onEncoderSettingsClicked()
         connect (mCodeGeneratorView, SIGNAL(menuButtonClicked(Gui::MenuButton)), this, SLOT(onBtnClicked_CodeGenerator(Gui::MenuButton)));
     }
     mCodeGeneratorView->show();
+}
+
+void ToolsViewDataAdministration::onRecipientDataClicked()
+{
+    /*if (!mRecipientView)
+    {
+        mRecipientView = new RecipientView ();
+        mRecipientView->setIOInterface(ioInterface());
+        connect (mCodeGeneratorView, SIGNAL(menuButtonClicked(Gui::MenuButton)), this, SLOT(onBtnClicked_CodeGenerator(Gui::MenuButton)));
+    }
+    mRecipientView->show();*/
 }
 
 void ToolsViewDataAdministration::onBtnClicked_CodeGenerator (Gui::MenuButton btn)
@@ -90,4 +104,7 @@ ToolsViewDataAdministration::~ToolsViewDataAdministration()
 {
     if (mCodeGeneratorView)
         mCodeGeneratorView->deleteLater();
+
+    if (mRecipientView)
+        mRecipientView->deleteLater();
 }

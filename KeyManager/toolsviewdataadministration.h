@@ -4,6 +4,7 @@
 #include "winsubmenu.h"
 
 class CodeGeneratorView;
+class RecipientView;
 
 class ToolsViewDataAdministration : public WinSubmenu
 {
@@ -15,9 +16,11 @@ class ToolsViewDataAdministration : public WinSubmenu
     signals:
     private slots:
         void onEncoderSettingsClicked();
+        void onRecipientDataClicked();
         void onBtnClicked_CodeGenerator (Gui::MenuButton btn);
     private:
         CodeGeneratorView *mCodeGeneratorView;
+        RecipientView *mRecipientView;
 };
 
 #endif // TOOLSVIEWDATAADMINISTRATION_H
