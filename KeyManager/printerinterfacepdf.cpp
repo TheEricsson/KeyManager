@@ -5,6 +5,7 @@
 #include <QRegularExpression>
 #include <QPrintDialog>
 #include <QStandardPaths>
+#include <QTextItem>
 
 PrinterInterfacePdf::PrinterInterfacePdf()
 {
@@ -78,7 +79,7 @@ void PrinterInterfacePdf::print()
 //     mPosX += margin.width();
 // }
 
-void PrinterInterfacePdf::drawQRCode (QImage &img, int codeDim, int labelWidth, bool foldable, Qt::PenStyle style)
+void PrinterInterfacePdf::drawQRCode (QImage &img, int codeDim, int labelWidth, const QString& codeString, bool foldable, Qt::PenStyle style)
 {
     // input is in mm -> calculate factor depending on print resolution
     float conversionFactor = mResolutionPPI / 2.41 / 10;
@@ -108,6 +109,37 @@ void PrinterInterfacePdf::drawQRCode (QImage &img, int codeDim, int labelWidth, 
             printSizeLabelWidth *= 2;
 
         drawBorder (mPosX, mPosY, printSizeLabelWidth, printSize, style);
+    }
+
+    //draw code as string (only when foldable, on the back side)...
+    if (foldable)
+    {
+        //string set?
+        if ("" != codeString)
+        {
+            QString printString = "ID: ";
+            printString.append(codeString);
+
+            int textSize = printSize * 0.15;
+            int margin = printSize * 0.05;
+
+            QFont font("Roboto");
+            font.setStyleHint(QFont::SansSerif);
+            font.setPixelSize(textSize);
+            mPainter.setFont(font);
+
+            mPainter.drawText(mPosX + (printSizeLabelWidth/2) + margin, mPosY + margin + textSize, printString);
+
+            QPen pen (Qt::black, 3, Qt::SolidLine, Qt::SquareCap, Qt::RoundJoin);
+            mPainter.setPen(pen);
+
+            for (int i = 0; i < 3; i++)
+            {
+                mPosY += printSize * 0.25;
+                mPainter.drawLine(mPosX + printSizeLabelWidth/2 + margin, mPosY, printSizeLabelWidth, mPosY);
+            }
+
+        }
     }
 
     // set new printer position

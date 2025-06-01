@@ -13,7 +13,7 @@ class PrinterInterfacePdf : public PrinterInterface
         const QString getFilePath();
         void print();
         //void add (const QImage& img, QRect size, QRect margin, bool foldable, PrinterInterface::BorderStyle borderstyle);
-        void drawQRCode(QImage &img, int codeDim, int labelWidth, bool foldable = false, Qt::PenStyle style = Qt::NoPen);
+        void drawQRCode(QImage &img, int codeDim, int labelWidth, const QString& codeString = "", bool foldable = false, Qt::PenStyle style = Qt::NoPen);
         void insertImage(const QImage &img, PrinterInterface::imgSize size, PrinterInterface::imgAlignment alignment);
         void insertHLine();
         void insertText(QString text);

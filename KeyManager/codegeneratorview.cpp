@@ -184,7 +184,7 @@ void CodeGeneratorView::generatePDF ()
 
             codeImg = decoder.encodeData (qrCode, QZXing::EncoderFormat_QR_CODE, QSize (300,300), QZXing::EncodeErrorCorrectionLevel_M, true, false);
 
-            pdfPrinter->drawQRCode(codeImg, mPrintHeight.toInt(), mPrintWidth.toInt(), mFoldableCheckState, borderPen);
+            pdfPrinter->drawQRCode(codeImg, mPrintHeight.toInt(), mPrintWidth.toInt(), qrCode, mFoldableCheckState, borderPen);
 
             freeCode++;
         }
