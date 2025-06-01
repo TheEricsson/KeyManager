@@ -289,7 +289,7 @@ void RecipientView::onTableSelectionChanged (const QItemSelection &itemNew, cons
         mRowSelected = false;
     }
 
-    if ("Unternehmen" == recipientType)
+    if ("Firma" == recipientType)
     {
         mRecipientNameEdit->setEnabled(true);
     }
