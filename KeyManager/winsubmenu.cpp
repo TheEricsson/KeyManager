@@ -42,16 +42,16 @@ WinSubmenu::WinSubmenu(QWidget *parent)
     //mHeaderLabel->setSizePolicy(QSizePolicy::Expanding, QSizePolicy::Minimum);
 
     //set css styles
-    // QFile f(":qdarkstyle/light/lightstyle.qss");
-    // if (!f.exists())
-    // {
-    //     qDebug () << "Unable to set stylesheet, file not found:";
-    // }
-    // else   {
-    //     f.open(QFile::ReadOnly | QFile::Text);
-    //     QTextStream ts(&f);
-    //     setStyleSheet(ts.readAll());
-    // }
+    QFile f(":qdarkstyle/light/lightstyle.qss");
+    if (!f.exists())
+    {
+        qDebug () << "Unable to set stylesheet, file not found:";
+    }
+    else   {
+        f.open(QFile::ReadOnly | QFile::Text);
+        QTextStream ts(&f);
+        setStyleSheet(ts.readAll());
+    }
 
     // mHeaderLabel->setStyleSheet("QLabel {background-color: #e0ffff; color: black; font: bold 30px; border-style: solid; border-width: 1px; border-radius: 5px; border-color: #A9A9A9; }");
 
