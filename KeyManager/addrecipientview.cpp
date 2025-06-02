@@ -7,6 +7,8 @@
 #include <QButtonGroup>
 #include <QRegularExpressionValidator>
 #include <QMessageBox>
+#include <QGroupBox>
+#include <QFormLayout>
 #include "iointerface.h"
 
 AddRecipientView::AddRecipientView (QWidget *parent)
@@ -23,7 +25,7 @@ AddRecipientView::AddRecipientView (QWidget *parent)
     mCityEdit = 0;
     mRecipientType = RecipientType::Company; // usual case
 
-    QGridLayout* gridLayout = new QGridLayout ();
+    QVBoxLayout* mainLayout= new QVBoxLayout();
 
     mIsCompany = new QRadioButton ("Firma", this);
     mIsCompany->setChecked(true); // this is the common case
@@ -34,57 +36,49 @@ AddRecipientView::AddRecipientView (QWidget *parent)
     // isEmployee->setStyleSheet("QRadioButton::indicator {width: 25px; height 25px;}");
     // mIsCompany->setStyleSheet("QRadioButton::indicator {width: 25px; height 25px;}");
 
-    QHBoxLayout *recipientTypeBtnBox = new QHBoxLayout ();
+    QVBoxLayout *recipientTypeBtnBox = new QVBoxLayout ();
+    recipientTypeBtnBox->setSizeConstraint(QLayout::SetMinimumSize);
     recipientTypeBtnBox->addWidget(mIsCompany);
     recipientTypeBtnBox->addWidget(isPrivatePerson);
     recipientTypeBtnBox->addWidget(isEmployee);
 
-    mLabelRecipientName = new QLabel ("Firmenbezeichnung", this);
-    mRecipientNameEdit = new QLineEdit (this);
+    QGroupBox *recipientType = new QGroupBox("Empfängertyp");
+    recipientType->setLayout(recipientTypeBtnBox);
 
-    QLabel *street = new QLabel ("Straße", this);
-    mStreetEdit = new QLineEdit (this);
+    mRecipientNameEdit = new QLineEdit ();
+    mStreetEdit = new QLineEdit ();
     //mStreetEdit->setValidator(new QRegularExpressionValidator(QRegularExpression("\\w+"), mStreetEdit));
-
-    QLabel *streetNumber = new QLabel ("Hausnummer", this);
-    mStreetNumberEdit = new QLineEdit (this);
+    mStreetNumberEdit = new QLineEdit ();
     // accept only a digit in first place, followed by digits or text
     mStreetNumberEdit->setValidator(new QRegularExpressionValidator(QRegularExpression("\\d+\\w+"), mStreetNumberEdit));
-
-    QLabel *areaCode = new QLabel ("PLZ", this);
     // accept only digits (5)
-    mAreaCodeEdit = new QLineEdit (this);
+    mAreaCodeEdit = new QLineEdit ();
     mAreaCodeEdit->setValidator(new QRegularExpressionValidator(QRegularExpression("\\d\\d\\d\\d\\d"), mAreaCodeEdit));
-
-    QLabel *city= new QLabel ("Stadt", this);
-    mCityEdit = new QLineEdit (this);
+    mCityEdit = new QLineEdit ();
     //mCityEdit->setValidator(new QRegularExpressionValidator(QRegularExpression("\\w+\\^( |ß|-)\\w+\\^( |ß|-)"), mCityEdit));
+    mLabelRecipientName = new QLabel();
 
-    connect (mIsCompany, SIGNAL (clicked()), this, SLOT (onIsCompanyBtnClicked()));
-    connect (isPrivatePerson, SIGNAL (clicked()), this, SLOT (onIsPrivatePersonBtnClicked()));
-    connect (isEmployee, SIGNAL (clicked()), this, SLOT (onIsEmployeeBtnClicked()));
+    QGroupBox *recipientAddressData = new QGroupBox ("Empfängeranschrift");
+    QFormLayout *recipientDataLayout = new QFormLayout ();
+    recipientDataLayout->setSizeConstraint(QLayout::SetMinimumSize);
+    recipientDataLayout->addRow(mLabelRecipientName, mRecipientNameEdit);
+    recipientDataLayout->addRow(tr("Straße"), mStreetEdit);
+    recipientDataLayout->addRow(tr("Hausnummer"), mStreetNumberEdit);
+    recipientDataLayout->addRow(tr("PLZ"), mAreaCodeEdit);
+    recipientDataLayout->addRow(tr("Stadt"), mCityEdit);
+    recipientAddressData->setLayout(recipientDataLayout);
 
-    gridLayout->addLayout(recipientTypeBtnBox, 1, 0, 1, 2);
+    QSpacerItem *spacer = new QSpacerItem (0, 0, QSizePolicy::MinimumExpanding, QSizePolicy::MinimumExpanding);
 
-    gridLayout->addWidget(mLabelRecipientName, 2, 0, 1, 1);
-    gridLayout->addWidget(mRecipientNameEdit, 2, 1, 1, 1);
+    mainLayout->addWidget(recipientType);
+    mainLayout->addWidget(recipientAddressData);
+    mainLayout->addSpacerItem(spacer);
 
-    gridLayout->addWidget(street, 3, 0, 1, 1);
-    gridLayout->addWidget(mStreetEdit, 3, 1, 1, 1);
+    setCentralLayout(mainLayout);
 
-    gridLayout->addWidget(streetNumber, 4, 0, 1, 1);
-    gridLayout->addWidget(mStreetNumberEdit, 4, 1, 1, 1);
-
-    gridLayout->addWidget(areaCode, 5, 0, 1, 1);
-    gridLayout->addWidget(mAreaCodeEdit, 5, 1, 1, 1);
-
-    gridLayout->addWidget(city, 6, 0, 1, 1);
-    gridLayout->addWidget(mCityEdit, 6, 1, 1, 1);
-
-    QSpacerItem *spacer = new QSpacerItem (0, 0, QSizePolicy::Maximum, QSizePolicy::Maximum);
-    gridLayout->addItem(spacer, 7, 0, 0);
-
-    setCentralLayout(gridLayout);
+    //set inital values
+    mIsCompany->setChecked(true);
+    mLabelRecipientName->setText("Firmenbezeichnung");
 
     QList<Gui::MenuButton> menuButtons;
     menuButtons.append(Gui::Back);
@@ -92,15 +86,12 @@ AddRecipientView::AddRecipientView (QWidget *parent)
     setMenuButtons(menuButtons);
 
     // line edit manipulators
-    // convert all chars to uppercase
+    // convert all chars of a street number to uppercase
     connect(mStreetNumberEdit, SIGNAL(textChanged(QString)), SLOT(toUpper(QString)));
 
-    // trigger screen update, when values change -> otherwise, screen update on android target is buggy
-    connect (mRecipientNameEdit, SIGNAL(textChanged(QString)), this, SLOT(onValueChanged(QString)));
-    connect (mStreetEdit, SIGNAL(textChanged(QString)), this, SLOT(onValueChanged(QString)));
-    connect (mStreetNumberEdit, SIGNAL(textChanged(QString)), this, SLOT(onValueChanged(QString)));
-    connect (mAreaCodeEdit, SIGNAL(textChanged(QString)), this, SLOT(onValueChanged(QString)));
-    connect (mCityEdit, SIGNAL(textChanged(QString)), this, SLOT(onValueChanged(QString)));
+    connect (mIsCompany, SIGNAL (clicked()), this, SLOT (onIsCompanyBtnClicked()));
+    connect (isPrivatePerson, SIGNAL (clicked()), this, SLOT (onIsPrivatePersonBtnClicked()));
+    connect (isEmployee, SIGNAL (clicked()), this, SLOT (onIsEmployeeBtnClicked()));
 }
 
 void AddRecipientView::clearForm()
@@ -218,32 +209,20 @@ bool AddRecipientView::checkValues ()
     return checkOk;
 }
 
-void AddRecipientView::onValueChanged (QString value)
-{
-    Q_UNUSED(value);
-
-    // do manual screen update, when value is changed.
-    // otherwise, visualisation in android target is buggy
-    update();
-}
-
 void AddRecipientView::onIsCompanyBtnClicked ()
 {
     mLabelRecipientName->setText("Firmenbezeichnung");
     mRecipientType = RecipientType::Company;
-    update (); // do a screen update, since behaviour with android is like there is no auto screen refresh after clicking a radio button.
 }
 
 void AddRecipientView::onIsPrivatePersonBtnClicked ()
 {
     mLabelRecipientName->setText("Empfängername");
     mRecipientType = RecipientType::PrivatePerson;
-    update (); // do a screen update, since behaviour with android is like there is no auto screen refresh after clicking a radio button.
 }
 
 void AddRecipientView::onIsEmployeeBtnClicked ()
 {
     mLabelRecipientName->setText("Mitarbeitername");
     mRecipientType = RecipientType::Employee;
-    update (); // do a screen update, since behaviour with android is like there is no auto screen refresh after clicking a radio button.
 }
