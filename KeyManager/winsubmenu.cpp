@@ -9,6 +9,7 @@
 #include <QBoxLayout>
 #include <QStyleOption>
 #include <QPainter>
+#include <QScrollArea>
 
 #include "globals.h"
 #include "menubutton.h"
@@ -52,10 +53,6 @@ WinSubmenu::WinSubmenu(QWidget *parent)
         QTextStream ts(&f);
         setStyleSheet(ts.readAll());
     }
-
-    // mHeaderLabel->setStyleSheet("QLabel {background-color: #e0ffff; color: black; font: bold 30px; border-style: solid; border-width: 1px; border-radius: 5px; border-color: #A9A9A9; }");
-
-    //setStyleSheet("QToolButton {border-style: solid; border-width: 1px; border-radius: 10px; border-color: #A9A9A9; font: 12px; padding: 6px;}");
 }
 
 void WinSubmenu::setDataInterface (DataInterface *data)
