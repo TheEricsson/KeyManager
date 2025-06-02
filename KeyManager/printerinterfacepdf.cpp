@@ -87,7 +87,7 @@ void PrinterInterfacePdf::drawQRCode (QImage &img, int codeDim, int labelWidth, 
     float printSizeLabelWidth = conversionFactor * labelWidth;
 
     // set printer position...
-    int nextPosY = mPosY + printSize + 5;
+    unsigned int nextPosY = mPosY + printSize + 5;
 
     // ... and check, if page break is needed
     if (nextPosY >= (mPixelPerPageY - mPageMargin))
@@ -133,12 +133,12 @@ void PrinterInterfacePdf::drawQRCode (QImage &img, int codeDim, int labelWidth, 
             QPen pen (Qt::black, 3, Qt::SolidLine, Qt::SquareCap, Qt::RoundJoin);
             mPainter.setPen(pen);
 
+            //insert 3 lines
             for (int i = 0; i < 3; i++)
             {
                 mPosY += printSize * 0.25;
                 mPainter.drawLine(mPosX + printSizeLabelWidth/2 + margin, mPosY, printSizeLabelWidth, mPosY);
             }
-
         }
     }
 

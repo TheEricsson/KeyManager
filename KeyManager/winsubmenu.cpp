@@ -273,7 +273,7 @@ void WinSubmenu::setMenuButtons (const QList<Gui::MenuButton> &buttons)
                 //menuBtn->setButtonText("Tools");
                 break;
             case (Gui::AddKey):
-                menuBtn->setIcon(QIcon(":/images/google_material_design/key_48dp_5985E1_FILL0_wght400_GRAD0_opsz48.svg"));
+                menuBtn->setIcon(QIcon(":/images/google_material_design/key_add_48dp_5985E1_FILL0_wght400_GRAD0_opsz48.svg"));
                 //menuBtn->setButtonText("Schlüssel\nhinzufügen");
                 break;
             case (Gui::TakePicture):

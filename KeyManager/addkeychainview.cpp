@@ -37,7 +37,7 @@ AddKeychainView::AddKeychainView(QWidget *parent) : WinSubmenu {parent}
 
     mFilteredModel = new QSortFilterProxyModel (this);
 
-    //setHeader("Schlüsselbund anlegen");
+    setHeader("Schlüsselbund anlegen");
 
     mSearchLabel = new QLabel ("Suche", this);
     mSearchField = new QLineEdit (this);
@@ -69,7 +69,7 @@ AddKeychainView::AddKeychainView(QWidget *parent) : WinSubmenu {parent}
     menuButtons.append(Gui::Next);
 
     setMenuButtons(menuButtons);
-    setButtonText(2, "Schlüssel hinzufügen");
+    //setButtonText(2, "Schlüssel\nhinzufügen");
 
     mCustomersView->update();
     mCustomersView->setFocus();
@@ -190,13 +190,14 @@ void AddKeychainView::onMenuBtnClicked (Gui::MenuButton btnType)
 
             if (0 != ioInterface()->getKeychainInternalLocation(dataInterface()->getScannedCode()))
             {
-                QString text = "Schlüsselhaken ist bereits belegt!\n";
-                //msgBox.setStandardButtons(QMessageBox::Abort);
+                QString text = "Schlüsselhaken ist bereits belegt!\nDoppelbelegung bestätigen?";
+                msgBox.setStandardButtons(QMessageBox::Yes | QMessageBox::Abort);
                 msgBox.setDefaultButton(QMessageBox::Abort);
-                msgBox.setText ("Fehler!");
                 msgBox.setInformativeText(text);
-                msgBox.exec();
-                return;
+                if (QDialog::Accepted != msgBox.exec())
+                {
+                    return;
+                }
             }
             else
             {

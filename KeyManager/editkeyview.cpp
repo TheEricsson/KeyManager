@@ -8,6 +8,7 @@
 #include <QSortFilterProxyModel>
 #include <QSqlRelationalDelegate>
 #include <QTextEdit>
+#include <QMessageBox>
 
 EditKeyView::EditKeyView(QWidget *parent) : WinSubmenu {parent}
 {
@@ -40,6 +41,7 @@ EditKeyView::EditKeyView(QWidget *parent) : WinSubmenu {parent}
     menuButtons.append(Gui::AddKey);
     menuButtons.append(Gui::Next);
     setMenuButtons(menuButtons);
+    disableButton(0, true);
 
     connect (mKeys->selectionModel(), SIGNAL(selectionChanged(const QItemSelection &, const QItemSelection &)), this, SLOT(onTableSelectionChanged(const QItemSelection &, const QItemSelection &)));
 }
@@ -85,6 +87,9 @@ bool EditKeyView::setKeysModel (QSqlRelationalTableModel* model)
 
 void EditKeyView::onMenuBtnClicked (Gui::MenuButton btnType)
 {
+    QList <QVariant> keys = ioInterface()->getKeyIdsByKeycode(dataInterface()->getScannedCode());
+    QMessageBox msgBox;
+
     switch (btnType)
     {
         case (Gui::AddKey):
@@ -96,6 +101,19 @@ void EditKeyView::onMenuBtnClicked (Gui::MenuButton btnType)
                 connect (mAddKeyView, SIGNAL(menuButtonClicked(Gui::MenuButton)), this, SLOT(onAddKeyMenuButtonClicked(Gui::MenuButton)));
             }
             mAddKeyView->show();
+            break;
+
+        case (Gui::Next):
+            if (0 == keys.count())
+            {
+                msgBox.setStandardButtons(QMessageBox::Abort);
+                msgBox.setText ("Fehler!");
+                msgBox.setInformativeText("Schlüsselbund enthält keine Schlüssel!");
+                msgBox.exec();
+                return;
+            }
+            else
+                emit menuButtonClicked(btnType);
             break;
 
         // no catch, emit signal
