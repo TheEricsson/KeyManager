@@ -1159,7 +1159,7 @@ unsigned int IOInterfaceSQLITE::getFreeInternalLocation (const unsigned int lock
 
     for (int i = 1; i<9999; i++)
     {
-        query.prepare("SELECT internalLocation FROM keychains WHERE id > ? AND id < ? AND internalLocation = ?");
+        query.prepare("SELECT internalLocation FROM keychains WHERE id >= ? AND id <= ? AND internalLocation = ?");
         query.bindValue(0, keycodeRangeMin);
         query.bindValue(1, keycodeRangeMax);
         query.bindValue(2, i);
