@@ -79,6 +79,18 @@ void MainWindow::init()
     QStatusBar *bar = statusBar();
     setStatusBar(bar);
 
+    //set css styles for all widgets
+    QFile f(":qdarkstyle/light/lightstyle.qss");
+    if (!f.exists())
+    {
+        qDebug () << "Unable to set stylesheet, file not found:";
+    }
+    else   {
+        f.open(QFile::ReadOnly | QFile::Text);
+        QTextStream ts(&f);
+        setStyleSheet(ts.readAll());
+    }
+
     mHomeView = new HomeView (this);
     mScanView = new ScannerView (this);
     mSearchView = new SearchView (this);
@@ -135,18 +147,6 @@ void MainWindow::init()
 
     mViewStackManager->setCurrentStackId(ViewStackManager::HandoverOut);
     mViewStack->setCurrentWidget(mHomeView);
-
-    //set css styles for all widgets
-    QFile f(":qdarkstyle/light/lightstyle.qss");
-    if (!f.exists())
-    {
-        qDebug () << "Unable to set stylesheet, file not found:";
-    }
-    else   {
-        f.open(QFile::ReadOnly | QFile::Text);
-        QTextStream ts(&f);
-        setStyleSheet(ts.readAll());
-    }
 
 /*#if defined(Q_OS_ANDROID)
     accessAllFiles();
