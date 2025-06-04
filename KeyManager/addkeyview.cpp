@@ -14,8 +14,27 @@ AddKeyView::AddKeyView(QWidget *parent) : WinSubmenu {parent}
     mKeyDescription = 0;
     mKeyCategories = 0;
     mKeyStates = 0;
+    mKeyDescriptionText = "";
 
     setHeader("Schlüssel hinzufügen");
+
+    QTextEdit *keyDecription = new QTextEdit();
+    QLabel *keyTypeHeader = new QLabel("Schlüsselkategorie");
+    QLabel *keyAdditionalInfoHeader = new QLabel ("Zusätzliche Angaben");
+    QSpacerItem *spacer = new QSpacerItem (0, 0, QSizePolicy::Expanding, QSizePolicy::Expanding);
+    mKeyCategories = new CheckBoxArray ();
+    mKeyDescription = new QTextEdit();
+
+    QVBoxLayout *centralLayout = new QVBoxLayout();
+    centralLayout->addWidget(keyTypeHeader);
+    centralLayout->addWidget(mKeyCategories);
+    centralLayout->addWidget(keyAdditionalInfoHeader);
+    centralLayout->addWidget(mKeyDescription);
+    centralLayout->addItem(spacer);
+
+    connect (mKeyDescription, SIGNAL(textChanged()), this, SLOT(onKeyDescriptionChanged()));
+
+    setCentralLayout(centralLayout);
 
     QList<Gui::MenuButton> menuButtons;
     menuButtons.append(Gui::Back);
@@ -46,7 +65,7 @@ void AddKeyView::onMenuBtnClicked (Gui::MenuButton btnType)
                     int categoryIdDb = mKeyCategories->getCheckedButtonIndex() + 1;
                     data->categoryId = categoryIdDb;
                     data->statusId = (int)KeyStatus::Ok;//mKeyStates->getCheckedButtonIndex();
-                    data->description = mKeyDescription->toPlainText();
+                    data->description = mKeyDescriptionText;
                     ioInterface()->addKey (data);
                     delete data;
                 }
@@ -61,6 +80,11 @@ void AddKeyView::onMenuBtnClicked (Gui::MenuButton btnType)
     }
 }
 
+void AddKeyView::onKeyDescriptionChanged ()
+{
+    mKeyDescriptionText = mKeyDescription->toPlainText();
+}
+
 void AddKeyView::showEvent(QShowEvent *)
 {
     reset ();
@@ -68,31 +92,14 @@ void AddKeyView::showEvent(QShowEvent *)
 
 void AddKeyView::reset ()
 {
-    if (!mKeyDescription)
-        mKeyDescription = new QTextEdit ();
-    else
+    if (mKeyDescription)
         mKeyDescription->clear();
 
-    if (!mKeyCategories)
+    if (mKeyCategories)
     {
-        mKeyCategories = new CheckBoxArray (this);
-
         if (ioInterface())
         {
             mKeyCategories->init (ioInterface(), "keyCategories", "category");
-
-            QLabel *keyTypeHeader = new QLabel("Schlüsselkategorie");
-            QLabel *keyAdditionalInfoHeader = new QLabel ("Zusätzliche Angaben");
-            QSpacerItem *spacer = new QSpacerItem (0, 0, QSizePolicy::Expanding, QSizePolicy::Expanding);
-
-            QVBoxLayout *centralLayout = new QVBoxLayout();
-            centralLayout->addWidget(keyTypeHeader);
-            centralLayout->addWidget(mKeyCategories);
-            centralLayout->addWidget(keyAdditionalInfoHeader);
-            centralLayout->addWidget(mKeyDescription);
-            centralLayout->addItem(spacer);
-
-            setCentralLayout(centralLayout);
         }
     }
 }

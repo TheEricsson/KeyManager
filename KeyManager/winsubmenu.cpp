@@ -246,7 +246,7 @@ void WinSubmenu::setMenuButtons (const QList<Gui::MenuButton> &buttons)
                 //menuBtn->setButtonText("Hauptmenü");
                 break;
             case (Gui::AddCustomer):
-                menuBtn->setIcon(QIcon(":/images/google_material_design/person_add_48dp_5985E1_FILL0_wght400_GRAD0_opsz48.svg"));
+                menuBtn->setIcon(QIcon(":/images/google_material_design/add_home_48dp_5985E1_FILL0_wght400_GRAD0_opsz48.svg"));
                 //menuBtn->setButtonText("Kunde anlegen");
                 break;
             case (Gui::Edit):

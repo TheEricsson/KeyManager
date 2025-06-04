@@ -6,10 +6,11 @@
 #include "iointerface.h"
 #include <QMessageBox>
 #include <QLineEdit>
+#include <QFormLayout>
 
 AddCustomerView::AddCustomerView(QWidget *parent) : WinSubmenu {parent}
 {
-    //setHeader("Kunde hinzufügen");
+    setHeader("Gebäude hinzufügen");
 
     mStreet = new QLineEdit (this);
     mStreetNr = new QLineEdit (this);
@@ -17,34 +18,21 @@ AddCustomerView::AddCustomerView(QWidget *parent) : WinSubmenu {parent}
     mAreaCode = new QLineEdit (this);
     mAreaCode->setValidator(new QRegularExpressionValidator(QRegularExpression("\\d\\d\\d\\d\\d"), mAreaCode));
     mCity = new QLineEdit (this);
+    QSpacerItem *spacer = new QSpacerItem (0, 0, QSizePolicy::MinimumExpanding, QSizePolicy::MinimumExpanding);
 
-    connect (mStreet, SIGNAL(textChanged(QString)), this, SLOT(onValueChanged(QString)));
-    connect (mStreetNr, SIGNAL(textChanged(QString)), this, SLOT(onValueChanged(QString)));
-    connect (mAreaCode, SIGNAL(textChanged(QString)), this, SLOT(onValueChanged(QString)));
-    connect (mCity, SIGNAL(textChanged(QString)), this, SLOT(onValueChanged(QString)));
+    connect (mStreet, SIGNAL(textChanged(QString)), this, SLOT(onStreetChanged(QString)));
+    connect (mStreetNr, SIGNAL(textChanged(QString)), this, SLOT(onStreetNrChanged(QString)));
+    connect (mAreaCode, SIGNAL(textChanged(QString)), this, SLOT(onAreaCodeChanged(QString)));
+    connect (mCity, SIGNAL(textChanged(QString)), this, SLOT(onCityChanged(QString)));
 
-    QLabel *headerStreet = new QLabel ("Straße:", this);
-    QLabel *headerStreetNr = new QLabel ("Hausnummer", this);
-    QLabel *headerAreaCode = new QLabel ("Postleitzahl", this);
-    QLabel *headerCity = new QLabel ("Stadt", this);
+    QFormLayout *mainLayout = new QFormLayout();
+    mainLayout->addRow("Straße", mStreet);
+    mainLayout->addRow("Hausnummer", mStreetNr);
+    mainLayout->addRow("PLZ", mAreaCode);
+    mainLayout->addRow("Stadt", mCity);
+    mainLayout->addItem(spacer);
 
-    QGridLayout *gridLayout = new QGridLayout ();
-    gridLayout->addWidget(headerStreet, 0, 0, Qt::AlignLeft);
-    gridLayout->addWidget(mStreet, 0, 1, Qt::AlignLeft);
-
-    gridLayout->addWidget(headerStreetNr, 1, 0, Qt::AlignLeft);
-    gridLayout->addWidget(mStreetNr, 1, 1, Qt::AlignLeft);
-
-    gridLayout->addWidget(headerAreaCode, 2, 0, Qt::AlignLeft);
-    gridLayout->addWidget(mAreaCode, 2, 1, Qt::AlignLeft);
-
-    gridLayout->addWidget(headerCity, 3, 0, Qt::AlignLeft);
-    gridLayout->addWidget(mCity, 3, 1, Qt::AlignLeft);
-
-    QSpacerItem *spacer = new QSpacerItem (0, 0, QSizePolicy::Expanding, QSizePolicy::Expanding);
-    gridLayout->addItem(spacer, 4, 1, 1, 1);
-
-    setCentralLayout(gridLayout);
+    setCentralLayout(mainLayout);
 
     QList<Gui::MenuButton> menuButtons;
     menuButtons.append(Gui::Back);
@@ -64,10 +52,10 @@ void AddCustomerView::onMenuBtnClicked (Gui::MenuButton btnType)
         {
             // add new key in database
             IOInterface::customerData *data = new IOInterface::customerData();
-            data->street = mStreet->text();
-            data->number = mStreetNr->text();
-            data->areaCode = mAreaCode->text();
-            data->city = mCity->text();
+            data->street = mStreetText;
+            data->number = mStreetNrText;
+            data->areaCode = mAreaCodeText;
+            data->city = mCityText;
             ioInterface()->addNewCustomer(data);
             delete data;
             emit menuButtonClicked(btnType);
@@ -80,10 +68,24 @@ void AddCustomerView::onMenuBtnClicked (Gui::MenuButton btnType)
     }
 }
 
-void AddCustomerView::onValueChanged (QString value)
+void AddCustomerView::onStreetChanged(QString text)
 {
+    mStreetText = text;
+}
 
-    update();
+void AddCustomerView::onStreetNrChanged(QString text)
+{
+    mStreetNrText = text;
+}
+
+void AddCustomerView::onAreaCodeChanged(QString text)
+{
+    mAreaCodeText = text;
+}
+
+void AddCustomerView::onCityChanged(QString text)
+{
+    mCityText = text;
 }
 
 void AddCustomerView::showEvent(QShowEvent *)
@@ -102,35 +104,36 @@ void AddCustomerView::reset ()
 bool AddCustomerView::checkSelections ()
 {
     bool checkOk = true;
+    QString styleSheet = "border-style: solid;border-width: 1px;border-color: red";
 
     //check all line edits
-    if ("" == mStreet->text())
+    if ("" == mStreetText)
     {
-        mStreet->setStyleSheet("border-style: solid;border-width: 1px;border-color: red");
+        mStreet->setStyleSheet(styleSheet);
         checkOk = false;
     }
     else
         mStreet->setStyleSheet("");
 
-    if ("" == mStreetNr->text())
+    if ("" == mStreetNrText)
     {
-        mStreetNr->setStyleSheet("border-style: solid;border-width: 1px;border-color: red");
+        mStreetNr->setStyleSheet(styleSheet);
         checkOk = false;
     }
     else
         mStreetNr->setStyleSheet("");
 
-    if ("" == mAreaCode->text())
+    if ("" == mAreaCodeText)
     {
-        mAreaCode->setStyleSheet("border-style: solid;border-width: 1px;border-color: red");
+        mAreaCode->setStyleSheet(styleSheet);
         checkOk = false;
     }
     else
         mAreaCode->setStyleSheet("");
 
-    if ("" == mCity->text())
+    if ("" == mCityText)
     {
-        mCity->setStyleSheet("border-style: solid;border-width: 1px;border-color: red");
+        mCity->setStyleSheet(styleSheet);
         checkOk = false;
     }
     else
