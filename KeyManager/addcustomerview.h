@@ -13,11 +13,7 @@ public:
     explicit AddCustomerView(QWidget *parent = nullptr);
 private slots:
     virtual void onMenuBtnClicked (Gui::MenuButton btnType);
-    //virtual void onValueChanged (QString value);
-    void onStreetChanged(QString text);
-    void onStreetNrChanged(QString text);
-    void onAreaCodeChanged(QString text);
-    void onCityChanged(QString text);
+
 private:
     void reset ();
     bool checkSelections ();
