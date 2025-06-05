@@ -15,7 +15,6 @@ class AddKeyView : public WinSubmenu
         ~AddKeyView();
     private slots:
         virtual void onMenuBtnClicked (Gui::MenuButton btnType);
-        void onKeyDescriptionChanged ();
     private:
         void reset ();
         bool checkSelections ();
