@@ -72,11 +72,11 @@ void AddCustomerView::showEvent(QShowEvent *)
 
 void AddCustomerView::updateForm()
 {
-    mStreet->update();
+    /*mStreet->update();
     mStreetNr->update();
     mAreaCode->update();
     mCity->update();
-    update();
+    update();*/
 }
 
 void AddCustomerView::reset ()
