@@ -20,11 +20,6 @@ AddCustomerView::AddCustomerView(QWidget *parent) : WinSubmenu {parent}
     mCity = new QLineEdit (this);
     QSpacerItem *spacer = new QSpacerItem (0, 0, QSizePolicy::MinimumExpanding, QSizePolicy::MinimumExpanding);
 
-    connect (mStreet, SIGNAL(textChanged(QString)), this, SLOT(onStreetChanged(QString)));
-    connect (mStreetNr, SIGNAL(textChanged(QString)), this, SLOT(onStreetNrChanged(QString)));
-    connect (mAreaCode, SIGNAL(textChanged(QString)), this, SLOT(onAreaCodeChanged(QString)));
-    connect (mCity, SIGNAL(textChanged(QString)), this, SLOT(onCityChanged(QString)));
-
     QFormLayout *mainLayout = new QFormLayout();
     mainLayout->addRow("Straße", mStreet);
     mainLayout->addRow("Hausnummer", mStreetNr);
@@ -48,14 +43,16 @@ void AddCustomerView::onMenuBtnClicked (Gui::MenuButton btnType)
     {
     // check valid selection
     case (Gui::Ok):
+        //force update on text items (android bug)
+        updateForm();
         if (checkSelections ())
         {
             // add new key in database
             IOInterface::customerData *data = new IOInterface::customerData();
-            data->street = mStreetText;
-            data->number = mStreetNrText;
-            data->areaCode = mAreaCodeText;
-            data->city = mCityText;
+            data->street = mStreet->text();
+            data->number = mStreetNr->text();
+            data->areaCode = mAreaCode->text();
+            data->city = mCity->text();
             ioInterface()->addNewCustomer(data);
             delete data;
             emit menuButtonClicked(btnType);
@@ -68,29 +65,18 @@ void AddCustomerView::onMenuBtnClicked (Gui::MenuButton btnType)
     }
 }
 
-void AddCustomerView::onStreetChanged(QString text)
-{
-    mStreetText = text;
-}
-
-void AddCustomerView::onStreetNrChanged(QString text)
-{
-    mStreetNrText = text;
-}
-
-void AddCustomerView::onAreaCodeChanged(QString text)
-{
-    mAreaCodeText = text;
-}
-
-void AddCustomerView::onCityChanged(QString text)
-{
-    mCityText = text;
-}
-
 void AddCustomerView::showEvent(QShowEvent *)
 {
     reset();
+}
+
+void AddCustomerView::updateForm()
+{
+    mStreet->update();
+    mStreetNr->update();
+    mAreaCode->update();
+    mCity->update();
+    update();
 }
 
 void AddCustomerView::reset ()
@@ -107,7 +93,7 @@ bool AddCustomerView::checkSelections ()
     QString styleSheet = "border-style: solid;border-width: 1px;border-color: red";
 
     //check all line edits
-    if ("" == mStreetText)
+    if ("" == mStreet->text())
     {
         mStreet->setStyleSheet(styleSheet);
         checkOk = false;
@@ -115,7 +101,7 @@ bool AddCustomerView::checkSelections ()
     else
         mStreet->setStyleSheet("");
 
-    if ("" == mStreetNrText)
+    if ("" == mStreetNr->text())
     {
         mStreetNr->setStyleSheet(styleSheet);
         checkOk = false;
@@ -123,7 +109,7 @@ bool AddCustomerView::checkSelections ()
     else
         mStreetNr->setStyleSheet("");
 
-    if ("" == mAreaCodeText)
+    if ("" == mAreaCode->text())
     {
         mAreaCode->setStyleSheet(styleSheet);
         checkOk = false;
@@ -131,7 +117,7 @@ bool AddCustomerView::checkSelections ()
     else
         mAreaCode->setStyleSheet("");
 
-    if ("" == mCityText)
+    if ("" == mCity->text())
     {
         mCity->setStyleSheet(styleSheet);
         checkOk = false;

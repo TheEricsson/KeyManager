@@ -22,16 +22,12 @@ private:
     void reset ();
     bool checkSelections ();
     void showEvent(QShowEvent *);
+    void updateForm();
 
     QLineEdit *mStreet;
     QLineEdit *mStreetNr;
     QLineEdit *mAreaCode;
     QLineEdit *mCity;
-
-    QString mStreetText;
-    QString mStreetNrText;
-    QString mAreaCodeText;
-    QString mCityText;
 };
 
 #endif // ADDCUSTOMERVIEW_H

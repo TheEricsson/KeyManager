@@ -39,6 +39,10 @@ void AnnotationView::reset()
 
 void AnnotationView::onTextChanged ()
 {
+    //force update (android bug)
+    mTextEditor->update();
+    update();
+
     dataInterface()->setAnnotationText(mTextEditor->toPlainText());
 }
 

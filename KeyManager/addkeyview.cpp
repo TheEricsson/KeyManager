@@ -14,7 +14,6 @@ AddKeyView::AddKeyView(QWidget *parent) : WinSubmenu {parent}
     mKeyDescription = 0;
     mKeyCategories = 0;
     mKeyStates = 0;
-    mKeyDescriptionText = "";
 
     setHeader("Schlüssel hinzufügen");
 
@@ -31,8 +30,6 @@ AddKeyView::AddKeyView(QWidget *parent) : WinSubmenu {parent}
     centralLayout->addWidget(keyAdditionalInfoHeader);
     centralLayout->addWidget(mKeyDescription);
     centralLayout->addItem(spacer);
-
-    connect (mKeyDescription, SIGNAL(textChanged()), this, SLOT(onKeyDescriptionChanged()));
 
     setCentralLayout(centralLayout);
 
@@ -57,6 +54,10 @@ void AddKeyView::onMenuBtnClicked (Gui::MenuButton btnType)
                 //check if keycode is valid
                 if (_UNDEFINED != keyCode)
                 {
+                    // force text field update (android bug)
+                    mKeyDescription->update();
+                    update();
+
                     // add new key in database
                     IOInterface::keyData *data = new IOInterface::keyData();
                     data->keychainId = keyCode;
@@ -65,7 +66,7 @@ void AddKeyView::onMenuBtnClicked (Gui::MenuButton btnType)
                     int categoryIdDb = mKeyCategories->getCheckedButtonIndex() + 1;
                     data->categoryId = categoryIdDb;
                     data->statusId = (int)KeyStatus::Ok;//mKeyStates->getCheckedButtonIndex();
-                    data->description = mKeyDescriptionText;
+                    data->description = mKeyDescription->toPlainText();
                     ioInterface()->addKey (data);
                     delete data;
                 }
@@ -78,11 +79,6 @@ void AddKeyView::onMenuBtnClicked (Gui::MenuButton btnType)
             emit menuButtonClicked(btnType);
             break;
     }
-}
-
-void AddKeyView::onKeyDescriptionChanged ()
-{
-    mKeyDescriptionText = mKeyDescription->toPlainText();
 }
 
 void AddKeyView::showEvent(QShowEvent *)

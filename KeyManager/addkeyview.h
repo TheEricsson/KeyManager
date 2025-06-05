@@ -23,7 +23,6 @@ class AddKeyView : public WinSubmenu
 
         CheckBoxArray *mKeyCategories;
         CheckBoxArray *mKeyStates;
-        QString mKeyDescriptionText;
         QTextEdit *mKeyDescription;
 };
 
