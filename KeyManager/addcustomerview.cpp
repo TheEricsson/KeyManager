@@ -6,10 +6,11 @@
 #include "iointerface.h"
 #include <QMessageBox>
 #include <QLineEdit>
+#include <QFormLayout>
 
 AddCustomerView::AddCustomerView(QWidget *parent) : WinSubmenu {parent}
 {
-    //setHeader("Kunde hinzufügen");
+    setHeader("Gebäude hinzufügen");
 
     mStreet = new QLineEdit (this);
     mStreetNr = new QLineEdit (this);
@@ -17,34 +18,16 @@ AddCustomerView::AddCustomerView(QWidget *parent) : WinSubmenu {parent}
     mAreaCode = new QLineEdit (this);
     mAreaCode->setValidator(new QRegularExpressionValidator(QRegularExpression("\\d\\d\\d\\d\\d"), mAreaCode));
     mCity = new QLineEdit (this);
+    QSpacerItem *spacer = new QSpacerItem (0, 0, QSizePolicy::MinimumExpanding, QSizePolicy::MinimumExpanding);
 
-    connect (mStreet, SIGNAL(textChanged(QString)), this, SLOT(onValueChanged(QString)));
-    connect (mStreetNr, SIGNAL(textChanged(QString)), this, SLOT(onValueChanged(QString)));
-    connect (mAreaCode, SIGNAL(textChanged(QString)), this, SLOT(onValueChanged(QString)));
-    connect (mCity, SIGNAL(textChanged(QString)), this, SLOT(onValueChanged(QString)));
+    QFormLayout *mainLayout = new QFormLayout();
+    mainLayout->addRow("Straße", mStreet);
+    mainLayout->addRow("Hausnummer", mStreetNr);
+    mainLayout->addRow("PLZ", mAreaCode);
+    mainLayout->addRow("Stadt", mCity);
+    mainLayout->addItem(spacer);
 
-    QLabel *headerStreet = new QLabel ("Straße:", this);
-    QLabel *headerStreetNr = new QLabel ("Hausnummer", this);
-    QLabel *headerAreaCode = new QLabel ("Postleitzahl", this);
-    QLabel *headerCity = new QLabel ("Stadt", this);
-
-    QGridLayout *gridLayout = new QGridLayout ();
-    gridLayout->addWidget(headerStreet, 0, 0, Qt::AlignLeft);
-    gridLayout->addWidget(mStreet, 0, 1, Qt::AlignLeft);
-
-    gridLayout->addWidget(headerStreetNr, 1, 0, Qt::AlignLeft);
-    gridLayout->addWidget(mStreetNr, 1, 1, Qt::AlignLeft);
-
-    gridLayout->addWidget(headerAreaCode, 2, 0, Qt::AlignLeft);
-    gridLayout->addWidget(mAreaCode, 2, 1, Qt::AlignLeft);
-
-    gridLayout->addWidget(headerCity, 3, 0, Qt::AlignLeft);
-    gridLayout->addWidget(mCity, 3, 1, Qt::AlignLeft);
-
-    QSpacerItem *spacer = new QSpacerItem (0, 0, QSizePolicy::Expanding, QSizePolicy::Expanding);
-    gridLayout->addItem(spacer, 4, 1, 1, 1);
-
-    setCentralLayout(gridLayout);
+    setCentralLayout(mainLayout);
 
     QList<Gui::MenuButton> menuButtons;
     menuButtons.append(Gui::Back);
@@ -60,6 +43,8 @@ void AddCustomerView::onMenuBtnClicked (Gui::MenuButton btnType)
     {
     // check valid selection
     case (Gui::Ok):
+        //force update on text items (android bug)
+        updateForm();
         if (checkSelections ())
         {
             // add new key in database
@@ -80,15 +65,18 @@ void AddCustomerView::onMenuBtnClicked (Gui::MenuButton btnType)
     }
 }
 
-void AddCustomerView::onValueChanged (QString value)
-{
-
-    update();
-}
-
 void AddCustomerView::showEvent(QShowEvent *)
 {
     reset();
+}
+
+void AddCustomerView::updateForm()
+{
+    /*mStreet->update();
+    mStreetNr->update();
+    mAreaCode->update();
+    mCity->update();
+    update();*/
 }
 
 void AddCustomerView::reset ()
@@ -102,11 +90,12 @@ void AddCustomerView::reset ()
 bool AddCustomerView::checkSelections ()
 {
     bool checkOk = true;
+    QString styleSheet = "border-style: solid;border-width: 1px;border-color: red";
 
     //check all line edits
     if ("" == mStreet->text())
     {
-        mStreet->setStyleSheet("border-style: solid;border-width: 1px;border-color: red");
+        mStreet->setStyleSheet(styleSheet);
         checkOk = false;
     }
     else
@@ -114,7 +103,7 @@ bool AddCustomerView::checkSelections ()
 
     if ("" == mStreetNr->text())
     {
-        mStreetNr->setStyleSheet("border-style: solid;border-width: 1px;border-color: red");
+        mStreetNr->setStyleSheet(styleSheet);
         checkOk = false;
     }
     else
@@ -122,7 +111,7 @@ bool AddCustomerView::checkSelections ()
 
     if ("" == mAreaCode->text())
     {
-        mAreaCode->setStyleSheet("border-style: solid;border-width: 1px;border-color: red");
+        mAreaCode->setStyleSheet(styleSheet);
         checkOk = false;
     }
     else
@@ -130,7 +119,7 @@ bool AddCustomerView::checkSelections ()
 
     if ("" == mCity->text())
     {
-        mCity->setStyleSheet("border-style: solid;border-width: 1px;border-color: red");
+        mCity->setStyleSheet(styleSheet);
         checkOk = false;
     }
     else

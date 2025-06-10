@@ -76,6 +76,11 @@ class ScannerView : public WinSubmenu
         QAudioOutput *mAudioOut;
 
         QZXing *mDecoder;
+
+#ifdef Q_OS_WIN64
+        unsigned int mGroup;
+        unsigned int mCode;
+#endif
 };
 
 #endif // SCANNERVIEW_H

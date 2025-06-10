@@ -43,6 +43,11 @@ ScannerView::ScannerView(QWidget *parent)
     mPlayer = 0;
     mAudioOut = 0;
 
+#ifdef Q_OS_WIN64
+    mGroup = 10000;
+    mCode = mGroup + 1;
+#endif
+
     setHeader("Code-Scanner");
 
     m_viewfinder = 0;
@@ -338,7 +343,10 @@ void ScannerView::decodeFromVideoFrame ()
     // no cam on windows pc -> use test image with barcode
     //QImage testCode (":/images/barcode00010150.png");
     QImage testCode (":/images/qrcode_0001-0001.png");
-    QString decodedString = mDecoder->decodeImage(testCode);
+    //QString decodedString = mDecoder->decodeImage(testCode);
+    QString decodedString = Database::normaliseKeycode(mCode);
+    mCode++;
+
 #else
     QString decodedString ("");
     if (0 != mDecoder)

@@ -327,8 +327,8 @@ void AddKeychainView::onTableSelectionChanged (const QItemSelection &itemNew, co
 void AddKeychainView::onButtonProposeLocationClicked ()
 {
     mInternalLocation->setText (QString::number(ioInterface()->getFreeInternalLocation (1)));
-    mInternalLocation->update();
-    update();
+    // mInternalLocation->update();
+    // update();
 }
 
 void AddKeychainView::onAddCustomerButtonClicked(Gui::MenuButton btn)

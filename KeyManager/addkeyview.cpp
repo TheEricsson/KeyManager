@@ -17,6 +17,22 @@ AddKeyView::AddKeyView(QWidget *parent) : WinSubmenu {parent}
 
     setHeader("Schlüssel hinzufügen");
 
+    QTextEdit *keyDecription = new QTextEdit();
+    QLabel *keyTypeHeader = new QLabel("Schlüsselkategorie");
+    QLabel *keyAdditionalInfoHeader = new QLabel ("Zusätzliche Angaben");
+    QSpacerItem *spacer = new QSpacerItem (0, 0, QSizePolicy::Expanding, QSizePolicy::Expanding);
+    mKeyCategories = new CheckBoxArray ();
+    mKeyDescription = new QTextEdit();
+
+    QVBoxLayout *centralLayout = new QVBoxLayout();
+    centralLayout->addWidget(keyTypeHeader);
+    centralLayout->addWidget(mKeyCategories);
+    centralLayout->addWidget(keyAdditionalInfoHeader);
+    centralLayout->addWidget(mKeyDescription);
+    centralLayout->addItem(spacer);
+
+    setCentralLayout(centralLayout);
+
     QList<Gui::MenuButton> menuButtons;
     menuButtons.append(Gui::Back);
     menuButtons.append(Gui::Ok);
@@ -38,6 +54,10 @@ void AddKeyView::onMenuBtnClicked (Gui::MenuButton btnType)
                 //check if keycode is valid
                 if (_UNDEFINED != keyCode)
                 {
+                    // force text field update (android bug)
+                    mKeyDescription->update();
+                    update();
+
                     // add new key in database
                     IOInterface::keyData *data = new IOInterface::keyData();
                     data->keychainId = keyCode;
@@ -68,31 +88,14 @@ void AddKeyView::showEvent(QShowEvent *)
 
 void AddKeyView::reset ()
 {
-    if (!mKeyDescription)
-        mKeyDescription = new QTextEdit ();
-    else
+    if (mKeyDescription)
         mKeyDescription->clear();
 
-    if (!mKeyCategories)
+    if (mKeyCategories)
     {
-        mKeyCategories = new CheckBoxArray (this);
-
         if (ioInterface())
         {
             mKeyCategories->init (ioInterface(), "keyCategories", "category");
-
-            QLabel *keyTypeHeader = new QLabel("Schlüsselkategorie");
-            QLabel *keyAdditionalInfoHeader = new QLabel ("Zusätzliche Angaben");
-            QSpacerItem *spacer = new QSpacerItem (0, 0, QSizePolicy::Expanding, QSizePolicy::Expanding);
-
-            QVBoxLayout *centralLayout = new QVBoxLayout();
-            centralLayout->addWidget(keyTypeHeader);
-            centralLayout->addWidget(mKeyCategories);
-            centralLayout->addWidget(keyAdditionalInfoHeader);
-            centralLayout->addWidget(mKeyDescription);
-            centralLayout->addItem(spacer);
-
-            setCentralLayout(centralLayout);
         }
     }
 }

@@ -12,9 +12,9 @@ AnnotationView::AnnotationView (QWidget *parent)
 
     setHeader("Zusätzliche Notizen");
     mTextEditor = new QTextEdit (this);
-    mTextEditor->setSizePolicy(QSizePolicy::Policy::Expanding, QSizePolicy::Policy::Expanding);
+    mTextEditor->setSizePolicy(QSizePolicy::Expanding, QSizePolicy::Expanding);
 
-    QHBoxLayout *centralLayout = new QHBoxLayout();
+    QVBoxLayout *centralLayout = new QVBoxLayout();
     centralLayout->addWidget(mTextEditor);
     setCentralLayout(centralLayout);
 
@@ -35,13 +35,15 @@ void AnnotationView::reset()
 {
     dataInterface()->resetAnnotationData();
     mTextEditor->setText("");
-    update();
 }
 
 void AnnotationView::onTextChanged ()
 {
-    dataInterface()->setAnnotationText(mTextEditor->toPlainText());
+    //force update (android bug)
+    mTextEditor->update();
     update();
+
+    dataInterface()->setAnnotationText(mTextEditor->toPlainText());
 }
 
 AnnotationView::~AnnotationView()

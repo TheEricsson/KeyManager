@@ -5,7 +5,7 @@
 
 ImageView::ImageView(QWidget *parent) : WinSubmenu {parent}
 {
-    mImagePane = new QLabel("No image provided.");
+    mImagePane = new QLabel("Kein Bild vorhanden");
 
     mImagePane->setScaledContents(true);
     // mImagePane->setMaximumHeight(Gui::logoHeight);
@@ -14,8 +14,6 @@ ImageView::ImageView(QWidget *parent) : WinSubmenu {parent}
     //mImagePane->setPixmap(logo_scaled);
     mImagePane->setAlignment(Qt::AlignCenter);
     mImagePane->setSizePolicy(QSizePolicy::MinimumExpanding, QSizePolicy::MinimumExpanding);
-
-    QSpacerItem *spacer = new QSpacerItem (0, 0, QSizePolicy::Expanding, QSizePolicy::Expanding);
 
     QVBoxLayout *centralLayout = new QVBoxLayout();
     centralLayout->addWidget(mImagePane);
@@ -28,11 +26,18 @@ ImageView::ImageView(QWidget *parent) : WinSubmenu {parent}
     menuButtons.append(Gui::DeleteImage);
 
     setMenuButtons(menuButtons);
+    disableButton(2, true);
 }
 
 void ImageView::setImage(QImage &img)
 {
-    QImage scaledImg = img.scaled(mImagePane->width(), mImagePane->height(), Qt::KeepAspectRatioByExpanding, Qt::SmoothTransformation);
+    QImage scaledImg = img.scaled(mImagePane->width()* 0.8, mImagePane->height() * 0.8, Qt::KeepAspectRatioByExpanding, Qt::SmoothTransformation);
     QPixmap pic = QPixmap::fromImage(scaledImg);
     mImagePane->setPixmap(pic);
+
+    //enable the "delete image" button, if image is valid
+    if (!img.isNull())
+    {
+        enableButton(2, true);
+    }
 }
