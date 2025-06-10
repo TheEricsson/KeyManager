@@ -8,7 +8,7 @@
 
 class QSqlRelationalTableModel;
 class QSortFilterProxyModel;
-class QTableView;
+class QTableWidget;
 
 class TableView : public WinSubmenu
 {
@@ -17,11 +17,10 @@ class TableView : public WinSubmenu
         explicit TableView(const QString &tableName, QWidget *parent = nullptr);
 
     private:
+        void getData();
         virtual void showEvent(QShowEvent *);
-        bool setKeychainModel (QSqlRelationalTableModel* model);
-        QSqlRelationalTableModel *mKeychainModel;
-        QSortFilterProxyModel *mFilteredKeychainModel;
-        QTableView *mKeychain;
+        QTableWidget *mTable;
+        QString mTableName;
 };
 
 #endif // TABLEVIEW_H

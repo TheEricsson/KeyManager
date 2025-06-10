@@ -5,6 +5,7 @@
 
 class CodeGeneratorView;
 class RecipientView;
+class TableView;
 
 class ToolsViewDataAdministration : public WinSubmenu
 {
@@ -21,6 +22,7 @@ class ToolsViewDataAdministration : public WinSubmenu
     private:
         CodeGeneratorView *mCodeGeneratorView;
         RecipientView *mRecipientView;
+        TableView *mRecipientDataView;
 };
 
 #endif // TOOLSVIEWDATAADMINISTRATION_H

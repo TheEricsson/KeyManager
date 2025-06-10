@@ -5,12 +5,14 @@
 #include "winsubmenu.h"
 #include "codegeneratorview.h"
 #include "recipientview.h"
+#include "tableview.h"
 
 ToolsViewDataAdministration::ToolsViewDataAdministration(QWidget *parent)
     : WinSubmenu{parent}
 {
     mCodeGeneratorView = 0;
     mRecipientView = 0;
+    mRecipientDataView = 0;
 
     setHeader("Tools");
 
@@ -71,6 +73,12 @@ void ToolsViewDataAdministration::onEncoderSettingsClicked()
 
 void ToolsViewDataAdministration::onRecipientDataClicked()
 {
+    if (!mRecipientDataView)
+    {
+        mRecipientDataView = new TableView("recipientAddresses");
+        mRecipientDataView->setIOInterface(ioInterface());
+        mRecipientDataView->show();
+    }
     /*if (!mRecipientView)
     {
         mRecipientView = new RecipientView ();

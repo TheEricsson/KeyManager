@@ -824,6 +824,25 @@ QStringList IOInterfaceSQLITE::getTableColumnStringList (const QString &tableNam
     return tableItems;
 }
 
+QStringList IOInterfaceSQLITE::getTableColumns (const QString &tableName)
+{
+    QString queryString = "SELECT name from pragma_table_info(?) as tblInfo;";
+
+    QSqlQuery query;
+    query.prepare(queryString);
+    query.bindValue(0, tableName);
+    query.exec();
+
+    QStringList items;
+
+    while (query.next())
+    {
+        items << query.value(0).toString();
+    }
+
+    return items;
+}
+
 bool IOInterfaceSQLITE::initRecipientModel (QSqlRelationalTableModel *model)
 {
     if (model)

@@ -43,6 +43,7 @@ class IOInterfaceSQLITE : public IOInterface
         QVariant getValue (const QString &tableName, const QString& columnName, int index);
         QList<QVariant> getTableColumn (const QString &tableName, const QString& columnName, const QString& filter = "");
         QStringList getTableColumnStringList (const QString &tableName, const QString& columnName);
+        QStringList getTableColumns (const QString &tableName);
         bool initKeyOverviewModel (QSqlRelationalTableModel *model, const QString &filter);
         bool initKeychainModel (QSqlRelationalTableModel *model, const QString &filter);
         bool initKeychainHistoryModel (QSqlRelationalTableModel *model, const QString &filter = "");

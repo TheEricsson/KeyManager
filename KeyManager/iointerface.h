@@ -56,6 +56,7 @@ public:
                                             const QString& columnName, \
                                             const QString& filter = "")                         {Q_UNUSED(tableName); Q_UNUSED(columnName);};
     virtual QStringList getTableColumnStringList (const QString &tableName, const QString& columnName)    {Q_UNUSED(tableName); Q_UNUSED(columnName);};
+    virtual QStringList getTableColumns (const QString &tableName)                              {Q_UNUSED(tableName);};
     virtual bool dbCleanupTable (const QString& tablename, \
                                 const QString& filter, \
                                 const int numberOfEntriesToKeep)                                {Q_UNUSED(tablename); Q_UNUSED(filter); Q_UNUSED(numberOfEntriesToKeep); return false;};

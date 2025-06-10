@@ -3,77 +3,64 @@
 #include <QSqlTableModel>
 #include <QSqlRelationalTableModel>
 #include <QSortFilterProxyModel>
-#include <QTableView>
+#include <QTableWidget>
 #include <QHBoxLayout>
 #include <QPushButton>
+#include <QLineEdit>
+
 #include "iointerface.h"
 
 TableView::TableView(const QString &tableName, QWidget *parent)
     : WinSubmenu {parent}
 {
-    mKeychainModel = 0;
-    mFilteredKeychainModel = 0;
-    //setHeader("Suchfunktion");
+    setHeader("Tabelle");
 
-    mKeychain = new QTableView (this);
-    mKeychain->setSizePolicy(QSizePolicy::Expanding, QSizePolicy::Expanding);
+    mTable = new QTableWidget ();
+    mTable->setSizePolicy(QSizePolicy::Expanding, QSizePolicy::Expanding);
 
-    QHBoxLayout *centralLayout = new QHBoxLayout();
-    centralLayout->addWidget(mKeychain);
+    QVBoxLayout *centralLayout = new QVBoxLayout();
+    centralLayout->addWidget(mTable);
     setCentralLayout(centralLayout);
 
     QList<Gui::MenuButton> menuButtons;
     menuButtons.append(Gui::Back);
     setMenuButtons(menuButtons);
+
+    mTableName = tableName;
 }
 
 void TableView::showEvent(QShowEvent *)
 {
-    if (!mKeychainModel)
-        mKeychainModel = new QSqlRelationalTableModel (this);
-
-    if (!mFilteredKeychainModel)
-        mFilteredKeychainModel = new QSortFilterProxyModel (this);
-
-    ioInterface()->initKeychainModel(mKeychainModel);
-    setKeychainModel(mKeychainModel);
-    mFilteredKeychainModel->setSourceModel(mKeychainModel);
-    mKeychain->setModel(mFilteredKeychainModel);
+    getData();
 }
 
-bool TableView::setKeychainModel (QSqlRelationalTableModel* model)
+void TableView::getData()
 {
-    if (model)
+    if (ioInterface())
     {
-        model->setHeaderData(0, Qt::Horizontal, tr("Barcode"), Qt::DisplayRole);
-        model->setHeaderData(1, Qt::Horizontal, tr("Ausgabestatus"), Qt::DisplayRole);
-        model->setHeaderData(2, Qt::Horizontal, tr("Schlüsselhaken"), Qt::DisplayRole);
-        model->setHeaderData(3, Qt::Horizontal, tr("Straße"), Qt::DisplayRole);
-        model->setHeaderData(4, Qt::Horizontal, tr("Hausnummer"), Qt::DisplayRole);
-        model->setHeaderData(5, Qt::Horizontal, tr("PLZ"), Qt::DisplayRole);
-        model->setHeaderData(6, Qt::Horizontal, tr("Ort"), Qt::DisplayRole);
+        int rows = ioInterface()->getNumberOfEntries (mTableName);
+        QStringList columnHeaders = ioInterface()->getTableColumns (mTableName);
 
-        if (!mFilteredKeychainModel)
-            return false;
+        int columnsWithButtons = columnHeaders.size() + 1;
+        mTable->setColumnCount(columnsWithButtons);
+        mTable->setRowCount(rows);
 
-        if (mKeychain)
+        mTable->setHorizontalHeaderLabels(columnHeaders);
+
+        //step through rows
+        for (int i = 0; i < rows; i++)
         {
-            mFilteredKeychainModel->setSourceModel(model);
-            mKeychain->hideColumn(7); // hide image column
-            mKeychain->setEditTriggers(QTableView::NoEditTriggers);
-            mKeychain->setSelectionMode(QTableView::NoSelection);
-            //mKeychain->verticalHeader()->hide();
-
-            mKeychain->show();
-
-            //mKeychain->setSizeAdjustPolicy(QAbstractScrollArea::AdjustToContents);
-            //mKeychain->setSizePolicy(QSizePolicy::Preferred, QSizePolicy::Maximum);
-
-            //mKeychain->resizeColumnsToContents();
-
-            return true;
+            //step through columns
+            int j = 0;
+            for (; j < columnHeaders.size(); j++)
+            {
+                QString entry = ioInterface()->getValue (mTableName, columnHeaders.at(j), i+1).toString();
+                QTableWidgetItem *item = new QTableWidgetItem(entry);
+                mTable->setItem(i, j, item);
+            }
+            //last db column reached, now add buttons
+            qDebug() << "adding button in row: " << i << " and column: " << j+1;
+            mTable->setCellWidget(i, j, new QPushButton ("Edit"));
         }
-        return false;
     }
-    return false;
 }
