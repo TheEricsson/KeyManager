@@ -32,6 +32,7 @@ RecipientView::RecipientView(QWidget *parent) : WinSubmenu {parent}
     mRecipientsModel = 0;
     mRowSelected = false;
     mAddRecipientView = 0;
+    mCurrentRecipientId = _UNDEFINED;
 
     mFilteredModel = new QSortFilterProxyModel (this);
 
@@ -59,10 +60,14 @@ RecipientView::RecipientView(QWidget *parent) : WinSubmenu {parent}
 
     QList<Gui::MenuButton> menuButtons;
     menuButtons.append(Gui::Back);
+    menuButtons.append(Gui::Edit);
+    menuButtons.append(Gui::Delete);
     menuButtons.append(Gui::AddRecipient);
     menuButtons.append(Gui::Next);
     setMenuButtons(menuButtons);
-    disableButton(2, true);
+
+    //disable buttons, which need a valid selection in the table
+    setMenuButtonState(false);
 
     mRecipients->update();
     mRecipients->setFocus();
@@ -146,7 +151,8 @@ void RecipientView::reset()
 
     hideSearchField(false);
     hideNameField(false);
-    disableButton(2, true);
+
+    setMenuButtonState(false);
 
     switch (dataInterface()->getKeychainStatusId())
     {
@@ -212,6 +218,17 @@ void RecipientView::onMenuBtnClicked (Gui::MenuButton btnType)
         mAddRecipientView->setIOInterface (ioInterface());
         mAddRecipientView->show();
         break;
+    case (Gui::Edit):
+        if (!mAddRecipientView)
+        {
+            mAddRecipientView = new AddRecipientView();
+            mAddRecipientView->setDataInterface (dataInterface());
+            mAddRecipientView->setData(mCurrentRecipientId, dataInterface()->getDataRecipient());
+            connect (mAddRecipientView, SIGNAL(menuButtonClicked(Gui::MenuButton)), this, SLOT(onAddRecipientButtonClicked(Gui::MenuButton)));
+        }
+        mAddRecipientView->setIOInterface (ioInterface());
+        mAddRecipientView->show();
+        break;
     default:
         break;
     }
@@ -261,6 +278,13 @@ void RecipientView::hideNameField (bool hide)
     update ();
 }
 
+void RecipientView::setMenuButtonState (bool tableitemSelected)
+{
+    enableButton(1, tableitemSelected);
+    enableButton(2, tableitemSelected);
+    enableButton(4, tableitemSelected);
+}
+
 void RecipientView::onTableSelectionChanged (const QItemSelection &itemNew, const QItemSelection &itemOld)
 {
     Q_UNUSED(itemOld);
@@ -270,9 +294,12 @@ void RecipientView::onTableSelectionChanged (const QItemSelection &itemNew, cons
     mRecipientNameEdit->setText("");
 
     int row = mRecipients->selectionModel()->currentIndex().row();
+    mCurrentRecipientId = mRecipients->model()->index(row, 0).data().toInt();
+    qDebug () << "mCurrentRecipientId: " << mCurrentRecipientId;
     dataInterface()->setRecipientName(mRecipients->model()->index(row, 1).data().toString ());
     QString recipientType = mRecipients->model()->index(row, 2).data().toString ();
-    dataInterface()->setRecipientType(recipientType);
+    RecipientType::Value recipientTypeId = ioInterface()->getRecipientTypeId(recipientType);
+    dataInterface()->setRecipientType(recipientTypeId);
     dataInterface()->setRecipientStreet(mRecipients->model()->index(row, 3).data().toString ());
     dataInterface()->setRecipientStreetNumber(mRecipients->model()->index(row, 4).data().toString ());
     dataInterface()->setRecipientAreaCode(mRecipients->model()->index(row, 5).data().toInt ());
@@ -280,16 +307,16 @@ void RecipientView::onTableSelectionChanged (const QItemSelection &itemNew, cons
 
     if (!itemNew.isEmpty())
     {
-        enableButton(2, true);
+        setMenuButtonState(true);
         mRowSelected = true;
     }
     else
     {
-        disableButton(2, true);
+        setMenuButtonState (false);
         mRowSelected = false;
     }
 
-    if ("Firma" == recipientType)
+    if ("Unternehmen" == recipientType)
     {
         mRecipientNameEdit->setEnabled(true);
     }

@@ -23,7 +23,7 @@ ImageView::ImageView(QWidget *parent) : WinSubmenu {parent}
     QList <Gui::MenuButton> menuButtons;
     menuButtons.append(Gui::Back);
     menuButtons.append(Gui::TakePicture);
-    menuButtons.append(Gui::DeleteImage);
+    menuButtons.append(Gui::Delete);
 
     setMenuButtons(menuButtons);
     disableButton(2, true);

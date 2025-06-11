@@ -16,6 +16,7 @@ class QSqlRelationalTableModel;
 class DataInterface
 {  
     public:
+
         DataInterface();
         ~DataInterface();
 
@@ -40,7 +41,7 @@ class DataInterface
         bool setNewKeychainStatusId (KeychainStatus::Value status);
 
         bool setRecipientName(const QString& name);
-        bool setRecipientType(const QString& type);
+        bool setRecipientType(RecipientType::Value type);
         bool setRecipientStreet(const QString& street);
         bool setRecipientStreetNumber(const QString& streetNr);
         bool setRecipientAreaCode(const int areaCode);
@@ -72,11 +73,12 @@ class DataInterface
         void setData (ViewDataReturnDate* data);
         void setData (ViewDataScanner* data);
 
-    private:
         ViewDataHandover* getDataHandover () {return mDataHandover;};
         ViewDataRecipient* getDataRecipient () {return mDataRecipient;};
         ViewDataReturnDate* getDataReturnDate () {return mDataReturnDate;};
         ViewDataScanner* getDataScanner () {return mDataScanner;};
+
+    private:
 
         ViewDataAnnotation *mDataAnnotation;
         ViewDataHandover *mDataHandover;

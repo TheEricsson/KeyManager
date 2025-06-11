@@ -7,10 +7,10 @@ ViewDataRecipient::ViewDataRecipient()
     mDeadlineDate = "";
     mName = "";
     mStreet = "";
-    mRecipientType = "";
+    mRecipientType = RecipientType::Undefined;
     mStreetNumber = "";
     mAreaCode = _UNDEFINED;
     mCity = "";
     mSignee = "";
-    mNewKeychainStatus = KeychainStatus::Value::Undefined;
+    mNewKeychainStatus = KeychainStatus::Undefined;
 }

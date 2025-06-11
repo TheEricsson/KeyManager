@@ -16,7 +16,7 @@ class ViewDataRecipient
         void setRecipientStreetNumber (const QString& streetNumber) {mStreetNumber = streetNumber;};
         void setRecipientAreaCode (const int& areaCode) {mAreaCode = areaCode;};
         void setRecipientCity (const QString& city) {mCity = city;};
-        void setRecipientType (const QString& recipientType) {mRecipientType = recipientType;};
+        void setRecipientType (RecipientType::Value recipientType) {mRecipientType = recipientType;};
         void setSignatureName (const QString& signee) {mSignee = signee;};
         void setSignatureImg (const QImage& sigImage) {mSigImg = sigImage;};
         void setNewKeychainStatus (KeychainStatus::Value newStatus) {mNewKeychainStatus= newStatus;};
@@ -28,7 +28,7 @@ class ViewDataRecipient
         const QString& getRecipientStreetNumber () {return mStreetNumber;};
         const int& getRecipientAreaCode () {return mAreaCode;};
         const QString& getRecipientCity () {return mCity;};
-        const QString& getRecipientType () {return mRecipientType;};
+        RecipientType::Value getRecipientType () {return mRecipientType;};
         const QString& getSignatureName () {return mSignee;};
         const QImage& getSignatureImg () {return mSigImg;};
         KeychainStatus::Value getNewKeychainStatus () {return mNewKeychainStatus;};
@@ -37,8 +37,9 @@ class ViewDataRecipient
         QString mCurrentDate;
         QString mDeadlineDate;
         QString mName;
+        RecipientType::Value mRecipientType;
         QString mStreet;
-        QString mRecipientType;
+        //QString mRecipientType;
         QString mStreetNumber;
         int mAreaCode;
         QString mCity;

@@ -160,7 +160,7 @@ bool DataInterface::setRecipientName(const QString& name)
     return true;
 }
 
-bool DataInterface::setRecipientType(const QString& type)
+bool DataInterface::setRecipientType(RecipientType::Value type)
 {
     if (!mDataRecipient)
         return false;

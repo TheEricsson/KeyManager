@@ -6,6 +6,7 @@ class QString;
 class ViewDataKeychain;
 class DataInterface;
 class ViewDataScanner;
+class ViewDataRecipient;
 
 #include <QVariant>
 #include "globals.h"
@@ -100,8 +101,13 @@ public:
     virtual bool initRecipientModel (QSqlRelationalTableModel *model)                           {Q_UNUSED(model); return false;};
     virtual bool initCustomerModel (QSqlRelationalTableModel *model)                            {Q_UNUSED(model); return false;};
 
+    //recipients
+    virtual bool addNewRecipient (ViewDataRecipient *data)                                      {Q_UNUSED(data); return false;};
+    virtual RecipientType::Value getRecipientTypeId (const QString& recipientType)              {Q_UNUSED(recipientType); return RecipientType::Undefined;};
+    virtual bool updateRecipient (unsigned int id, ViewDataRecipient *data)                     {Q_UNUSED(id);Q_UNUSED(data); return false;};
+
     //personal data
-    virtual bool addNewRecipient (const IOInterface::recipientData *data)                       {Q_UNUSED(data); return false;};
+
     virtual bool addNewCustomer (const IOInterface::customerData *data)                         {Q_UNUSED(data); return false;};
 
     //handovers

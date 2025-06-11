@@ -352,7 +352,7 @@ void KeychainStatusView::onImageViewButtonClicked(Gui::MenuButton btn)
 
             mCameraView->show();
             break;
-        case Gui::DeleteImage:
+        case Gui::Delete:
             if (mImageView)
             {
                 mImageView->hide();

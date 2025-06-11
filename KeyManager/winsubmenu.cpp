@@ -257,7 +257,7 @@ void WinSubmenu::setMenuButtons (const QList<Gui::MenuButton> &buttons)
                 menuBtn->setIcon(QIcon(":/images/google_material_design/print_48dp_5985E1_FILL0_wght400_GRAD0_opsz48.svg"));
                 //menuBtn->setButtonText("Drucken");
                 break;
-            case (Gui::DeleteImage):
+            case (Gui::Delete):
                 menuBtn->setIcon(QIcon(":/images/google_material_design/delete_forever_48dp_5985E1_FILL0_wght400_GRAD0_opsz48.svg"));
                 //menuBtn->setButtonText("Bild\nLöschen");
                 break;

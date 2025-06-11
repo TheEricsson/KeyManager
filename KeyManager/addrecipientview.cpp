@@ -10,6 +10,8 @@
 #include <QGroupBox>
 #include <QFormLayout>
 #include "iointerface.h"
+#include "datainterface.h"
+#include "viewdatarecipient.h"
 
 AddRecipientView::AddRecipientView (QWidget *parent)
     : WinSubmenu {parent}
@@ -17,6 +19,8 @@ AddRecipientView::AddRecipientView (QWidget *parent)
     setHeader("Neuer Empfänger");
 
     mIsCompany = 0;
+    mIsPrivatePerson = 0;
+    mIsEmployee = 0;
     mLabelRecipientName = 0;
     mRecipientNameEdit = 0;
     mStreetEdit = 0;
@@ -24,23 +28,20 @@ AddRecipientView::AddRecipientView (QWidget *parent)
     mAreaCodeEdit = 0;
     mCityEdit = 0;
     mRecipientType = RecipientType::Company; // usual case
+    mRecipientId = _UNDEFINED;
 
     QVBoxLayout* mainLayout= new QVBoxLayout();
 
-    mIsCompany = new QRadioButton ("Firma", this);
+    mIsCompany = new QRadioButton ("Unternehmen", this);
     mIsCompany->setChecked(true); // this is the common case
-    QRadioButton *isPrivatePerson = new QRadioButton ("Privatperson", this);
-    QRadioButton *isEmployee = new QRadioButton ("Mitarbeiter", this);
-
-    // isPrivatePerson->setStyleSheet("QRadioButton::indicator {width: 25px; height 25px;}");
-    // isEmployee->setStyleSheet("QRadioButton::indicator {width: 25px; height 25px;}");
-    // mIsCompany->setStyleSheet("QRadioButton::indicator {width: 25px; height 25px;}");
+    mIsPrivatePerson = new QRadioButton ("Privatperson", this);
+    mIsEmployee = new QRadioButton ("Mitarbeiter", this);
 
     QVBoxLayout *recipientTypeBtnBox = new QVBoxLayout ();
     recipientTypeBtnBox->setSizeConstraint(QLayout::SetMinimumSize);
     recipientTypeBtnBox->addWidget(mIsCompany);
-    recipientTypeBtnBox->addWidget(isPrivatePerson);
-    recipientTypeBtnBox->addWidget(isEmployee);
+    recipientTypeBtnBox->addWidget(mIsPrivatePerson);
+    recipientTypeBtnBox->addWidget(mIsEmployee);
 
     QGroupBox *recipientType = new QGroupBox("Empfängertyp");
     recipientType->setLayout(recipientTypeBtnBox);
@@ -88,10 +89,9 @@ AddRecipientView::AddRecipientView (QWidget *parent)
     // line edit manipulators
     // convert all chars of a street number to uppercase
     connect(mStreetNumberEdit, SIGNAL(textChanged(QString)), SLOT(toUpper(QString)));
-
     connect (mIsCompany, SIGNAL (clicked()), this, SLOT (onIsCompanyBtnClicked()));
-    connect (isPrivatePerson, SIGNAL (clicked()), this, SLOT (onIsPrivatePersonBtnClicked()));
-    connect (isEmployee, SIGNAL (clicked()), this, SLOT (onIsEmployeeBtnClicked()));
+    connect (mIsPrivatePerson, SIGNAL (clicked()), this, SLOT (onIsPrivatePersonBtnClicked()));
+    connect (mIsEmployee, SIGNAL (clicked()), this, SLOT (onIsEmployeeBtnClicked()));
 }
 
 void AddRecipientView::clearForm()
@@ -104,6 +104,41 @@ void AddRecipientView::clearForm()
     mStreetNumberEdit->setText("");
     mAreaCodeEdit->setText("");
     mCityEdit->setText("");
+    mRecipientId = _UNDEFINED;
+}
+
+void AddRecipientView::setData(unsigned int id, ViewDataRecipient *data)
+{
+    mRecipientId = id;
+    setHeader("Empfängerdaten ändern");
+
+    if (data)
+    {
+        switch (data->getRecipientType())
+        {
+            case RecipientType::Company:
+                mIsCompany->setChecked(true);
+                mLabelRecipientName->setText("Firmenbezeichnung");
+                break;
+            case RecipientType::Employee:
+                mIsEmployee->setChecked(true);
+                mLabelRecipientName->setText("Mitarbeitername");
+                break;
+            case RecipientType::PrivatePerson:
+                mIsPrivatePerson->setChecked(true);
+                mLabelRecipientName->setText("Empfängername");
+                break;
+            default:
+                break;
+        }
+
+        mRecipientType = data->getRecipientType();
+        mRecipientNameEdit->setText(data->getRecipientName());
+        mStreetEdit->setText(data->getRecipientStreet());
+        mStreetNumberEdit->setText(data->getRecipientStreetNumber());
+        mAreaCodeEdit->setText(QString::number(data->getRecipientAreaCode()));
+        mCityEdit->setText(data->getRecipientCity());
+    }
 }
 
 void AddRecipientView::toUpper(QString text)
@@ -123,17 +158,26 @@ void AddRecipientView::onMenuBtnClicked (Gui::MenuButton btnType)
             // check editable fiels
             if (checkValues ())
             {
-                qDebug () << "AddRecipientView::onMenuBtnClicked OK";
-                IOInterface::recipientData *data = new IOInterface::recipientData ();
-                data->areaCode = mAreaCodeEdit->text();
-                data->city = mCityEdit->text();
-                data->name = mRecipientNameEdit->text();
-                data->street = mStreetEdit->text();
-                data->number = mStreetNumberEdit->text();
-                data->type = mRecipientType;
+                if (dataInterface())
+                {
+                    dataInterface()->setRecipientAreaCode(mAreaCodeEdit->text().toInt());
+                    dataInterface()->setRecipientCity(mCityEdit->text());
+                    dataInterface()->setRecipientName(mRecipientNameEdit->text());
+                    dataInterface()->setRecipientStreet(mStreetEdit->text());
+                    dataInterface()->setRecipientStreetNumber(mStreetNumberEdit->text());
+                    dataInterface()->setRecipientType(mRecipientType);
 
-                ioInterface()->addNewRecipient(data);
-                delete data;
+                    // add new record
+                    if (_UNDEFINED == mRecipientId)
+                    {
+                        ioInterface()->addNewRecipient(dataInterface()->getDataRecipient());
+                    }
+                    // edit existing record
+                    else
+                    {
+                        ioInterface()->updateRecipient(mRecipientId, dataInterface()->getDataRecipient());
+                    }
+                }
 
                 clearForm();
 
@@ -181,7 +225,7 @@ bool AddRecipientView::checkValues ()
     else
         mStreetNumberEdit->setStyleSheet("");
 
-    if ("" == mAreaCodeEdit->text())
+    if ("" == mAreaCodeEdit->text() || mAreaCodeEdit->text().length() < 5)
     {
         mAreaCodeEdit->setStyleSheet("border-style: solid;border-width: 1px;border-color: red");
         checkOk = false;

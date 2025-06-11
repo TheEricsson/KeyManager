@@ -43,7 +43,7 @@ namespace Gui
         Print,
         TakePicture,
         Save,
-        DeleteImage,
+        Delete,
         NewImageFromCam,
         Tools,
         Shutter
@@ -81,7 +81,8 @@ namespace RecipientType
     {
         Company = 1,
         Employee = 2,
-        PrivatePerson = 3
+        PrivatePerson = 3,
+        Undefined = 999
     };
 }
 

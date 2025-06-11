@@ -44,6 +44,7 @@ private:
     void setTableFilter(const int column, const QString &searchString);
     void hideSearchField(bool hide);
     void hideNameField(bool hide);
+    void setMenuButtonState (bool tableitemSelected);
 
     QSqlRelationalTableModel *mRecipientsModel;
     QTableView *mRecipients;
@@ -60,6 +61,8 @@ private:
 
     AddRecipientView *mAddRecipientView;
     ReturnDateView *mReturnDateWidget;
+
+    int mCurrentRecipientId;
 };
 
 #endif // RECIPIENTVIEW_H

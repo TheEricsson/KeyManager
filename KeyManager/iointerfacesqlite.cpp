@@ -15,6 +15,7 @@
 #include "viewdatakeychain.h"
 #include "datainterface.h"
 #include "globals.h"
+#include "viewdatarecipient.h"
 
 #ifdef Q_OS_ANDROID
     #include <QCoreApplication>
@@ -858,32 +859,70 @@ bool IOInterfaceSQLITE::initRecipientModel (QSqlRelationalTableModel *model)
 
 bool IOInterfaceSQLITE::initCustomerModel (QSqlRelationalTableModel *model)
 {
+    bool retVal = false;
+
     if (model)
     {
         model->setTable("keyAddresses");
         model->select();
-        return true;
+        retVal = true;
     }
-    else
-        return false;
+    return retVal;
 }
 
-bool IOInterfaceSQLITE::addNewRecipient (const IOInterface::recipientData *data)
+bool IOInterfaceSQLITE::updateRecipient (unsigned int id, ViewDataRecipient *data)
 {
-    if (!data)
-        return false;
+    bool retVal = false;
 
+    if (data)
+    {
+        QSqlQuery query;
+        query.prepare("UPDATE recipientAddresses SET name = ?, type = ?, street = ?, houseNr = ?, areaCode = ?, city = ? WHERE id = ?");
+        query.bindValue(0, data->getRecipientName());
+        query.bindValue(1, data->getRecipientType());
+        query.bindValue(2, data->getRecipientStreet());
+        query.bindValue(3, data->getRecipientStreetNumber());
+        query.bindValue(4, data->getRecipientAreaCode());
+        query.bindValue(5, data->getRecipientCity());
+        query.bindValue(6, id);
+
+        retVal = query.exec();
+    }
+    return retVal;
+}
+
+RecipientType::Value IOInterfaceSQLITE::getRecipientTypeId (const QString& recipientType)
+{
     QSqlQuery query;
-    query.prepare("INSERT INTO recipientAddresses (name, type, street, houseNr, areaCode, city) \
-                    VALUES (?, ?, ?, ?, ?, ?)");
-    query.bindValue(0, data->name);
-    query.bindValue(1, data->type);
-    query.bindValue(2, data->street);
-    query.bindValue(3, data->number);
-    query.bindValue(4, data->areaCode);
-    query.bindValue(5, data->city);
 
-    return query.exec();
+    query.prepare("SELECT id FROM recipientTypes WHERE type = ?");
+    query.bindValue(0, recipientType);
+    query.exec();
+
+    if (query.next())
+    {
+        return (RecipientType::Value)query.value(0).toInt();
+    }
+    else
+        return RecipientType::Undefined;
+}
+
+bool IOInterfaceSQLITE::addNewRecipient (ViewDataRecipient *data)
+{
+    if (data)
+    {
+        QSqlQuery query;
+        query.prepare("INSERT INTO recipientAddresses (name, type, street, houseNr, areaCode, city) \
+                        VALUES (?, ?, ?, ?, ?, ?)");
+        query.bindValue(0, data->getRecipientName());
+        query.bindValue(1, data->getRecipientType());
+        query.bindValue(2, data->getRecipientStreet());
+        query.bindValue(3, data->getRecipientStreetNumber());
+        query.bindValue(4, data->getRecipientAreaCode());
+        query.bindValue(5, data->getRecipientCity());
+
+        return query.exec();
+    }
 }
 
 bool IOInterfaceSQLITE::addNewCustomer (const IOInterface::customerData *data)
