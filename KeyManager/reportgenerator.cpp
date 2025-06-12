@@ -146,7 +146,7 @@ void ReportGenerator::createHandoverProtocol(unsigned int id, ReportGenerator::O
     QByteArray sigByteArray = mIOInterface->getValue("handovers", "signature", id).toByteArray();
     QImage sigImage;
     mIOInterface->byteArrayToImage(sigByteArray, sigImage);
-    printer->insertImage(sigImage, PrinterInterface::Small, PrinterInterface::Left);
+    printer->insertImage(sigImage, PrinterInterface::Medium, PrinterInterface::Left);
     printer->insertHLine();
 
     printer->finish();

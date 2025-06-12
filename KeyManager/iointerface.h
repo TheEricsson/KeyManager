@@ -49,13 +49,13 @@ public:
     virtual const QString getDatabaseLocation()                                                 {return "";};
     virtual bool openDatabase()                                                                 {return false;};
     virtual bool closeDatabase()                                                                {return false;};
-    virtual bool doDbBackup(const QString& fileName)                                            {Q_UNUSED(fileName);};
+    virtual bool doDbBackup(const QString& fileName)                                            {Q_UNUSED(fileName); return false;};
 
     virtual int getNumberOfEntries (const QString &tableName)                                   {Q_UNUSED(tableName); return _UNDEFINED;};
     virtual QVariant getValue (const QString &tableName, const QString& columnName, int index)  {Q_UNUSED(tableName); Q_UNUSED(columnName); Q_UNUSED(index); return _UNDEFINED;};
     virtual QList<QVariant> getTableColumn (const QString &tableName, \
                                             const QString& columnName, \
-                                            const QString& filter = "")                         {Q_UNUSED(tableName); Q_UNUSED(columnName);};
+                                            const QString& filter = "")                         {Q_UNUSED(tableName); Q_UNUSED(columnName); Q_UNUSED(filter);};
     virtual QStringList getTableColumnStringList (const QString &tableName, const QString& columnName)    {Q_UNUSED(tableName); Q_UNUSED(columnName);};
     virtual QStringList getTableColumns (const QString &tableName)                              {Q_UNUSED(tableName);};
     virtual bool dbCleanupTable (const QString& tablename, \
@@ -77,7 +77,8 @@ public:
     virtual bool setKeychainData (ViewDataKeychain* data, const int& keyCode)                   {Q_UNUSED(keyCode); Q_UNUSED(data); return false;};
     virtual bool dbInsertKeychain (DataInterface *data)                                         {Q_UNUSED(data); return false;};
     virtual bool dbInsertKeychainImg (const unsigned int keyCode, const QImage& img)            {Q_UNUSED(keyCode); Q_UNUSED(img); return false;};
-    virtual unsigned int getKeycodeFromInternalLocation (const unsigned int lockerId, const unsigned int internalLoc) {Q_UNUSED(internalLoc); return _UNDEFINED;};
+    virtual unsigned int getKeycodeFromInternalLocation (const unsigned int lockerId, \
+                                                        const unsigned int internalLoc)         {Q_UNUSED(lockerId); Q_UNUSED(internalLoc); return _UNDEFINED;};
 
     //keys
     virtual bool addKey (const IOInterface::keyData *data)                                      {Q_UNUSED(data); return false;};

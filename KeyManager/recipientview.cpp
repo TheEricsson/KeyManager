@@ -212,9 +212,10 @@ void RecipientView::onMenuBtnClicked (Gui::MenuButton btnType)
         if (!mAddRecipientView)
         {
             mAddRecipientView = new AddRecipientView();
-            mAddRecipientView->setDataInterface (dataInterface());
             connect (mAddRecipientView, SIGNAL(menuButtonClicked(Gui::MenuButton)), this, SLOT(onAddRecipientButtonClicked(Gui::MenuButton)));
         }
+        mAddRecipientView->setDataInterface (dataInterface());
+        mAddRecipientView->setViewMode(ViewMode::NewData);
         mAddRecipientView->setIOInterface (ioInterface());
         mAddRecipientView->show();
         break;
@@ -222,10 +223,11 @@ void RecipientView::onMenuBtnClicked (Gui::MenuButton btnType)
         if (!mAddRecipientView)
         {
             mAddRecipientView = new AddRecipientView();
-            mAddRecipientView->setDataInterface (dataInterface());
-            mAddRecipientView->setData(mCurrentRecipientId, dataInterface()->getDataRecipient());
             connect (mAddRecipientView, SIGNAL(menuButtonClicked(Gui::MenuButton)), this, SLOT(onAddRecipientButtonClicked(Gui::MenuButton)));
         }
+        mAddRecipientView->setDataInterface (dataInterface());
+        mAddRecipientView->setData(mCurrentRecipientId, dataInterface()->getDataRecipient());
+        mAddRecipientView->setViewMode(ViewMode::EditData);
         mAddRecipientView->setIOInterface (ioInterface());
         mAddRecipientView->show();
         break;

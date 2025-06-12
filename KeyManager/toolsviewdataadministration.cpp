@@ -12,7 +12,6 @@ ToolsViewDataAdministration::ToolsViewDataAdministration(QWidget *parent)
 {
     mCodeGeneratorView = 0;
     mRecipientView = 0;
-    mRecipientDataView = 0;
 
     setHeader("Tools");
 
@@ -73,38 +72,53 @@ void ToolsViewDataAdministration::onEncoderSettingsClicked()
 
 void ToolsViewDataAdministration::onRecipientDataClicked()
 {
-    if (!mRecipientDataView)
-    {
-        mRecipientDataView = new TableView("recipientAddresses");
-        mRecipientDataView->setIOInterface(ioInterface());
-        mRecipientDataView->show();
-    }
-    /*if (!mRecipientView)
+    if (!mRecipientView)
     {
         mRecipientView = new RecipientView ();
-        mRecipientView->setIOInterface(ioInterface());
-        connect (mCodeGeneratorView, SIGNAL(menuButtonClicked(Gui::MenuButton)), this, SLOT(onBtnClicked_CodeGenerator(Gui::MenuButton)));
+        connect (mRecipientView, SIGNAL(menuButtonClicked(Gui::MenuButton)), this, SLOT (onBtnClicked_RecipientView(Gui::MenuButton)));
     }
-    mRecipientView->show();*/
+    mRecipientView->setDataInterface(dataInterface());
+    mRecipientView->setIOInterface(ioInterface());
+    mRecipientView->show();
 }
 
 void ToolsViewDataAdministration::onBtnClicked_CodeGenerator (Gui::MenuButton btn)
 {
     switch (btn)
     {
-    case Gui::Back:
-    case Gui::Ok:
-        if (mCodeGeneratorView)
-        {
-            mCodeGeneratorView->hide();
-            delete mCodeGeneratorView;
-            mCodeGeneratorView = 0;
-            setFocus();
-            update ();
-        }
-        break;
-    default:
-        break;
+        case Gui::Back:
+        case Gui::Ok:
+            if (mCodeGeneratorView)
+            {
+                mCodeGeneratorView->hide();
+                delete mCodeGeneratorView;
+                mCodeGeneratorView = 0;
+                setFocus();
+                update ();
+            }
+            break;
+        default:
+            break;
+    }
+}
+
+void ToolsViewDataAdministration::onBtnClicked_RecipientView (Gui::MenuButton btn)
+{
+    switch (btn)
+    {
+        case Gui::Back:
+        case Gui::Ok:
+            if (mRecipientView)
+            {
+                mRecipientView->hide();
+                delete mRecipientView;
+                mRecipientView = 0;
+                setFocus();
+                update ();
+            }
+            break;
+        default:
+            break;
     }
 }
 

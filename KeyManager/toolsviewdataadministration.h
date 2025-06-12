@@ -19,10 +19,10 @@ class ToolsViewDataAdministration : public WinSubmenu
         void onEncoderSettingsClicked();
         void onRecipientDataClicked();
         void onBtnClicked_CodeGenerator (Gui::MenuButton btn);
+        void onBtnClicked_RecipientView (Gui::MenuButton btn);
     private:
         CodeGeneratorView *mCodeGeneratorView;
         RecipientView *mRecipientView;
-        TableView *mRecipientDataView;
 };
 
 #endif // TOOLSVIEWDATAADMINISTRATION_H

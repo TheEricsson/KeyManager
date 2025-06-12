@@ -154,13 +154,13 @@ void PrinterInterfacePdf::insertImage(const QImage &img, PrinterInterface::imgSi
     switch (size)
     {
         case PrinterInterface::Small:
-            img_scaled = img.scaledToWidth(400, Qt::SmoothTransformation);
+            img_scaled = img.scaledToWidth(500, Qt::SmoothTransformation);
             break;
         case PrinterInterface::Medium:
-            img_scaled = img.scaledToWidth(600, Qt::SmoothTransformation);
+            img_scaled = img.scaledToWidth(1000, Qt::SmoothTransformation);
             break;
         case PrinterInterface::Big:
-            img_scaled = img.scaledToWidth(1000, Qt::SmoothTransformation);
+            img_scaled = img.scaledToWidth(1600, Qt::SmoothTransformation);
             break;
         default:
             img_scaled = img;
@@ -185,7 +185,7 @@ void PrinterInterfacePdf::insertImage(const QImage &img, PrinterInterface::imgSi
     mPosY += 10;
 
     // draw the image in document
-    mPainter.drawImage(QRect(mPosX, mPosY, img_scaled.width(), img_scaled.height()), img);
+    mPainter.drawImage(QRect(mPosX, mPosY, img_scaled.width(), img_scaled.height()), img_scaled);
 
     // set printer position...
     int nextPosY = mPosY + img_scaled.height() + 5;

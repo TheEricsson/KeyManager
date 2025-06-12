@@ -85,6 +85,15 @@ namespace RecipientType
         Undefined = 999
     };
 }
+namespace ViewMode
+{
+    enum Value
+    {
+        EditData = 0,
+        NewData = 1,
+        Undefined = 999
+    };
+}
 
 namespace Database
 {

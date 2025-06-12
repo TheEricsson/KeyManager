@@ -29,6 +29,7 @@ AddRecipientView::AddRecipientView (QWidget *parent)
     mCityEdit = 0;
     mRecipientType = RecipientType::Company; // usual case
     mRecipientId = _UNDEFINED;
+    mViewMode = ViewMode::Undefined;
 
     QVBoxLayout* mainLayout= new QVBoxLayout();
 
@@ -105,6 +106,12 @@ void AddRecipientView::clearForm()
     mAreaCodeEdit->setText("");
     mCityEdit->setText("");
     mRecipientId = _UNDEFINED;
+    mViewMode = ViewMode::Undefined;
+}
+
+void AddRecipientView::setViewMode (ViewMode::Value mode)
+{
+    mViewMode = mode;
 }
 
 void AddRecipientView::setData(unsigned int id, ViewDataRecipient *data)
@@ -167,15 +174,23 @@ void AddRecipientView::onMenuBtnClicked (Gui::MenuButton btnType)
                     dataInterface()->setRecipientStreetNumber(mStreetNumberEdit->text());
                     dataInterface()->setRecipientType(mRecipientType);
 
-                    // add new record
-                    if (_UNDEFINED == mRecipientId)
+                    if (ioInterface())
                     {
-                        ioInterface()->addNewRecipient(dataInterface()->getDataRecipient());
-                    }
-                    // edit existing record
-                    else
-                    {
-                        ioInterface()->updateRecipient(mRecipientId, dataInterface()->getDataRecipient());
+                        switch (mViewMode)
+                        {
+                            //add new db entry
+                            case ViewMode::NewData:
+                                ioInterface()->addNewRecipient(dataInterface()->getDataRecipient());
+                                break;
+                            //edit existing db entry
+                            case ViewMode::EditData:
+                                ioInterface()->updateRecipient(mRecipientId, dataInterface()->getDataRecipient());
+                                break;
+                            //view mode not set
+                            default:
+                                qDebug()<< "AddRecipientView::onMenuBtnClicked: ViewMode not set!";
+                                break;
+                        }
                     }
                 }
 

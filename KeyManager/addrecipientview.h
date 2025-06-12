@@ -15,8 +15,10 @@ class AddRecipientView : public WinSubmenu
 {
     Q_OBJECT
     public:
+
         explicit AddRecipientView(QWidget *parent = nullptr);
         void clearForm();
+        void setViewMode (ViewMode::Value mode);
         void setData(unsigned int id, ViewDataRecipient *data);
 
     private slots:
@@ -44,6 +46,8 @@ class AddRecipientView : public WinSubmenu
 
         ViewDataRecipient *mRecipientData;
         int mRecipientId;
+
+        ViewMode::Value mViewMode;
 };
 
 #endif // ADDRECIPIENTVIEW_H
