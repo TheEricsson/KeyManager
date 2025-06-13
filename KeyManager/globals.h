@@ -95,6 +95,15 @@ namespace ViewMode
     };
 }
 
+namespace DbEntryStatus
+{
+    enum Value
+    {
+        Enabled = 0,
+        Disabled = 1
+    };
+}
+
 namespace Database
 {
     const int maxHandoverEntries = 50;

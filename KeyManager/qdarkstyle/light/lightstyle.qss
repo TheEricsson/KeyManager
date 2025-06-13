@@ -1952,6 +1952,11 @@ QTableCornerButton::section {
   border-radius: 0px;
 }
 
+QTreeView::item{
+    border-bottom: 1px solid rgb(210, 210, 210);
+    /*border-left: 1px solid rgb(210, 210, 210);*/
+}
+
 /* QHeaderView ------------------------------------------------------------
 
 https://doc.qt.io/qt-5/stylesheet-examples.html#customizing-qheaderview

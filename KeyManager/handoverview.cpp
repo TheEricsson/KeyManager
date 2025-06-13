@@ -184,6 +184,7 @@ bool HandoverView::reportRequested()
 {
     QMessageBox msgBox;
     msgBox.setStandardButtons(QMessageBox::Yes | QMessageBox::No);
+    msgBox.setIcon(QMessageBox::Question);
     msgBox.setText ("Protokoll");
     msgBox.setInformativeText("Die Schlüsselübergabe wurde vollständig verarbeitet.\nMöchten Sie ein Protokoll im PDF-Format erzeugen?");
 

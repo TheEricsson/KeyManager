@@ -243,7 +243,16 @@ void SearchView::setTreeAddressData()
                     QIcon iconPic(logo);
                     QStandardItem *keyIcon = new QStandardItem();
                     keyIcon->setIcon(iconPic);
+                    keyIcon->setTextAlignment(Qt::AlignTop);
                     keyIcon->setText(keyCatString);
+
+                    QStandardItem *keyStatusItem = new QStandardItem();
+                    keyStatusItem->setTextAlignment(Qt::AlignTop);
+                    keyStatusItem->setText(keyStatusString);
+
+                    QStandardItem *keyDescriptionItem = new QStandardItem();
+                    keyDescriptionItem->setTextAlignment(Qt::AlignTop);
+                    keyDescriptionItem->setText(keyDescription);
 
                     QList<QStandardItem*> childItems2;
                     childItems2 << new QStandardItem();
@@ -251,8 +260,8 @@ void SearchView::setTreeAddressData()
                     childItems2 << new QStandardItem();
                     childItems2 << new QStandardItem();
                     childItems2 << keyIcon;
-                    childItems2 << new QStandardItem(keyStatusString);
-                    childItems2 << new QStandardItem(keyDescription);
+                    childItems2 << keyStatusItem;
+                    childItems2 << keyDescriptionItem;
 
                     childItems.first()->appendRow(childItems2);
                 }

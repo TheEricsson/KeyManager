@@ -119,6 +119,9 @@ void MainWindow::init()
     registerView (mSettingsViewDb);
     registerView (mToolsViewDataAdministration);
 
+    // set view state
+    mRecipientView->setHandoverSession(true);
+
     mViewStack->setCurrentWidget(mHomeView);
 
     //register possible menu navigation paths

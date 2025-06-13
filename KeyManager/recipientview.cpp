@@ -15,6 +15,7 @@
 #include <QButtonGroup>
 #include <QDate>
 #include <QGroupBox>
+#include <QMessageBox>
 
 #include "winsubmenu.h"
 #include "globals.h"
@@ -29,12 +30,16 @@ RecipientView::RecipientView(QWidget *parent) : WinSubmenu {parent}
 
     mRecipients = 0;
     mFilteredModel = 0;
+    mActiveEntries = 0;
     mRecipientsModel = 0;
     mRowSelected = false;
     mAddRecipientView = 0;
     mCurrentRecipientId = _UNDEFINED;
+    mIsHandoverSession = false;
 
+    mActiveEntries = new QSortFilterProxyModel (this);
     mFilteredModel = new QSortFilterProxyModel (this);
+    mActiveEntries->setSourceModel(mFilteredModel);
 
     QGridLayout* centralLayout = new QGridLayout();
 
@@ -42,7 +47,7 @@ RecipientView::RecipientView(QWidget *parent) : WinSubmenu {parent}
     mSearchField = new QLineEdit (this);
 
     mRecipients = new QTableView (this);
-    mRecipients->setModel(mFilteredModel);
+    mRecipients->setModel(mActiveEntries);
 
     mRecipientNameLabel = new QLabel ("Unterzeichner:", this);
     mRecipientNameEdit = new QLineEdit ("", this);
@@ -73,10 +78,13 @@ RecipientView::RecipientView(QWidget *parent) : WinSubmenu {parent}
     mRecipients->setFocus();
 
     connect (mRecipients->selectionModel(), SIGNAL(selectionChanged(const QItemSelection &, const QItemSelection &)), this, SLOT(onTableSelectionChanged(const QItemSelection &, const QItemSelection &)));
-    connect (mSearchField, SIGNAL(textChanged(const QString &)), this, SLOT(setTableFilter(const QString &)));
-    //connect (mReturnDateWidget, SIGNAL(dateSelectionChanged(QDate)), this, SLOT(onSelectedDateChanged (QDate)));
-    //connect (mReturnDateWidget, SIGNAL(keychainStatusChanged(KeychainStatus::Value)), this, SLOT(onKeychainStatusChanged (KeychainStatus::Value)));
-    connect (mRecipientNameEdit, SIGNAL(textChanged(const QString &)), this, SLOT(onRecipientNameTextChanged(const QString &)));
+    connect (mSearchField, SIGNAL(textChanged(QString)), this, SLOT(setTableFilter(QString)));
+    connect (mRecipientNameEdit, SIGNAL(textChanged(QString)), this, SLOT(onRecipientNameTextChanged(QString)));
+}
+
+void RecipientView::setHandoverSession(bool value)
+{
+    mIsHandoverSession = value;
 }
 
 bool RecipientView::setModel (QSqlRelationalTableModel* model)
@@ -97,17 +105,22 @@ bool RecipientView::setModel (QSqlRelationalTableModel* model)
     model->setHeaderData(4, Qt::Horizontal, tr("Hausnummer"), Qt::DisplayRole);
     model->setHeaderData(5, Qt::Horizontal, tr("PLZ"), Qt::DisplayRole);
     model->setHeaderData(6, Qt::Horizontal, tr("Stadt"), Qt::DisplayRole);
+    model->setHeaderData(7, Qt::Horizontal, tr("DB Status"), Qt::DisplayRole);
 
     mFilteredModel->setSourceModel(model);
     mFilteredModel->setFilterCaseSensitivity(Qt::CaseInsensitive); // ignore capital letters
 
     mRecipients->hideColumn(0); //don't show table index
+    mRecipients->hideColumn(7); //don't show db status
 
     mRecipients->setSortingEnabled(true);
     mRecipients->sortByColumn(1, Qt::AscendingOrder);
     mRecipients->setEditTriggers(QTableView::NoEditTriggers);
     mRecipients->setSelectionMode(QTableView::SingleSelection);
     mRecipients->setSelectionBehavior(QTableView::SelectRows);
+
+    //show active entries only
+    filterActiveEntries();
 
     mRecipients->show();
 
@@ -123,21 +136,12 @@ bool RecipientView::setModel (QSqlRelationalTableModel* model)
 
 void RecipientView::reset()
 {
+    //reset data/views
     dataInterface()->resetRecipientData();
 
-    QDate curDate = QDate::currentDate();
-    int day = 0;
-    int month = 0;
-    int year = 0;
-    curDate.getDate(&year, &month, &day);
-
-    QString curDateString = QString::number(day);
-    curDateString.append(".");
-    curDateString.append(QString::number(month));
-    curDateString.append(".");
-    curDateString.append(QString::number(year));
-
-    dataInterface()->setRecipientCurrentDate(curDateString);
+    hideSearchField(false);
+    hideNameField(true);
+    setMenuButtonState(false);
 
     //init model/view at first show event
     if (!mRecipientsModel)
@@ -149,35 +153,21 @@ void RecipientView::reset()
         setModel(mRecipientsModel);
     }
 
-    hideSearchField(false);
-    hideNameField(false);
-
-    setMenuButtonState(false);
-
-    switch (dataInterface()->getKeychainStatusId())
+    //if view is called as handover session -> check current keychain status and set view state
+    if (mIsHandoverSession)
     {
-        case KeychainStatus::Value::AdministrationEnded:
-        case KeychainStatus::Value::Lost:
-        case KeychainStatus::Value::PermanentOut:
-        case KeychainStatus::Value::TemporaryOut:
-        case KeychainStatus::Value::Undefined:
-            hideSearchField(true);
-            hideNameField(true);
-            setTableFilter(2, "Mitarbeiter");
-            //mReturnDateWidget->hide();
-            //mReturnDateWidget->setDisabled(true);
-            dataInterface()->setRecipientDeadlineDate("");
-
-            update ();
-            dataInterface()->setNewKeychainStatusId(KeychainStatus::Value::Available);
-            break;
-        default:
-            hideSearchField(false);
-            hideNameField(false);
-            setTableFilter("");
-            update ();
-            //mReturnDateWidget->show();
-            //mReturnDateWidget->setDisabled(false);
+        switch (dataInterface()->getKeychainStatusId())
+        {
+            case KeychainStatus::Value::AdministrationEnded:
+            case KeychainStatus::Value::Lost:
+            case KeychainStatus::Value::PermanentOut:
+            case KeychainStatus::Value::TemporaryOut:
+            case KeychainStatus::Value::Undefined:
+                setTableFilter(2, "Mitarbeiter");
+                break;
+            default:
+                setTableFilter("");
+        }
     }
 
     mRecipients->clearSelection();
@@ -209,28 +199,13 @@ void RecipientView::onMenuBtnClicked (Gui::MenuButton btnType)
         }
         break;
     case (Gui::AddRecipient):
-        if (!mAddRecipientView)
-        {
-            mAddRecipientView = new AddRecipientView();
-            connect (mAddRecipientView, SIGNAL(menuButtonClicked(Gui::MenuButton)), this, SLOT(onAddRecipientButtonClicked(Gui::MenuButton)));
-        }
-        mAddRecipientView->setDataInterface (dataInterface());
-        mAddRecipientView->setViewMode(ViewMode::NewData);
-        mAddRecipientView->setIOInterface (ioInterface());
-        mAddRecipientView->show();
+        addRecipient();
         break;
     case (Gui::Edit):
-        if (!mAddRecipientView)
-        {
-            mAddRecipientView = new AddRecipientView();
-            connect (mAddRecipientView, SIGNAL(menuButtonClicked(Gui::MenuButton)), this, SLOT(onAddRecipientButtonClicked(Gui::MenuButton)));
-        }
-        mAddRecipientView->setDataInterface (dataInterface());
-        mAddRecipientView->setData(mCurrentRecipientId, dataInterface()->getDataRecipient());
-        mAddRecipientView->setViewMode(ViewMode::EditData);
-        mAddRecipientView->setIOInterface (ioInterface());
-        mAddRecipientView->show();
+        editRecipient();
         break;
+    case (Gui::Delete):
+        disableRecipient();
     default:
         break;
     }
@@ -249,19 +224,27 @@ void RecipientView::setTableFilter(const QString &text)
     update ();
 }
 
+void RecipientView::filterActiveEntries()
+{
+    DbEntryStatus::Value dbStatus = DbEntryStatus::Enabled;
+    mActiveEntries->setFilterKeyColumn(7);
+    mActiveEntries->setFilterRegularExpression(QRegularExpression(QString::number(dbStatus)));
+    mRecipients->update();
+}
+
 void RecipientView::setTableFilter(const int column, const QString &searchString)
 {
     if (!mRecipients)
         return;
 
     mFilteredModel->setFilterKeyColumn(column);
-    mFilteredModel->setFilterWildcard(searchString);
+    //mFilteredModel->setFilterWildcard(searchString);
+    mFilteredModel->setFilterRegularExpression(QRegularExpression(searchString, QRegularExpression::CaseInsensitiveOption));
 
     qDebug () << "RecipientView::setTableFilter";
     qDebug () << "column: " << column;
     qDebug () << "searchString: " << searchString;
-
-    update();
+    mRecipients->update();
 }
 
 void RecipientView::hideSearchField (bool hide)
@@ -285,6 +268,61 @@ void RecipientView::setMenuButtonState (bool tableitemSelected)
     enableButton(1, tableitemSelected);
     enableButton(2, tableitemSelected);
     enableButton(4, tableitemSelected);
+}
+
+void RecipientView::addRecipient()
+{
+    if (!mAddRecipientView)
+    {
+        mAddRecipientView = new AddRecipientView();
+        connect (mAddRecipientView, SIGNAL(menuButtonClicked(Gui::MenuButton)), this, SLOT(onAddRecipientButtonClicked(Gui::MenuButton)));
+    }
+    mAddRecipientView->setDataInterface (dataInterface());
+    mAddRecipientView->setViewMode(ViewMode::NewData);
+    mAddRecipientView->setIOInterface (ioInterface());
+    mAddRecipientView->show();
+}
+
+void RecipientView::editRecipient()
+{
+    if (!mAddRecipientView)
+    {
+        mAddRecipientView = new AddRecipientView();
+        connect (mAddRecipientView, SIGNAL(menuButtonClicked(Gui::MenuButton)), this, SLOT(onAddRecipientButtonClicked(Gui::MenuButton)));
+    }
+    mAddRecipientView->setDataInterface (dataInterface());
+    mAddRecipientView->setData(mCurrentRecipientId, dataInterface()->getDataRecipient());
+    mAddRecipientView->setViewMode(ViewMode::EditData);
+    mAddRecipientView->setIOInterface (ioInterface());
+    mAddRecipientView->show();
+}
+
+void RecipientView::disableRecipient()
+{
+    QMessageBox msgBox;
+    msgBox.setText("Fortfahren?");
+    msgBox.setInformativeText("Wenn Sie fortfahren, wird dieser Datensatz deaktiviert.\n \
+                    Dieser Vorgang kann nicht rückgängig gemacht werden!\n \
+                    Möchten Sie fortfahren?");
+    msgBox.setIcon(QMessageBox::Question);
+    msgBox.setStandardButtons(QMessageBox::Yes | QMessageBox::No);
+    msgBox.setDefaultButton(QMessageBox::No);
+    int ret = msgBox.exec();
+
+    switch (ret)
+    {
+        case QMessageBox::Yes:
+            if (ioInterface())
+            {
+                ioInterface()->disableRecipient(mCurrentRecipientId);
+                reset();
+            }
+            break;
+        case QMessageBox::No:
+            break;
+        default:
+            break;
+    }
 }
 
 void RecipientView::onTableSelectionChanged (const QItemSelection &itemNew, const QItemSelection &itemOld)
@@ -318,43 +356,22 @@ void RecipientView::onTableSelectionChanged (const QItemSelection &itemNew, cons
         mRowSelected = false;
     }
 
-    if ("Unternehmen" == recipientType)
+    if (mIsHandoverSession)
     {
-        mRecipientNameEdit->setEnabled(true);
-    }
-    else
-    {
+        // show or hide signee field, depending on selected recipient type
+        RecipientType::Value recTypeId = ioInterface()->getRecipientTypeId(recipientType);
         mRecipientNameEdit->setText("");
-        mRecipientNameEdit->setEnabled(false);
+        switch (recTypeId)
+        {
+            case RecipientType::Company:
+                hideNameField (false);
+                break;
+            default:
+                hideNameField(true);
+        }
     }
 
     update();
-}
-
-void RecipientView::onSelectedDateChanged (QDate date)
-{
-    QString dateDeadline;
-
-    int day = 0;
-    int month = 0;
-    int year = 0;
-
-    date.getDate (&year, &month, &day);
-
-    dateDeadline.append(QString::number(day));
-    dateDeadline.append(".");
-    dateDeadline.append(QString::number(month));
-    dateDeadline.append(".");
-    dateDeadline.append(QString::number(year));
-
-    dataInterface()->setRecipientDeadlineDate(dateDeadline);
-    update ();
-}
-
-void RecipientView::onKeychainStatusChanged (KeychainStatus::Value newStatus)
-{
-    dataInterface()->setNewKeychainStatusId(newStatus);
-    update ();
 }
 
 void RecipientView::onRecipientNameTextChanged (const QString &text)

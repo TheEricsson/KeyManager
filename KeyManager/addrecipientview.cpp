@@ -89,7 +89,7 @@ AddRecipientView::AddRecipientView (QWidget *parent)
 
     // line edit manipulators
     // convert all chars of a street number to uppercase
-    connect(mStreetNumberEdit, SIGNAL(textChanged(QString)), SLOT(toUpper(QString)));
+    connect (mStreetNumberEdit, SIGNAL(textChanged(QString)), SLOT(toUpper(QString)));
     connect (mIsCompany, SIGNAL (clicked()), this, SLOT (onIsCompanyBtnClicked()));
     connect (mIsPrivatePerson, SIGNAL (clicked()), this, SLOT (onIsPrivatePersonBtnClicked()));
     connect (mIsEmployee, SIGNAL (clicked()), this, SLOT (onIsEmployeeBtnClicked()));
@@ -162,52 +162,53 @@ void AddRecipientView::onMenuBtnClicked (Gui::MenuButton btnType)
     {
         // user wants to add recipient
         case (Gui::Ok):
-            // check editable fiels
-            if (checkValues ())
-            {
-                if (dataInterface())
-                {
-                    dataInterface()->setRecipientAreaCode(mAreaCodeEdit->text().toInt());
-                    dataInterface()->setRecipientCity(mCityEdit->text());
-                    dataInterface()->setRecipientName(mRecipientNameEdit->text());
-                    dataInterface()->setRecipientStreet(mStreetEdit->text());
-                    dataInterface()->setRecipientStreetNumber(mStreetNumberEdit->text());
-                    dataInterface()->setRecipientType(mRecipientType);
-
-                    if (ioInterface())
-                    {
-                        switch (mViewMode)
-                        {
-                            //add new db entry
-                            case ViewMode::NewData:
-                                ioInterface()->addNewRecipient(dataInterface()->getDataRecipient());
-                                break;
-                            //edit existing db entry
-                            case ViewMode::EditData:
-                                ioInterface()->updateRecipient(mRecipientId, dataInterface()->getDataRecipient());
-                                break;
-                            //view mode not set
-                            default:
-                                qDebug()<< "AddRecipientView::onMenuBtnClicked: ViewMode not set!";
-                                break;
-                        }
-                    }
-                }
-
-                clearForm();
-
-                emit menuButtonClicked(btnType);
-            }
+            okButtonClicked();
             break;
         case (Gui::Back):
-                clearForm();
-                emit menuButtonClicked(btnType);
-                break;
+            clearForm();
+            break;
 
         // fall through for any other button
         default:
-            emit menuButtonClicked(btnType);
             break;
+    }
+    emit menuButtonClicked(btnType);
+}
+
+void AddRecipientView::okButtonClicked()
+{
+    // check editable fiels
+    if (checkValues ())
+    {
+        if (dataInterface())
+        {
+            dataInterface()->setRecipientAreaCode(mAreaCodeEdit->text().toInt());
+            dataInterface()->setRecipientCity(mCityEdit->text());
+            dataInterface()->setRecipientName(mRecipientNameEdit->text());
+            dataInterface()->setRecipientStreet(mStreetEdit->text());
+            dataInterface()->setRecipientStreetNumber(mStreetNumberEdit->text());
+            dataInterface()->setRecipientType(mRecipientType);
+
+            if (ioInterface())
+            {
+                switch (mViewMode)
+                {
+                //add new db entry
+                case ViewMode::NewData:
+                    ioInterface()->addNewRecipient(dataInterface()->getDataRecipient());
+                    break;
+                //edit existing db entry
+                case ViewMode::EditData:
+                    ioInterface()->updateRecipient(mRecipientId, dataInterface()->getDataRecipient());
+                    break;
+                //view mode not set
+                default:
+                    qDebug()<< "AddRecipientView::okButtonClicked: ViewMode not set!";
+                    break;
+                }
+            }
+        }
+        clearForm();
     }
 }
 

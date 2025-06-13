@@ -50,8 +50,11 @@ class IOInterfaceSQLITE : public IOInterface
         bool initRecipientModel (QSqlRelationalTableModel *model);
         bool initCustomerModel (QSqlRelationalTableModel *model);
         bool initSearchViewModel (QSqlRelationalTableModel *model, const QString &filter = "");
+
         bool updateRecipient (unsigned int id, ViewDataRecipient *data);
+        bool disableRecipient(unsigned int recipientId);
         RecipientType::Value getRecipientTypeId (const QString& recipientType);
+
         bool addNewRecipient (ViewDataRecipient *data);
         bool addNewCustomer (const IOInterface::customerData *data);
         bool getKeychainImg (const int aId, QImage& img);

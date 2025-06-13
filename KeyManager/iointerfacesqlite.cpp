@@ -194,60 +194,66 @@ bool IOInterfaceSQLITE::initTables()
                         street   TEXT,\
                         houseNr  TEXT,\
                         areaCode INTEGER,\
-                        city     TEXT)");
+                        city     TEXT, \
+                        dbStatus INTEGER DEFAULT (0) )");
     query.finish();
 
     if(!retVal)
         return false;
 
     retVal = query.exec ("CREATE TABLE keyStates (\
-                     id     INTEGER PRIMARY KEY AUTOINCREMENT\
-                     UNIQUE,\
-                     status TEXT)");
+                    id     INTEGER PRIMARY KEY AUTOINCREMENT\
+                    UNIQUE,\
+                    status TEXT, \
+                    dbStatus INTEGER DEFAULT (0) )");
     query.finish();
 
     if(!retVal)
         return false;
 
     retVal = query.exec ("CREATE TABLE keyCategories (\
-                     id       INTEGER PRIMARY KEY AUTOINCREMENT\
-                     UNIQUE,\
-                     category TEXT)");
+                    id       INTEGER PRIMARY KEY AUTOINCREMENT\
+                    UNIQUE,\
+                    category TEXT, \
+                    dbStatus INTEGER DEFAULT (0) )");
     query.finish();
 
     if(!retVal)
         return false;
 
     retVal = query.exec ("CREATE TABLE keychainStates (\
-                     id     INTEGER PRIMARY KEY AUTOINCREMENT\
-                     UNIQUE,\
-                     status TEXT)");
+                    id     INTEGER PRIMARY KEY AUTOINCREMENT\
+                    UNIQUE,\
+                    status TEXT, \
+                    dbStatus INTEGER DEFAULT (0) )");
     query.finish();
 
     if(!retVal)
         return false;
 
     retVal = query.exec ("CREATE TABLE keyAddresses (\
-                     id           INTEGER PRIMARY KEY AUTOINCREMENT\
-                     UNIQUE,\
-                     street       TEXT,\
-                     streetNumber TEXT,\
-                     areaCode     INTEGER,\
-                     city         TEXT)");
+                    id           INTEGER PRIMARY KEY AUTOINCREMENT\
+                    UNIQUE,\
+                    street       TEXT,\
+                    streetNumber TEXT,\
+                    areaCode     INTEGER,\
+                    city         TEXT, \
+                    dbStatus     INTEGER DEFAULT (0) )");
     query.finish();
 
     if(!retVal)
         return false;
 
     retVal = query.exec ("CREATE TABLE keychains (\
-                     id               INTEGER NOT NULL\
-                     PRIMARY KEY\
-                     UNIQUE,\
-                     keychainStatusId INTEGER REFERENCES keychainStates (id) \
-                     NOT NULL,\
-                     internalLocation INTEGER,\
-                     addressId        INTEGER REFERENCES keyAddresses (id),\
-                     image        BLOB)");
+                    id               INTEGER NOT NULL\
+                    PRIMARY KEY\
+                    UNIQUE,\
+                    keychainStatusId INTEGER REFERENCES keychainStates (id) \
+                    NOT NULL,\
+                    internalLocation INTEGER,\
+                    addressId        INTEGER REFERENCES keyAddresses (id),\
+                    image        BLOB,\
+                    dbStatus INTEGER DEFAULT (0) )");
     query.finish();
 
     if(!retVal)
@@ -274,13 +280,14 @@ bool IOInterfaceSQLITE::initTables()
         return false;
 
     retVal = query.exec ("CREATE TABLE keys (\
-                     id          INTEGER PRIMARY KEY AUTOINCREMENT\
-                     UNIQUE\
-                     NOT NULL,\
-                     keychainId  INTEGER REFERENCES keychains (id),\
-                     categoryId  INTEGER REFERENCES keyCategories (id),\
-                     statusId    INTEGER REFERENCES keyStates (id),\
-                     description TEXT)");
+                    id          INTEGER PRIMARY KEY AUTOINCREMENT\
+                    UNIQUE\
+                    NOT NULL,\
+                    keychainId  INTEGER REFERENCES keychains (id),\
+                    categoryId  INTEGER REFERENCES keyCategories (id),\
+                    statusId    INTEGER REFERENCES keyStates (id),\
+                    description TEXT,\
+                    dbStatus INTEGER DEFAULT (0) )");
     query.finish();
 
     retVal = query.exec ("CREATE TABLE appSettings (\
@@ -889,6 +896,19 @@ bool IOInterfaceSQLITE::updateRecipient (unsigned int id, ViewDataRecipient *dat
         retVal = query.exec();
     }
     return retVal;
+}
+
+bool IOInterfaceSQLITE::disableRecipient(unsigned int recipientId)
+{
+    QSqlQuery query;
+    query.prepare("UPDATE recipientAddresses SET dbStatus = ? WHERE id = ?");
+
+    DbEntryStatus::Value status = DbEntryStatus::Disabled;
+
+    query.bindValue(0, status);
+    query.bindValue(1, recipientId);
+
+    return query.exec();
 }
 
 RecipientType::Value IOInterfaceSQLITE::getRecipientTypeId (const QString& recipientType)

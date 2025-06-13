@@ -106,6 +106,7 @@ public:
     virtual bool addNewRecipient (ViewDataRecipient *data)                                      {Q_UNUSED(data); return false;};
     virtual RecipientType::Value getRecipientTypeId (const QString& recipientType)              {Q_UNUSED(recipientType); return RecipientType::Undefined;};
     virtual bool updateRecipient (unsigned int id, ViewDataRecipient *data)                     {Q_UNUSED(id);Q_UNUSED(data); return false;};
+    virtual bool disableRecipient(unsigned int recipientId)                                     {Q_UNUSED(recipientId); return false;};
 
     //personal data
 

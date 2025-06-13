@@ -59,31 +59,53 @@ ReturnDateView::ReturnDateView (QWidget *parent) : WinSubmenu {parent}
     connect (mCalendar, SIGNAL(clicked(QDate)), this, SLOT(onDateClicked(QDate)));
 }
 
-void ReturnDateView::showEvent(QShowEvent *)
+void ReturnDateView::reset()
 {
+    //set current date in database
+    QDate curDate = QDate::currentDate();
+    int day = 0;
+    int month = 0;
+    int year = 0;
+    curDate.getDate(&year, &month, &day);
+
+    QString curDateString = QString::number(day);
+    curDateString.append(".");
+    curDateString.append(QString::number(month));
+    curDateString.append(".");
+    curDateString.append(QString::number(year));
+
+    dataInterface()->setRecipientCurrentDate(curDateString);
+    dataInterface()->setRecipientDeadlineDate("");
+
+    //set new keychainstatus
     switch (dataInterface()->getKeychainStatusId())
     {
-        case KeychainStatus::Value::AdministrationEnded:
-        case KeychainStatus::Value::Lost:
-        case KeychainStatus::Value::PermanentOut:
-        case KeychainStatus::Value::TemporaryOut:
-        case KeychainStatus::Value::Undefined:
-            onHandoverPermanentClicked (true);
-            mReturnDateLabel->setVisible(false);
-            dataInterface()->setNewKeychainStatusId(KeychainStatus::Value::Available);
-            emit menuButtonClicked(Gui::Next);
-            break;
-        case KeychainStatus::Value::Available:
-        default:
-            mHandoverTemporary->setChecked(true);
-            onHandoverTemporaryClicked (true);
-            mCalendar->setMinimumDate(QDate::currentDate());
-            mCalendar->setSelectedDate(QDate::currentDate().addDays(14));
-            dataInterface()->setNewKeychainStatusId(KeychainStatus::Value::TemporaryOut);
-            onDateClicked(mCalendar->selectedDate());
-            mReturnDateLabel->setVisible(true);
-            break;
+    case KeychainStatus::Value::AdministrationEnded:
+    case KeychainStatus::Value::Lost:
+    case KeychainStatus::Value::PermanentOut:
+    case KeychainStatus::Value::TemporaryOut:
+    case KeychainStatus::Value::Undefined:
+        onHandoverPermanentClicked (true);
+        mReturnDateLabel->setVisible(false);
+        dataInterface()->setNewKeychainStatusId(KeychainStatus::Value::Available);
+        emit menuButtonClicked(Gui::Next);
+        break;
+    case KeychainStatus::Value::Available:
+    default:
+        mHandoverTemporary->setChecked(true);
+        onHandoverTemporaryClicked (true);
+        mCalendar->setMinimumDate(QDate::currentDate());
+        mCalendar->setSelectedDate(QDate::currentDate().addDays(14));
+        dataInterface()->setNewKeychainStatusId(KeychainStatus::Value::TemporaryOut);
+        onDateClicked(mCalendar->selectedDate());
+        mReturnDateLabel->setVisible(true);
+        break;
     }
+}
+
+void ReturnDateView::showEvent(QShowEvent *)
+{
+    reset();
     update ();
 }
 

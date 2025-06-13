@@ -109,6 +109,7 @@ void EditKeyView::onMenuBtnClicked (Gui::MenuButton btnType)
                 msgBox.setStandardButtons(QMessageBox::Abort);
                 msgBox.setText ("Fehler!");
                 msgBox.setInformativeText("Schlüsselbund enthält keine Schlüssel!");
+                msgBox.setIcon(QMessageBox::Critical);
                 msgBox.exec();
                 return;
             }

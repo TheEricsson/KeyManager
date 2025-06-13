@@ -23,6 +23,7 @@ class ReturnDateView : public WinSubmenu
         void onHandoverEndOfServiceClicked(bool aChecked);
         void onDateClicked (QDate date);
     private:
+        void reset();
         void showEvent(QShowEvent *);
         QCalendarWidget *mCalendar;
         QLabel *mReturnDateLabel;

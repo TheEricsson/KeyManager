@@ -24,6 +24,7 @@ class RecipientView : public WinSubmenu
     Q_OBJECT
 public:
     explicit RecipientView(QWidget *parent = nullptr);
+    void setHandoverSession(bool value);
     ~RecipientView();
     void reset();
 
@@ -33,22 +34,25 @@ public slots:
 private slots:
     virtual void onMenuBtnClicked (Gui::MenuButton btnType);
     void onTableSelectionChanged (const QItemSelection &itemNew, const QItemSelection &itemOld);
-    void onSelectedDateChanged (QDate date);
-    void onKeychainStatusChanged (KeychainStatus::Value newStatus);
     void onRecipientNameTextChanged (const QString &text);
     void onAddRecipientButtonClicked(Gui::MenuButton btn);
 
 private:
     bool setModel (QSqlRelationalTableModel* model);
     virtual void showEvent(QShowEvent *);
+    void filterActiveEntries();
     void setTableFilter(const int column, const QString &searchString);
     void hideSearchField(bool hide);
     void hideNameField(bool hide);
     void setMenuButtonState (bool tableitemSelected);
+    void addRecipient();
+    void editRecipient();
+    void disableRecipient();
 
     QSqlRelationalTableModel *mRecipientsModel;
     QTableView *mRecipients;
     QSortFilterProxyModel *mFilteredModel;
+    QSortFilterProxyModel *mActiveEntries;
     QLabel *mRecipientNameLabel;
     QLineEdit *mRecipientNameEdit;
     bool mRowSelected;
@@ -63,6 +67,7 @@ private:
     ReturnDateView *mReturnDateWidget;
 
     int mCurrentRecipientId;
+    bool mIsHandoverSession;
 };
 
 #endif // RECIPIENTVIEW_H
