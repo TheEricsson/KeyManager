@@ -62,6 +62,8 @@ public:
                                 const QString& filter, \
                                 const int numberOfEntriesToKeep)                                {Q_UNUSED(tablename); Q_UNUSED(filter); Q_UNUSED(numberOfEntriesToKeep); return false;};
     virtual unsigned int getFreeKeycode (const unsigned int lockerId)                           {Q_UNUSED(lockerId); return _UNDEFINED;};
+    virtual QList<QVariant> getFreeKeycodes (const unsigned int lockerId, \
+                                             const unsigned int quantity)                       {Q_UNUSED(lockerId); Q_UNUSED(quantity);};
     virtual unsigned int getFreeInternalLocation (const unsigned int lockerId)                  {Q_UNUSED(lockerId); return _UNDEFINED;};
     virtual const QString dbGetLastError()                                                      {return "IOInterface::dbGetLastError - not implemented.";};
     virtual void byteArrayToImage (QByteArray imgBa, QImage& img)                               {Q_UNUSED(imgBa); Q_UNUSED(img);}

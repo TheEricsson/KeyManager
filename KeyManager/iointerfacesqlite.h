@@ -64,6 +64,7 @@ class IOInterfaceSQLITE : public IOInterface
         bool dbInsertKeychainImg (const unsigned int keyCode, const QImage& img);
         bool dbCleanupTable (const QString& tablename, const QString& filter, const int numberOfEntriesToKeep);
         unsigned int getFreeKeycode (const unsigned int lockerId);
+        QList<QVariant> getFreeKeycodes (const unsigned int lockerId, const unsigned int quantity);
         unsigned int getFreeInternalLocation (const unsigned int lockerId);
         unsigned int getKeycodeFromInternalLocation (const unsigned int lockerId, const unsigned int internalLoc);
         const QString dbGetLastError();

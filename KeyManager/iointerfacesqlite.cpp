@@ -1232,6 +1232,36 @@ unsigned int IOInterfaceSQLITE::getFreeKeycode (const unsigned int lockerId)
     return 0;
 }
 
+QList<QVariant> IOInterfaceSQLITE::getFreeKeycodes (const unsigned int lockerId, const unsigned int quantity)
+{
+    QSqlQuery query;
+    QList<QVariant> values;
+
+    unsigned int shiftedLockerId = lockerId * 10000;
+    unsigned int minKeycode = shiftedLockerId + 1;
+    unsigned int maxKeycode = shiftedLockerId + 9999;
+    int freeCode = -1;
+
+    unsigned int countCodes = 0;
+    for (unsigned int i = minKeycode; i < maxKeycode && countCodes < quantity; i++, countCodes++)
+    {
+        query.prepare("SELECT id FROM keychains WHERE id = ?");
+        query.bindValue(0, i);
+
+        if(query.exec())
+        {
+            if (!query.next())
+            {
+                freeCode = i - shiftedLockerId;
+                qDebug () << "IOInterfaceSQLITE::getFreeKeycodes (): " << i;
+                values << freeCode;
+            }
+        }
+    }
+
+    return values;
+}
+
 unsigned int IOInterfaceSQLITE::getFreeInternalLocation (const unsigned int lockerId)
 {
     if (lockerId > 9999)
