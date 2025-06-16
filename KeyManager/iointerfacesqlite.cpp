@@ -180,7 +180,7 @@ bool IOInterfaceSQLITE::initTables()
 
     bool retVal = false;
 
-    retVal = query.exec ("CREATE TABLE recipientTypes (id INTEGER PRIMARY KEY AUTOINCREMENT UNIQUE, type TEXT UNIQUE)");
+    retVal = query.exec ("CREATE TABLE recipientTypes (id INTEGER PRIMARY KEY AUTOINCREMENT UNIQUE, type TEXT UNIQUE, dbStatus INTEGER DEFAULT (0))");
     query.finish();
 
     if(!retVal)
@@ -325,8 +325,9 @@ bool IOInterfaceSQLITE::initDefaultValues()
 
     for (int i = 0; i < values.count(); i++)
     {
-        query.prepare ("INSERT INTO keyCategories (category) VALUES (?)");
+        query.prepare ("INSERT INTO keyCategories (category, dbStatus) VALUES (?, ?)");
         query.bindValue(0, values.at(i));
+        query.bindValue(1, 0);
         query.exec();
         query.finish();
     }
@@ -341,8 +342,9 @@ bool IOInterfaceSQLITE::initDefaultValues()
 
     for (int i = 0; i < values.count(); i++)
     {
-        query.prepare ("INSERT INTO keychainStates (status) VALUES (?)");
+        query.prepare ("INSERT INTO keychainStates (status, dbStatus) VALUES (?, ?)");
         query.bindValue(0, values.at(i));
+        query.bindValue(1, 0);
         query.exec();
         query.finish();
     }
@@ -356,8 +358,9 @@ bool IOInterfaceSQLITE::initDefaultValues()
 
     for (int i = 0; i < values.count(); i++)
     {
-        query.prepare ("INSERT INTO keyStates (status) VALUES (?)");
+        query.prepare ("INSERT INTO keyStates (status, dbStatus) VALUES (?, ?)");
         query.bindValue(0, values.at(i));
+        query.bindValue(1, 0);
         query.exec();
         query.finish();
     }
@@ -370,8 +373,9 @@ bool IOInterfaceSQLITE::initDefaultValues()
 
     for (int i = 0; i < values.count(); i++)
     {
-        query.prepare ("INSERT INTO recipientTypes (type) VALUES (?)");
+        query.prepare ("INSERT INTO recipientTypes (type, dbStatus) VALUES (?, ?)");
         query.bindValue(0, values.at(i));
+        query.bindValue(1, 0);
         query.exec();
         query.finish();
     }
@@ -407,12 +411,13 @@ bool IOInterfaceSQLITE::addKey (const IOInterface::keyData *data)
         return false;
 
     QSqlQuery query;
-    query.prepare("INSERT INTO keys (keychainId, categoryId, statusId, description) \
-                    VALUES (?, ?, ?, ?)");
+    query.prepare("INSERT INTO keys (keychainId, categoryId, statusId, description, dbStatus) \
+                    VALUES (?, ?, ?, ?, ?)");
     query.bindValue(0, data->keychainId);
     query.bindValue(1, data->categoryId);
     query.bindValue(2, data->statusId);
     query.bindValue(3, data->description);
+    query.bindValue(4, 0);
 
     return query.exec();
 }
@@ -932,14 +937,15 @@ bool IOInterfaceSQLITE::addNewRecipient (ViewDataRecipient *data)
     if (data)
     {
         QSqlQuery query;
-        query.prepare("INSERT INTO recipientAddresses (name, type, street, houseNr, areaCode, city) \
-                        VALUES (?, ?, ?, ?, ?, ?)");
+        query.prepare("INSERT INTO recipientAddresses (name, type, street, houseNr, areaCode, city, dbStatus) \
+                        VALUES (?, ?, ?, ?, ?, ?, ?)");
         query.bindValue(0, data->getRecipientName());
         query.bindValue(1, data->getRecipientType());
         query.bindValue(2, data->getRecipientStreet());
         query.bindValue(3, data->getRecipientStreetNumber());
         query.bindValue(4, data->getRecipientAreaCode());
         query.bindValue(5, data->getRecipientCity());
+        query.bindValue(6, 0);
 
         return query.exec();
     }
@@ -953,12 +959,13 @@ bool IOInterfaceSQLITE::addNewCustomer (const IOInterface::customerData *data)
 
 
     QSqlQuery query;
-    query.prepare("INSERT INTO keyAddresses (street, streetNumber, areaCode, city) \
-                    VALUES (?, ?, ?, ?)");
+    query.prepare("INSERT INTO keyAddresses (street, streetNumber, areaCode, city, dbStatus) \
+                    VALUES (?, ?, ?, ?, ?)");
     query.bindValue(0, data->street);
     query.bindValue(1, data->number);
     query.bindValue(2, data->areaCode);
     query.bindValue(3, data->city);
+    query.bindValue(4, 0);
 
     return query.exec();
 }
@@ -1079,13 +1086,14 @@ bool IOInterfaceSQLITE::dbInsertKeychain (DataInterface *data)
         QSqlQuery query;
 
         // insert new keychain entry
-        query.prepare("INSERT INTO keychains (id, keychainStatusId, internalLocation, addressId, image) \
-                        VALUES (?, ?, ?, ?, ?)");
+        query.prepare("INSERT INTO keychains (id, keychainStatusId, internalLocation, addressId, image, dbStatus) \
+                        VALUES (?, ?, ?, ?, ?, ?)");
         query.bindValue(0, data->getScannedCode());
         query.bindValue(1, data->getNewKeychainStatusId());
         query.bindValue(2, data->getInternalLocation());
         query.bindValue(3, data->getKeychainAddressId ());
         query.bindValue(4, data->getKeychainImg());
+        query.bindValue(5, 0);
 
         queryOk = query.exec();
 

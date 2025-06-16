@@ -14,7 +14,7 @@ class HomeView : public WinSubmenu
         explicit HomeView(QWidget *parent = nullptr);
     private:
         void showEvent(QShowEvent *);
-        QLabel *mLogo;
+        //QLabel *mLogo;
         bool mInitDone;
 };
 
