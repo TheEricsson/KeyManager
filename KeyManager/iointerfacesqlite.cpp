@@ -1242,8 +1242,7 @@ QList<QVariant> IOInterfaceSQLITE::getFreeKeycodes (const unsigned int lockerId,
     unsigned int maxKeycode = shiftedLockerId + 9999;
     int freeCode = -1;
 
-    unsigned int countCodes = 0;
-    for (unsigned int i = minKeycode; i < maxKeycode && countCodes < quantity; i++, countCodes++)
+    for (unsigned int i = minKeycode; i < maxKeycode && values.size() < quantity; i++)
     {
         query.prepare("SELECT id FROM keychains WHERE id = ?");
         query.bindValue(0, i);
