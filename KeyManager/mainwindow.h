@@ -39,6 +39,7 @@ public:
     explicit MainWindow(QWidget *parent = nullptr);
     void setDataInterface (DataInterface *dataInterface);
     void setIOInterface (IOInterface *ioInterface);
+    void setViewMode (ViewMode::Value mode);
     void init();
     bool reallyQuit();
     ~MainWindow();

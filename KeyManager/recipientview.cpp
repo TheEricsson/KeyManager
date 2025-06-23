@@ -82,6 +82,19 @@ RecipientView::RecipientView(QWidget *parent) : WinSubmenu {parent}
     connect (mRecipientNameEdit, SIGNAL(textChanged(QString)), this, SLOT(onRecipientNameTextChanged(QString)));
 }
 
+void RecipientView::setViewMode(ViewMode::Value mode)
+{
+    switch (mode)
+    {
+        case ViewMode::Handover:
+            mIsHandoverSession = true;
+            break;
+        default:
+            mIsHandoverSession = false;
+            break;
+    }
+}
+
 void RecipientView::setHandoverSession(bool value)
 {
     mIsHandoverSession = value;

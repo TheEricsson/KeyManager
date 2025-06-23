@@ -19,6 +19,8 @@
 #include "datainterface.h"
 #include "iointerface.h"
 #include <QSqlRelationalTableModel>
+#include <QFormLayout>
+#include <QGroupBox>
 #include "codegeneratorview.h"
 #include "cameraview.h"
 #include "imageview.h"
@@ -26,7 +28,7 @@
 KeychainStatusView::KeychainStatusView(QWidget *parent)
     : WinSubmenu {parent}
 {
-    setHeader("Schlüsselbund-Daten");
+    setHeader("Schlüsselbund");
 
     mViewMode = ViewMode::Undefined;
     mKeys = 0;
@@ -38,66 +40,64 @@ KeychainStatusView::KeychainStatusView(QWidget *parent)
     mCameraView = 0;
     mImageView = 0;
 
-    QLabel* keychainKeycode = new QLabel ("Gescannter Code: ", this);
-    QLabel* keychainStatus = new QLabel ("Aktueller Status: ", this);
-    QLabel* keychainInternalLocation = new QLabel ("Schlüsselhaken: ", this);
+    //group keychain info
+    mKeychainKeycode = new QLabel ();
+    mKeychainStatus = new QLabel ();
+    mKeychainInternalLocation = new QLabel ();
+    mKeychainStreet = new QLabel ();
+    mKeychainCity = new QLabel ();
 
-    QLabel* customer = new QLabel ("Kunde", this);
-
-    mKeychainKeycode = new QLabel (this);
-    mKeychainStatus = new QLabel (this);
-    mKeychainInternalLocation = new QLabel (this);
-    mKeychainStreet = new QLabel (this);
-    mKeychainCity = new QLabel (this);
-
-    mKeysImgPreview = new QPushButton ("Bild hinzufügen", this);
+    mKeysImgPreview = new QPushButton ("Bild hinzufügen");
     mKeysImgPreview->setMinimumHeight(100);
     mKeysImgPreview->setMinimumWidth(100);
     mKeysImgPreview->setSizePolicy(QSizePolicy::Minimum, QSizePolicy::Minimum);
 
-    QSpacerItem *spacerItem = new QSpacerItem (1,1, QSizePolicy::MinimumExpanding, QSizePolicy::Minimum);
+    QString groupBoxHeader = "Informationen zum Schlüsselbund";
+    QGroupBox *keychainInfo = new QGroupBox(groupBoxHeader);
+    QFormLayout *keychainInfoLayout = new QFormLayout();
+    keychainInfo->setLayout(keychainInfoLayout);
+    keychainInfoLayout->addRow("Straße: ", mKeychainStreet);
+    keychainInfoLayout->addRow("PLZ, Ort: ", mKeychainCity);
+    keychainInfoLayout->addRow("Aktueller Status: ", mKeychainStatus);
+    keychainInfoLayout->addRow("Schlüsselhaken: ", mKeychainInternalLocation);
+    keychainInfoLayout->addRow("QR-Code: ", mKeychainKeycode);
 
+    //group preview image
+    QGroupBox *keychainImageBox = new QGroupBox("Vorschau");
+    QVBoxLayout *imageBoxLayout = new QVBoxLayout();
+    keychainImageBox->setLayout(imageBoxLayout);
+    imageBoxLayout->addWidget(mKeysImgPreview);
+
+    //group key table
+    mKeys = new QTableView (this);
+    mKeys->setWordWrap(true);
+
+    QGroupBox *keyOverviewBox = new QGroupBox("Hinterlegte Schlüssel");
+    QVBoxLayout *keyOverviewLayout = new QVBoxLayout();
+    keyOverviewBox->setLayout(keyOverviewLayout);
+    keyOverviewLayout->addWidget(mKeys);
+
+    //group keychain history
+    mHistory = new QTableView (this);
+    mHistory->setWordWrap(true);
+
+    QGroupBox *keychainHistoryBox = new QGroupBox("Einträge zum Schlüsselbund");
+    QVBoxLayout *keychainHistoryLayout = new QVBoxLayout();
+    keychainHistoryBox->setLayout(keychainHistoryLayout);
+    keychainHistoryLayout->addWidget(mHistory);
+
+    QSpacerItem *spacerItem = new QSpacerItem (1,1, QSizePolicy::Expanding, QSizePolicy::Expanding);
+
+    //layout
     QGridLayout *keychainData = new QGridLayout();
 
-    keychainData->addWidget(keychainKeycode, 0, 0);
-    keychainData->addWidget(mKeychainKeycode, 0, 1);
-    keychainData->addWidget(keychainStatus, 1, 0);
-    keychainData->addWidget(mKeychainStatus, 1, 1);
-    keychainData->addWidget(keychainInternalLocation, 2, 0);
-    keychainData->addWidget(mKeychainInternalLocation, 2, 1);
-    keychainData->addWidget(customer, 3, 0);
-    keychainData->addWidget(mKeychainStreet, 3, 1);
-    keychainData->addWidget(mKeychainCity, 4, 1);
-    keychainData->addItem(spacerItem, 0, 3, 1, 1);
-    keychainData->addWidget(mKeysImgPreview, 0, 4, 5, 1, Qt::AlignLeft);
-
-    QLabel *keysHeader = new QLabel ("Hinterlegte Schlüssel", this);
-    keychainData->addWidget(keysHeader, 5, 0, 1, 5);
-    //layout()->addWidget(keysHeader);
-
-    mKeys = new QTableView (this);
-    //layout()->addWidget(mKeys);
-    keychainData->addWidget(mKeys, 6, 0, 1, 5);
-
-    QLabel *historyHeader = new QLabel ("Historie", this);
-    //layout()->addWidget(historyHeader);
-    keychainData->addWidget(historyHeader, 7, 0, 1, 5);
-
-    mHistory = new QTableView (this);
-    //layout()->addWidget(mHistory);
-    keychainData->addWidget(mHistory, 8, 0, 1, 5);
-
-    QSpacerItem *spacer = new QSpacerItem (0, 0, QSizePolicy::Expanding, QSizePolicy::Expanding);
-    keychainData->addItem(spacer, 9, 0, 1, 4);
+    keychainData->addWidget(keychainInfo, 0, 0);
+    keychainData->addWidget(keychainImageBox, 0, 1, Qt::AlignLeft);
+    keychainData->addWidget(keyOverviewBox, 1, 0, 1, 2);
+    keychainData->addWidget(keychainHistoryBox, 2, 0, 1, 2);
+    keychainData->addItem(spacerItem, 3, 0, 1, 2);
 
     setCentralLayout(keychainData);
-
-    //set default buttons
-    QList<Gui::MenuButton> menuButtons;
-    menuButtons.append(Gui::Back);
-    menuButtons.append(Gui::MainMenu);
-    menuButtons.append(Gui::Next);
-    setMenuButtons(menuButtons);
 
     mKeyModel = new QSqlRelationalTableModel (this);
     mFilteredKeyModel= new QSortFilterProxyModel (this);
@@ -121,10 +121,8 @@ void KeychainStatusView::setViewMode(ViewMode::Value mode)
     switch (mViewMode)
     {
         case ViewMode::ShowData:
-            qDebug () << "setViewMode";
             menuButtons.append(Gui::Back);
             setMenuButtons(menuButtons);
-            qDebug () << "setMenuButtons done";
             break;
         default:
             menuButtons.append(Gui::Back);
@@ -137,10 +135,6 @@ void KeychainStatusView::setViewMode(ViewMode::Value mode)
 
 void KeychainStatusView::showEvent(QShowEvent *)
 {
-    int screenWidth = size().width();
-    mKeys->setMaximumWidth(screenWidth);
-    mHistory->setMaximumWidth(screenWidth);
-
     int barcode = dataInterface()->getScannedCode();
     QString barcodeAsString = QString::number(barcode);
 
@@ -149,7 +143,10 @@ void KeychainStatusView::showEvent(QShowEvent *)
     ioInterface()->initKeyOverviewModel(mKeyModel, filter);
     setKeysModel(mKeyModel);
 
-    //mKeychain->update();
+    mKeys->setSizeAdjustPolicy(QAbstractScrollArea::AdjustToContents);
+    mKeys->horizontalHeader()->setStretchLastSection(true);
+    mKeys->resizeRowsToContents();
+    mKeys->resizeColumnsToContents();
 
     filter = "id = ";
     filter.append(barcodeAsString);
@@ -158,9 +155,11 @@ void KeychainStatusView::showEvent(QShowEvent *)
     filter.append(barcodeAsString);
     ioInterface()->initKeychainHistoryModel(mHistoryModel, filter);
     setKeychainHistoryModel(mHistoryModel);
-    mHistory->update ();
 
-    update ();
+    mHistory->setSizeAdjustPolicy(QAbstractScrollArea::AdjustToContents);
+    mHistory->horizontalHeader()->setStretchLastSection(true);
+    mHistory->resizeRowsToContents();
+    mHistory->resizeColumnsToContents();
 
     dataInterface()->resetKeychainData();
 
@@ -256,9 +255,10 @@ bool KeychainStatusView::setKeychainHistoryModel (QSqlRelationalTableModel* mode
 {
     if (model)
     {
-        // model->setHeaderData(2, Qt::Horizontal, tr("Kategorie"), Qt::DisplayRole);
-        // model->setHeaderData(3, Qt::Horizontal, tr("Zustand"), Qt::DisplayRole);
-        // model->setHeaderData(4, Qt::Horizontal, tr("Zusatzinformation"), Qt::DisplayRole);
+        model->setHeaderData(2, Qt::Horizontal, tr("Eintrag vom"), Qt::DisplayRole);
+        model->setHeaderData(3, Qt::Horizontal, tr("Rückgabefrist"), Qt::DisplayRole);
+        model->setHeaderData(4, Qt::Horizontal, tr("Status"), Qt::DisplayRole);
+        model->setHeaderData(5, Qt::Horizontal, tr("Empfänger"), Qt::DisplayRole);
 
         if (mHistory)
         {
@@ -335,9 +335,12 @@ void KeychainStatusView::onCameraViewButtonClicked(Gui::MenuButton btn)
         case Gui::Shutter:
             if (mCameraView)
             {
-                showMessageWindow("Bild wurde gespeichert.");
-                ioInterface()->dbInsertKeychainImg(dataInterface()->getScannedCode(), mCameraView->getImage());
-                setKeychainImage(mCameraView->getImage());
+                QImage img = mCameraView->getImage();
+                if (ioInterface()->dbInsertKeychainImg(dataInterface()->getScannedCode(), img))
+                {
+                    showMessageWindow("Bild gespeichert.");
+                    setKeychainImage(mCameraView->getImage());
+                }
                 mCameraView->hide();
                 delete mCameraView;
                 mCameraView = 0;

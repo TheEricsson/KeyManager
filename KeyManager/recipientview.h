@@ -24,6 +24,7 @@ class RecipientView : public WinSubmenu
     Q_OBJECT
 public:
     explicit RecipientView(QWidget *parent = nullptr);
+    void setViewMode (ViewMode::Value mode);
     void setHandoverSession(bool value);
     ~RecipientView();
     void reset();

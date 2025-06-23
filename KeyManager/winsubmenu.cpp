@@ -101,26 +101,19 @@ void WinSubmenu::setCentralLayout (QLayout *layout)
 
 void WinSubmenu::setBottomLayout (QLayout *layout)
 {
-    qDebug () << "setBottomLayout";
-
     QLayout *current = getBottomLayout();
-    qDebug () << "1";
+
     if (0 != current)
     {
-        qDebug () << "2";
         mBaseLayout->removeItem(current);
-        qDebug () << "3";
         delete current;
     }
 
     if (layout)
     {
-        qDebug () << "4";
         layout->setSizeConstraint(QLayout::SetMinimumSize);
         mBaseLayout->insertLayout(2, layout);
-        qDebug () << "5";
     }
-    qDebug () << "6";
 }
 
 QLayout* WinSubmenu::getTopLayout ()

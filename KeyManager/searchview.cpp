@@ -93,7 +93,7 @@ SearchView::SearchView (QWidget *parent)
 
     QList<Gui::MenuButton> menuButtons;
     menuButtons.append(Gui::Back);
-    menuButtons.append(Gui::Edit);
+    menuButtons.append(Gui::Search);
     setMenuButtons(menuButtons);
     disableButton(1, true);
 
@@ -122,7 +122,7 @@ void SearchView::onMenuBtnClicked (Gui::MenuButton btnType)
 {
     switch (btnType)
     {
-        case Gui::Edit:
+        case Gui::Search:
             showKeychainStatusView();
             break;
         default:

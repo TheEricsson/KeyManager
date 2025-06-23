@@ -92,6 +92,7 @@ namespace ViewMode
         EditData = 0,
         NewData = 1,
         ShowData = 2,
+        Handover = 3,
         Undefined = 999
     };
 }

@@ -120,7 +120,8 @@ void MainWindow::init()
     registerView (mToolsViewDataAdministration);
 
     // set view state
-    mRecipientView->setHandoverSession(true);
+    mRecipientView->setViewMode(ViewMode::Handover);
+    mKeychainStatusView->setViewMode(ViewMode::Handover);
 
     mViewStack->setCurrentWidget(mHomeView);
 
