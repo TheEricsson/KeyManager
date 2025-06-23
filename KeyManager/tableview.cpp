@@ -41,8 +41,7 @@ void TableView::getData()
         int rows = ioInterface()->getNumberOfEntries (mTableName);
         QStringList columnHeaders = ioInterface()->getTableColumns (mTableName);
 
-        int columnsWithButtons = columnHeaders.size() + 1;
-        mTable->setColumnCount(columnsWithButtons);
+        mTable->setColumnCount(columnHeaders.size());
         mTable->setRowCount(rows);
 
         mTable->setHorizontalHeaderLabels(columnHeaders);
@@ -58,9 +57,6 @@ void TableView::getData()
                 QTableWidgetItem *item = new QTableWidgetItem(entry);
                 mTable->setItem(i, j, item);
             }
-            //last db column reached, now add buttons
-            qDebug() << "adding button in row: " << i << " and column: " << j+1;
-            mTable->setCellWidget(i, j, new QPushButton ("Edit"));
         }
     }
 }

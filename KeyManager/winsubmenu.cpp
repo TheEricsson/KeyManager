@@ -101,18 +101,26 @@ void WinSubmenu::setCentralLayout (QLayout *layout)
 
 void WinSubmenu::setBottomLayout (QLayout *layout)
 {
+    qDebug () << "setBottomLayout";
+
     QLayout *current = getBottomLayout();
+    qDebug () << "1";
     if (0 != current)
     {
+        qDebug () << "2";
         mBaseLayout->removeItem(current);
+        qDebug () << "3";
         delete current;
     }
 
     if (layout)
     {
+        qDebug () << "4";
         layout->setSizeConstraint(QLayout::SetMinimumSize);
         mBaseLayout->insertLayout(2, layout);
+        qDebug () << "5";
     }
+    qDebug () << "6";
 }
 
 QLayout* WinSubmenu::getTopLayout ()
@@ -179,6 +187,8 @@ void WinSubmenu::setMenuButtons (const QList<Gui::MenuButton> &buttons)
         return;
 
     QHBoxLayout *btnLayout = new QHBoxLayout ();
+
+    qDebug () << "setMenuButtons";
 
     for (int i = 0; i<buttons.count();i++)
     {
@@ -294,6 +304,7 @@ void WinSubmenu::setMenuButtons (const QList<Gui::MenuButton> &buttons)
         }
         btnLayout->addWidget(menuBtn);
         connect (menuBtn, SIGNAL (clicked(Gui::MenuButton)), this, SLOT (onMenuBtnClicked(Gui::MenuButton)));
+        qDebug () << "setMenuButtons end";
     }
 
     setBottomLayout(btnLayout);

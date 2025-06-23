@@ -28,6 +28,7 @@ KeychainStatusView::KeychainStatusView(QWidget *parent)
 {
     setHeader("Schlüsselbund-Daten");
 
+    mViewMode = ViewMode::Undefined;
     mKeys = 0;
     //mKeychain = 0;
     mKeysImgPreview = 0;
@@ -91,6 +92,7 @@ KeychainStatusView::KeychainStatusView(QWidget *parent)
 
     setCentralLayout(keychainData);
 
+    //set default buttons
     QList<Gui::MenuButton> menuButtons;
     menuButtons.append(Gui::Back);
     menuButtons.append(Gui::MainMenu);
@@ -110,6 +112,29 @@ KeychainStatusView::KeychainStatusView(QWidget *parent)
     connect (mKeysImgPreview, SIGNAL(clicked()), this, SLOT (keyImgBtnClicked()));
 }
 
+void KeychainStatusView::setViewMode(ViewMode::Value mode)
+{
+    QList<Gui::MenuButton> menuButtons;
+
+    mViewMode = mode;
+
+    switch (mViewMode)
+    {
+        case ViewMode::ShowData:
+            qDebug () << "setViewMode";
+            menuButtons.append(Gui::Back);
+            setMenuButtons(menuButtons);
+            qDebug () << "setMenuButtons done";
+            break;
+        default:
+            menuButtons.append(Gui::Back);
+            menuButtons.append(Gui::MainMenu);
+            menuButtons.append(Gui::Next);
+            setMenuButtons(menuButtons);
+            break;
+    }
+}
+
 void KeychainStatusView::showEvent(QShowEvent *)
 {
     int screenWidth = size().width();
@@ -123,6 +148,7 @@ void KeychainStatusView::showEvent(QShowEvent *)
     filter.append(barcodeAsString);
     ioInterface()->initKeyOverviewModel(mKeyModel, filter);
     setKeysModel(mKeyModel);
+
     //mKeychain->update();
 
     filter = "id = ";
@@ -139,6 +165,7 @@ void KeychainStatusView::showEvent(QShowEvent *)
     dataInterface()->resetKeychainData();
 
     int keyCode = dataInterface()->getScannedCode();
+    qDebug()<<"keycode:" << keyCode;
 
     QImage keychainImage;
     if  (ioInterface()->getKeychainImg(keyCode, keychainImage))
@@ -165,7 +192,10 @@ void KeychainStatusView::showEvent(QShowEvent *)
     txt.append (ioInterface()->getAddressCity(addressId));
     mKeychainCity->setText(txt);
 
-    setNextBtnText ();
+    if (mViewMode != ViewMode::ShowData)
+    {
+        setNextBtnText ();
+    }
 }
 
 void KeychainStatusView::setNextBtnText ()
@@ -196,7 +226,7 @@ bool KeychainStatusView::setKeysModel (QSqlRelationalTableModel* model)
         if (mKeys)
         {
             mFilteredKeyModel->setSourceModel(model);
-            qDebug () << "KeychainStatusView::setModel QSqlRelationalTableModel";
+            qDebug () << "KeychainStatusView::setKeysModel QSqlRelationalTableModel";
             mKeys->setModel(model);
             mKeys->hideColumn(0); // hide table id
             mKeys->hideColumn(1); // hide barcode id

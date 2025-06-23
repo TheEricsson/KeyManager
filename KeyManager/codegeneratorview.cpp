@@ -152,7 +152,7 @@ void CodeGeneratorView::generatePDF ()
 {
     QImage codeImg;
     unsigned int lockerId = 1; //hardcoded right now - todo: should be a user defined value, stored in db
-    unsigned int freeCode = ioInterface()->getFreeKeycode(lockerId);
+    QList<QVariant> freeKeyCodes = ioInterface()->getFreeKeycodes(lockerId, mNumberOfCodes.toInt());
     PrinterInterface *pdfPrinter = new PrinterInterfacePdf ();
 
     if (pdfPrinter->saveAsFile())
@@ -171,9 +171,9 @@ void CodeGeneratorView::generatePDF ()
         if (mBorderCheckState)
             borderPen = Qt::DotLine;
 
-        for (int i = 0; i < mNumberOfCodes.toInt(); i++)
+        for (int i = 0; i < freeKeyCodes.size(); i++)
         {
-            qrCode = QString::number(freeCode);
+            qrCode = QString::number(freeKeyCodes.at(i).toUInt());
 
             // insert leading 0 so we have 4 digits for the code
             while (qrCode.length() < 4)
@@ -182,12 +182,13 @@ void CodeGeneratorView::generatePDF ()
             qrCode.prepend("-");
             qrCode.prepend(lockerCode);
 
+            // generate qr code image
             codeImg = decoder.encodeData (qrCode, QZXing::EncoderFormat_QR_CODE, QSize (300,300), QZXing::EncodeErrorCorrectionLevel_M, true, false);
 
+            // print qr code image to pdf
             pdfPrinter->drawQRCode(codeImg, mPrintHeight.toInt(), mPrintWidth.toInt(), qrCode, mFoldableCheckState, borderPen);
-
-            freeCode++;
         }
+
         pdfPrinter->finish();
 
         // open pdf after creation?

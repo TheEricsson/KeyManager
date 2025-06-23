@@ -8,6 +8,10 @@ class QStandardItem;
 class QStandardItemModel;
 class QSortFilterProxyModel;
 class QLineEdit;
+class KeychainStatusView;
+class QItemSelection;
+class QTableWidget;
+class QTableWidgetItem;
 
 class SearchView : public WinSubmenu
 {
@@ -17,6 +21,10 @@ class SearchView : public WinSubmenu
         ~SearchView();
         virtual void showEvent(QShowEvent *);
     private slots:
+        virtual void onMenuBtnClicked (Gui::MenuButton btnType);
+        void onKeychainStatusMenuButtonClicked (Gui::MenuButton btnType);
+        void onTableItemClicked(QTableWidgetItem *item);
+        void onTreeViewSelectionChanged(const QItemSelection &selected, const QItemSelection &deselected);
         void onPropertyFilterSet(QString txt);
         void onKeycodeFilterSet(QString txt);
         void onKeyPositionFilterSet(QString txt);
@@ -24,12 +32,17 @@ class SearchView : public WinSubmenu
         void onKeyInfoFilterSet(QString txt);
         void onResetFiltersCLicked();
     private:
+        void setData();
         void resetFilters();
-        void setTreeAddressData();
+        //void setTreeAddressData();
         void setTreeData ();
         void resizeTreeColumnsToContent();
+        void showKeychainStatusView();
         QTreeView *mDataView;
+        //QTableWidget *mDataTable;
         QStandardItemModel *mStandardModel;
+
+        unsigned int mSelectedKeycode;
 
         QLineEdit *mPropertyLineEdit;
         QLineEdit *mQrCodeLineEdit;
@@ -42,6 +55,8 @@ class SearchView : public WinSubmenu
         QSortFilterProxyModel *mFilterKeyPosition;
         QSortFilterProxyModel *mFilterStatus;
         QSortFilterProxyModel *mFilterInfo;
+
+        KeychainStatusView *mKeychainStatusView;
 };
 
 #endif // SEARCHVIEW_H

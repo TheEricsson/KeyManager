@@ -15,16 +15,16 @@ HomeView::HomeView(QWidget *parent)
     mInitDone = false;
     setHeader("KeyManager");
 
-    mLogo = new QLabel();
-    mLogo->setScaledContents(true);
-    mLogo->setContentsMargins(20,20,20,20);
-    mLogo->setAlignment(Qt::AlignCenter);
-    mLogo->setSizePolicy(QSizePolicy::MinimumExpanding, QSizePolicy::MinimumExpanding);
+    // mLogo = new QLabel();
+    // mLogo->setScaledContents(true);
+    // mLogo->setContentsMargins(20,20,20,20);
+    // mLogo->setAlignment(Qt::AlignCenter);
+    // mLogo->setSizePolicy(QSizePolicy::MinimumExpanding, QSizePolicy::MinimumExpanding);
 
     QSpacerItem *spacer = new QSpacerItem (0, 0, QSizePolicy::Expanding, QSizePolicy::Expanding);
 
     QVBoxLayout *centralLayout = new QVBoxLayout();
-    centralLayout->addWidget(mLogo);
+    //centralLayout->addWidget(mLogo);
     centralLayout->addItem(spacer);
     setCentralLayout(centralLayout);
 
@@ -43,14 +43,14 @@ void HomeView::showEvent(QShowEvent *)
     //set logo once at first show event
     if (!mInitDone)
     {
-        if (mLogo)
-        {
-            int logo_width = size().width();
-            logo_width *= 0.75;
+        // if (mLogo)
+        // {
+        //     int logo_dim = size().width();
+        //     logo_dim *= 0.75;
 
-            QPixmap logo (":/images/keymanager_logo.png");
-            QPixmap logo_scaled = logo.scaledToWidth(logo_width,Qt::SmoothTransformation);
-            mLogo->setPixmap(logo_scaled);
-        }
+        //     QPixmap logo (":/images/keymanager_logo.png");
+        //     QPixmap logo_scaled = logo.scaled(QSize(logo_dim,logo_dim), Qt::KeepAspectRatio, Qt::SmoothTransformation);
+        //     mLogo->setPixmap(logo_scaled);
+        // }
     }
 }
