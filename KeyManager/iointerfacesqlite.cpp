@@ -709,9 +709,12 @@ bool IOInterfaceSQLITE::initKeyOverviewModel (QSqlRelationalTableModel *model, c
         model->setRelation(3, QSqlRelation("keyStates", "id", "status"));
         model->setFilter(filter);
         model->select();
+        qDebug() << "initKeyOverviewModel OK";
         return true;
     }
-    else return false;
+    else
+        qDebug() << "initKeyOverviewModel NOK";
+        return false;
 }
 
 bool IOInterfaceSQLITE::initKeychainModel (QSqlRelationalTableModel *model, const QString &filter)

@@ -27,6 +27,7 @@ class KeychainStatusView : public WinSubmenu
         bool setKeysModel (QSqlRelationalTableModel* model);
         bool setKeychainHistoryModel (QSqlRelationalTableModel* model);
         void setKeychainImage (const QImage& img);
+        void setViewMode (ViewMode::Value mode);
 
     private slots:
         void keyCodeBtnClicked();
@@ -61,6 +62,8 @@ class KeychainStatusView : public WinSubmenu
         ViewDataKeychain *mViewData;
         CameraView *mCameraView;
         ImageView *mImageView;
+
+        ViewMode::Value mViewMode;
 };
 
 #endif // KEYCHAINSTATUSVIEW_H

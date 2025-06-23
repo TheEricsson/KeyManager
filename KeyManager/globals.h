@@ -91,6 +91,7 @@ namespace ViewMode
     {
         EditData = 0,
         NewData = 1,
+        ShowData = 2,
         Undefined = 999
     };
 }
