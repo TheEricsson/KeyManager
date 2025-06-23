@@ -13,6 +13,7 @@ HomeView::HomeView(QWidget *parent)
     : WinSubmenu {parent}
 {
     mInitDone = false;
+    setHeader("KeyManager");
 
     mLogo = new QLabel();
     mLogo->setScaledContents(true);
