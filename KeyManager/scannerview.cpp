@@ -102,6 +102,7 @@ ScannerView::ScannerView(QWidget *parent)
 
 void ScannerView::reset()
 {
+    stopScanner();
     mCodeLabel->setText("");
     setCustomerLabel("");
     setKeyLabel("");
