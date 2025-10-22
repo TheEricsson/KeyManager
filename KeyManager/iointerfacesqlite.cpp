@@ -49,8 +49,10 @@ IOInterfaceSQLITE::IOInterfaceSQLITE()
 
 #endif
 #ifdef Q_OS_WIN64
-    //mDbLocation = "db.sqlite";
-    mDbLocation = "C:/QtProjekte/KeyManager/build/Desktop_Qt_6_8_2_MinGW_64_bit-Debug/db.sqlite";
+    //mDbLocation = "C:/QtProjekte/KeyManager/build/Desktop_Qt_6_8_2_MinGW_64_bit-Debug/db.sqlite";
+    mDbLocation = QStandardPaths::writableLocation(QStandardPaths::AppDataLocation);
+    mDbLocation.append("db.sqlite");
+    qDebug () << "mDbLocation: " << mDbLocation;
 #endif
 
     mDb.setDatabaseName(mDbLocation);
@@ -713,8 +715,10 @@ bool IOInterfaceSQLITE::initKeyOverviewModel (QSqlRelationalTableModel *model, c
         return true;
     }
     else
+    {
         qDebug() << "initKeyOverviewModel NOK";
         return false;
+    }
 }
 
 bool IOInterfaceSQLITE::initKeychainModel (QSqlRelationalTableModel *model, const QString &filter)
@@ -952,6 +956,8 @@ bool IOInterfaceSQLITE::addNewRecipient (ViewDataRecipient *data)
 
         return query.exec();
     }
+    else
+        return false;
 }
 
 bool IOInterfaceSQLITE::addNewCustomer (const IOInterface::customerData *data)
@@ -1075,6 +1081,8 @@ unsigned int IOInterfaceSQLITE::getLastHandoverId()
             return id;
         }
     }
+    else
+        return 0;
 }
 
 bool IOInterfaceSQLITE::dbInsertKeychain (DataInterface *data)

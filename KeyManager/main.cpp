@@ -8,6 +8,7 @@
 #include "datainterface.h"
 #include "iointerfacesqlite.h"
 #include "androidapplication.h"
+#include <QPermissions>
 
 int main(int argc, char *argv[])
 {

@@ -339,15 +339,11 @@ void ScannerView::decodeFromVideoFrame ()
     {
         capture = mCameraInstance->getImageFromVideoframe ();
     }
-
-#ifdef Q_OS_WIN64
-    // no cam on windows pc -> use test image with barcode
-    //QImage testCode (":/images/barcode00010150.png");
+#ifdef QT_DEBUG
+    // debugging without cam on windows pc -> use test image with barcode
     QImage testCode (":/images/qrcode_0001-0001.png");
-    //QString decodedString = mDecoder->decodeImage(testCode);
     QString decodedString = Database::normaliseKeycode(mCode);
     mCode++;
-
 #else
     QString decodedString ("");
     if (0 != mDecoder)
