@@ -26,6 +26,7 @@ class ScannerView : public WinSubmenu
             READY,
             SCANNING,
             SCANSUCCEEDED,
+            STOPPED
         };
 
         explicit ScannerView(QWidget *parent = nullptr);
@@ -35,8 +36,6 @@ class ScannerView : public WinSubmenu
         void setScannerState (ScannerState aStatus);
         QVideoWidget* getViewfinder ();
         QSize getViewfinderSize ();
-        void setCustomerLabel (QString aCustomerId);
-        void setKeyLabel (QString aKeyId);
         const QString getCustomerLabel ();
         const QString getKeyLabel();
         ~ScannerView();
@@ -50,6 +49,10 @@ class ScannerView : public WinSubmenu
         void decodeFromVideoFrame ();
 
     private:
+        void setCodeLabel(QString aCodeLabel);
+        void setCustomerLabel (QString aCustomerId);
+        void setKeyLabel (QString aKeyId);
+
         void startScanner();
         void stopScanner();
         bool codeIsValid(const unsigned int code);
@@ -57,6 +60,7 @@ class ScannerView : public WinSubmenu
         void setAvailableCams();
         void keyReleaseEvent(QKeyEvent *event);
         void setDefaultCam (int camId);
+        void resetLabels();
 
         QFormLayout *mCamSettingsLayout;
         CheckBoxArray *mAvailableCameras;

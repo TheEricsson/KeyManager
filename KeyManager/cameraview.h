@@ -2,6 +2,7 @@
 #define CAMERAVIEW_H
 
 #include <QWidget>
+#include <QImage>
 #include "winsubmenu.h"
 
 class QVideoWidget;
@@ -20,6 +21,7 @@ class CameraView : public WinSubmenu
     private:
         QVideoWidget *mViewfinder;
         Camera *mCamera;
+        QImage mImg;
 };
 
 #endif // CAMERAVIEW_H

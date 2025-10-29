@@ -28,13 +28,11 @@ CameraView::CameraView(QWidget *parent)
 
 QImage CameraView::getImage()
 {
-    QImage img;
-
     if (mCamera)
     {
-        img = mCamera->getImageFromVideoframe();
+        mImg = mCamera->getImageFromVideoframe();
     }
-    return img;
+    return mImg;
 }
 
 void CameraView::showEvent(QShowEvent *)
@@ -50,7 +48,9 @@ void CameraView::showEvent(QShowEvent *)
 void CameraView::hideEvent(QHideEvent *)
 {
     if (mCamera)
+    {
         mCamera->stopCamera();
+    }
 }
 
 CameraView::~CameraView ()

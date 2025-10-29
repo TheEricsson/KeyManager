@@ -47,8 +47,9 @@ private:
     QVideoWidget* mVideoWidget;
     QList<QCameraDevice> mAvailableCams;
     QCameraDevice mCurrentCameraDevice;
-
     QCamera *mCamera;
+    QImage mVideoFrameImg;
+    QList<int> mCamIds;
 };
 
 #endif // CAMERA_H

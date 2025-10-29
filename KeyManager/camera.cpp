@@ -152,13 +152,11 @@ void Camera::setVideoOutput (QVideoWidget* videoOutput)
 
 QImage Camera::getImageFromVideoframe ()
 {
-    QImage img;
-
     if (mVideoWidget)
     {
-        img = mVideoWidget->videoSink()->videoFrame().toImage();
+        mVideoFrameImg = mVideoWidget->videoSink()->videoFrame().toImage();
     }
-    return img;
+    return mVideoFrameImg;
 }
 
 void Camera::processCapturedImage (int requestId, const QImage &img)
@@ -179,14 +177,14 @@ const QList<QCameraDevice> Camera::getAvailableCameraDevices()
 
 const QList<int> Camera::getAvailableCameraIds()
 {
-    QList<int> ids;
+    mCamIds.clear();
 
     for (int i = 0; i < mAvailableCams.size(); i++)
     {
-        ids.insert(i,i);
+        mCamIds.insert(i,i);
     }
 
-    return ids;
+    return mCamIds;
 }
 
 void Camera::setCameraDevice(int camId)
@@ -195,9 +193,8 @@ void Camera::setCameraDevice(int camId)
     {
         if (mAvailableCams.size() >= camId)
         {
-        mCurrentCameraDevice = mAvailableCams.value(camId);
-        //setCamera(mCurrentCameraDevice);
-        initCaptureSession ();
+            mCurrentCameraDevice = mAvailableCams.value(camId);
+            initCaptureSession ();
         }
     }
 }

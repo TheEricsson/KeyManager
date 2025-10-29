@@ -97,29 +97,12 @@ ScannerView::ScannerView(QWidget *parent)
     menuButtons.append(Gui::Next);
     setMenuButtons(menuButtons);
     hideButton(2, true);
-    setScannerState (ScannerState::READY);
+    //setScannerState (ScannerState::READY);
 }
 
 void ScannerView::reset()
 {
-    stopScanner();
-    mCodeLabel->setText("");
-    setCustomerLabel("");
-    setKeyLabel("");
-    dataInterface()->resetScannerData();
-
-    // if (0 != mAvailableCameras)
-    // {
-    //     if (0 != ioInterface())
-    //     {
-    //         int camId = ioInterface()->getDefaultCameraId();
-    //         QRadioButton *btn = mAvailableCameras->getButtonAt(camId);
-    //         if (0 != btn)
-    //         {
-    //             btn->setChecked(true);
-    //         }
-    //     }
-    // }
+    setScannerState(ScannerState::READY);
 }
 
 void ScannerView::showEvent(QShowEvent *)
@@ -165,12 +148,12 @@ void ScannerView::showEvent(QShowEvent *)
     // reset view labels and scanner data
     reset();
     // start scanning
-    startScanner();
+    setScannerState(ScannerState::SCANNING);
 }
 
 void ScannerView::hideEvent(QHideEvent *)
 {
-    stopScanner();
+    setScannerState(ScannerState::STOPPED);
 }
 
 void ScannerView::startScanner ()
@@ -189,15 +172,11 @@ void ScannerView::startScanner ()
     if (!mGrabTimer)
     {
         mGrabTimer = new QTimer (this);
-        mGrabTimer->setInterval(250);
+        mGrabTimer->setInterval(100);
         connect (mGrabTimer, SIGNAL(timeout()), this, SLOT(decodeFromVideoFrame()));
     }
 
-    // wait half a second before capturing first frame
-    // -> otherwise it may happen, that the old video frame is read (from the previous scan)
-    mGrabTimer->start(500);
-
-    setScannerState (ScannerState::SCANNING);
+    mGrabTimer->start(1000);
 }
 
 void ScannerView::stopScanner ()
@@ -208,7 +187,7 @@ void ScannerView::stopScanner ()
     if (0 != mCameraInstance)
         mCameraInstance->stopCamera();
 
-    setScannerState (ScannerState::READY);
+    //setScannerState (ScannerState::STOPPED);
 }
 
 bool ScannerView::codeIsValid(const unsigned int code)
@@ -313,11 +292,14 @@ void ScannerView::onMenuBtnClicked (Gui::MenuButton btnType)
     switch (btnType)
     {
         case Gui::Repeat:
-            startScanner();
+            setScannerState(ScannerState::SCANNING);
             break;
         case Gui::Back:
-            stopScanner();
+            setScannerState(ScannerState::STOPPED);
             emit menuButtonClicked(btnType);
+            break;
+        case Gui::Next:
+            setScannerState(ScannerState::STOPPED);
             break;
         default:
             emit menuButtonClicked(btnType);
@@ -328,8 +310,7 @@ void ScannerView::onMenuBtnClicked (Gui::MenuButton btnType)
 void ScannerView::onCameraChanged(int camId)
 {
     setDefaultCam(camId);
-    stopScanner();
-    startScanner();
+    setScannerState(ScannerState::SCANNING);
 }
 
 void ScannerView::decodeFromVideoFrame ()
@@ -409,41 +390,39 @@ void ScannerView::setScannerState (ScannerState aStatus)
     switch (mScannerState)
     {
         case READY:
-            qDebug () << "ScannerState is READY";
-            mGroupLabel->setText("---");
-            mKeyLabel->setText("---");
+        case STOPPED:
+            stopScanner();
+            resetLabels();
+
+            dataInterface()->resetScannerData();
+
             disableButton(1, false);
             disableButton(2, true);
             disableButton(3, true);
+
+            qDebug () << "ScannerState is READY";
             break;
         case SCANNING:
-            mGroupLabel->setText("---");
-            mKeyLabel->setText("---");
-            qDebug() <<  "ScannerState is SCANNING";
+            resetLabels();
+            startScanner();
+
             disableButton(1, true);
             disableButton(2, true);
             disableButton(3, true);
+
+            qDebug() <<  "ScannerState is SCANNING";
             break;
         case SCANSUCCEEDED:
-            qDebug() <<  "ScannerState is SCANSUCCEEDED";
-            int code = dataInterface()->getScannedCode();
-            bool foundCode = ioInterface()->findKeyCode(code);
 
-            if (foundCode)
-            {
-                hideButton(2, true);
-                //hideButton(3, false);
-                enableButton(1, true);
-                enableButton(3, true);
-            }
-            else
-            {
-                showButton(2, true);
-                //hideButton(3, true);
-                enableButton(1, true);
-                enableButton(2, true);
-                enableButton(3, false);
-            }
+            stopScanner();
+
+            showButton(2, true);
+            //hideButton(3, true);
+            enableButton(1, true);
+            enableButton(2, true);
+            enableButton(3, false);
+
+            qDebug() <<  "ScannerState is SCANSUCCEEDED";
 
             break;
     }
@@ -457,6 +436,11 @@ QSize ScannerView::getViewfinderSize ()
 QVideoWidget* ScannerView::getViewfinder ()
 {
     return m_viewfinder;
+}
+
+void ScannerView::setCodeLabel(QString aCodeLabel)
+{
+    mCodeLabel->setText(aCodeLabel);
 }
 
 void ScannerView::setCustomerLabel (QString aCustomerId)
@@ -491,6 +475,13 @@ void ScannerView::setDefaultCam (int camId)
             ioInterface()->setDefaultCameraId(camId);
         }
     }
+}
+
+void ScannerView::resetLabels()
+{
+    setCodeLabel("");
+    setCustomerLabel("");
+    setKeyLabel("");
 }
 
 ScannerView::~ScannerView()
