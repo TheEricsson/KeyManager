@@ -51,7 +51,8 @@ IOInterfaceSQLITE::IOInterfaceSQLITE()
 #ifdef Q_OS_WIN64
     //mDbLocation = "C:/QtProjekte/KeyManager/build/Desktop_Qt_6_8_2_MinGW_64_bit-Debug/db.sqlite";
     mDbLocation = QStandardPaths::writableLocation(QStandardPaths::AppDataLocation);
-    mDbLocation.append("db.sqlite");
+    mDbLocation.append("/db");
+    mDbLocation.append(".sqlite");
     qDebug () << "mDbLocation: " << mDbLocation;
 #endif
 
@@ -161,6 +162,8 @@ bool IOInterfaceSQLITE::closeDatabase()
 
 bool IOInterfaceSQLITE::doDbBackup(const QString& fileName)
 {
+    bool success = false;
+
     QString dbLocation = getDatabaseLocation();
     QString backupLocation = dbLocation + "_" + fileName;
 
@@ -172,7 +175,12 @@ bool IOInterfaceSQLITE::doDbBackup(const QString& fileName)
     qDebug () << "dbLocation: " << dbLocation;
     qDebug () << "backupLocation: " << backupLocation;
 
-    return QFile::copy(dbLocation, backupLocation);
+    // local backup
+    success = QFile::copy(dbLocation, backupLocation);
+
+    // network backup
+
+    return success;
 }
 
 bool IOInterfaceSQLITE::initTables()
@@ -576,6 +584,31 @@ int IOInterfaceSQLITE::getKeychainInternalLocation (const int& keyCode)
     }
     else
         return 0;
+}
+
+bool IOInterfaceSQLITE::isInternalLocationInUse(const int& location)
+{
+    QSqlQuery query;
+    query.prepare("SELECT internalLocation FROM keychains");
+    //query.bindValue(0, location);
+    query.exec();
+
+    bool locationFound = false;
+
+    while (query.next())
+    {
+        if (location == query.value(0).toInt())
+        {
+            locationFound = true;
+        }
+    }
+
+    if (locationFound)
+        qDebug () << "IOInterfaceSQLITE::isInternalLocationInUse - location number " << location << " is in use.";
+    else
+        qDebug () << "IOInterfaceSQLITE::isInternalLocationInUse - location number " << location << " is free.";
+
+    return locationFound;
 }
 
 int IOInterfaceSQLITE::getKeychainAddressId (const int& keyCode)
@@ -1093,6 +1126,12 @@ bool IOInterfaceSQLITE::dbInsertKeychain (DataInterface *data)
 
     if (data)
     {
+        qDebug()<< "data:";
+        qDebug()<< "data->getScannedCode(): " << data->getScannedCode();
+        qDebug()<< "data->getNewKeychainStatusId()" << data->getNewKeychainStatusId();
+        qDebug()<< "data->getInternalLocation()" << data->getInternalLocation();
+        qDebug()<< "data->getKeychainAddressId ()" << data->getKeychainAddressId();
+        qDebug()<< "data->getKeychainImg()" << data->getKeychainImg();
 
         QSqlQuery query;
 
@@ -1107,8 +1146,6 @@ bool IOInterfaceSQLITE::dbInsertKeychain (DataInterface *data)
         query.bindValue(5, 0);
 
         queryOk = query.exec();
-
-        qDebug () << "query.lastError().databaseText():" << query.lastError().databaseText();
     }
 
     return queryOk;

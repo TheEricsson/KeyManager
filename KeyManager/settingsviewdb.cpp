@@ -6,6 +6,8 @@
 #include <QFileDialog>
 #include <QMessageBox>
 #include <QSaveFile>
+#include <QStandardPaths>
+#include <QCheckBox>
 
 SettingsViewDb::SettingsViewDb(QWidget *parent) : WinSubmenu {parent}
 {
@@ -24,11 +26,18 @@ SettingsViewDb::SettingsViewDb(QWidget *parent) : WinSubmenu {parent}
     QPushButton *readDbBtn = new QPushButton("Datenbank-Backup\neinlesen", this);
     readDbBtn->setMinimumSize(QSize(Gui::buttonHeight,Gui::buttonWidth));
 
+    QCheckBox *autoBackup = new QCheckBox("Automatisches Backup bei Beenden", this);
+    mAutoBackupLocation = new QPushButton("Speicherort...", this);
+    mAutoBackupLocation->setMinimumSize(QSize(Gui::buttonHeight,Gui::buttonWidth));
+    mAutoBackupLocation->setDisabled(true);
+
     QSpacerItem *spacer = new QSpacerItem (0, 0, QSizePolicy::Expanding, QSizePolicy::Expanding);
 
-    gridLayout->addWidget(saveDbBtn, 0, 0);
-    gridLayout->addWidget(readDbBtn, 1, 0);
-    gridLayout->addItem(spacer, 2, 0);
+    gridLayout->addWidget(saveDbBtn, 0, 0, 1, 2);
+    gridLayout->addWidget(readDbBtn, 1, 0, 1, 2);
+    gridLayout->addWidget(autoBackup, 2, 0, 1, 1);
+    gridLayout->addWidget(mAutoBackupLocation, 2, 1, 1, 1);
+    gridLayout->addItem(spacer, 3, 0, 1, 2);
 
     setCentralLayout(gridLayout);
 
@@ -38,6 +47,7 @@ SettingsViewDb::SettingsViewDb(QWidget *parent) : WinSubmenu {parent}
 
     connect (saveDbBtn, SIGNAL(clicked()), this, SLOT(onSaveDbBtnClicked()));
     connect (readDbBtn, SIGNAL(clicked()), this, SLOT(onReadDbBtnClicked()));
+    connect (autoBackup, SIGNAL(checkStateChanged(Qt::CheckState)), this, SLOT(onAutoBackupCheckStateChanged(Qt::CheckState)));
 }
 
 void SettingsViewDb::showSuccessWindow(SettingsViewDb::DbOption messageType, bool noError)
@@ -91,7 +101,12 @@ void SettingsViewDb::onSaveDbBtnClicked()
     // open file dialog and let user set location + file name
     QString dbLocation = ioInterface()->getDatabaseLocation();
 
+#ifdef Q_OS_WIN64
+    QUrl saveLocation = QFileDialog::getSaveFileName(nullptr,QString(),QStandardPaths::writableLocation(QStandardPaths::AppDataLocation),"Backup (*.sqlite)",nullptr,QFileDialog::Options());
+#elif Q_OS_ANDROID
     QUrl saveLocation = QFileDialog::getSaveFileUrl(nullptr,QString(),QUrl(),"Backup (*.sqlite)",nullptr,QFileDialog::Options(),QStringList());
+#endif
+
     QString filename = saveLocation.toDisplayString();
 
     //new file to save backup to
@@ -140,27 +155,50 @@ void SettingsViewDb::onReadDbBtnClicked()
     // open file dialog and let user set location + file name
     QString dbNew = dlg.getOpenFileName((QWidget* )0, "Datenbank importieren", QString(), "*.sqlite*");
 
-    //QString dbNew = QFileDialog::getOpenFileName((QWidget* )0, "Datenbank importieren", QString(), "*.sqlite*");
-
-    qDebug() << "dbLocation: " << dbLocation;
-    qDebug() << "dbNew: " << dbNew;
-
-    // close database, otherwise the file cannot be replaced
-    ioInterface()->closeDatabase();
-
-    bool ok = false;
-
-    if (QFile::exists(dbLocation))
+    if (!dbNew.isNull()) // check if the dialog was canceled
     {
-        QString dbReplaced = dbLocation + "_replaced.sqlite";
-        QFile::copy(dbLocation, dbReplaced);
+        qDebug() << "dbLocation: " << dbLocation;
+        qDebug() << "dbNew: " << dbNew;
+
+        if ("" != dbNew)
+        {
+            // close database, otherwise the file cannot be replaced
+            ioInterface()->closeDatabase();
+
+            bool ok = false;
+
+            if (QFile::exists(dbLocation))
+            {
+                QString dbReplaced = dbLocation + "_replaced.sqlite";
+                QFile::copy(dbLocation, dbReplaced);
+            }
+
+            QFile::remove(dbLocation);
+            ok = QFile::copy(dbNew, dbLocation);
+
+            // open database
+            ioInterface()->openDatabase();
+
+            showSuccessWindow (SettingsViewDb::dbRestore, ok);
+        }
     }
+}
 
-    QFile::remove(dbLocation);
-    ok = QFile::copy(dbNew, dbLocation);
+void SettingsViewDb::onAutoBackupCheckStateChanged(Qt::CheckState aCheckstate)
+{
+    if (mAutoBackupLocation)
+    {
+        switch (aCheckstate)
+        {
+            case Qt::Checked:
+                mAutoBackupLocation->setEnabled(true);
+                break;
+            case Qt::Unchecked:
+                mAutoBackupLocation->setDisabled(true);
+                break;
+            default:
+                break;
 
-    // open database
-    ioInterface()->openDatabase();
-
-    showSuccessWindow (SettingsViewDb::dbRestore, ok);
+        }
+    }
 }

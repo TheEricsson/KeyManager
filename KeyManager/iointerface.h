@@ -73,6 +73,7 @@ public:
     virtual KeychainStatus::Value getKeychainStatusId (const int& keyCode)                      {Q_UNUSED(keyCode); return KeychainStatus::Undefined;};
     virtual const QString getKeychainStatusText (int statusId)                                  {Q_UNUSED(statusId); return "IOInterface::getKeychainStatusText - not implemented.";};
     virtual int getKeychainInternalLocation (const int& keyCode)                                {Q_UNUSED(keyCode); return _UNDEFINED;};
+    virtual bool isInternalLocationInUse(const int& location)                                   {Q_UNUSED(location); return false;};
     virtual unsigned int getLockerIdByKeycode (unsigned int keyCode)                            {Q_UNUSED(keyCode); return 0;};
     virtual int getKeychainAddressId (const int& keyCode)                                       {Q_UNUSED(keyCode); return _UNDEFINED;};
     virtual bool getKeychainImg (const int keyCode, QImage& img)                                {Q_UNUSED(keyCode); Q_UNUSED(img); return false;};

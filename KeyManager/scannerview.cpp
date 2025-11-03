@@ -153,7 +153,7 @@ void ScannerView::showEvent(QShowEvent *)
 
 void ScannerView::hideEvent(QHideEvent *)
 {
-    setScannerState(ScannerState::STOPPED);
+    //setScannerState(ScannerState::STOPPED);
 }
 
 void ScannerView::startScanner ()
@@ -298,9 +298,9 @@ void ScannerView::onMenuBtnClicked (Gui::MenuButton btnType)
             setScannerState(ScannerState::STOPPED);
             emit menuButtonClicked(btnType);
             break;
-        case Gui::Next:
-            setScannerState(ScannerState::STOPPED);
-            break;
+        // case Gui::Next:
+        //     setScannerState(ScannerState::STOPPED);
+        //     break;
         default:
             emit menuButtonClicked(btnType);
             break;
@@ -367,10 +367,12 @@ void ScannerView::decodeFromVideoFrame ()
         setKeyLabel(keyId);
 
         dataInterface()->resetScannerData();
-        dataInterface()->setScannedCode (barcodeAsInt);
 
-        // set scanview ui state
-        setScannerState(ScannerState::SCANSUCCEEDED);
+        if (dataInterface()->setScannedCode (barcodeAsInt))
+        {
+            // set scanview ui state
+            setScannerState(ScannerState::SCANSUCCEEDED);
+        }
     }
     else
     {
@@ -391,11 +393,6 @@ void ScannerView::setScannerState (ScannerState aStatus)
     {
         case READY:
         case STOPPED:
-            stopScanner();
-            resetLabels();
-
-            dataInterface()->resetScannerData();
-
             disableButton(1, false);
             disableButton(2, true);
             disableButton(3, true);
@@ -404,6 +401,7 @@ void ScannerView::setScannerState (ScannerState aStatus)
             break;
         case SCANNING:
             resetLabels();
+            dataInterface()->resetScannerData();
             startScanner();
 
             disableButton(1, true);
@@ -413,17 +411,27 @@ void ScannerView::setScannerState (ScannerState aStatus)
             qDebug() <<  "ScannerState is SCANNING";
             break;
         case SCANSUCCEEDED:
+            int code = dataInterface()->getScannedCode();
+            bool foundCode = ioInterface()->findKeyCode(code);
+
+            if (foundCode)
+            {
+                hideButton(2, true);
+                //hideButton(3, false);
+                enableButton(1, true);
+                enableButton(3, true);
+            }
+            else
+            {
+                showButton(2, true);
+                //hideButton(3, true);
+                enableButton(1, true);
+                enableButton(2, true);
+                enableButton(3, false);
+            }
 
             stopScanner();
-
-            showButton(2, true);
-            //hideButton(3, true);
-            enableButton(1, true);
-            enableButton(2, true);
-            enableButton(3, false);
-
             qDebug() <<  "ScannerState is SCANSUCCEEDED";
-
             break;
     }
 }

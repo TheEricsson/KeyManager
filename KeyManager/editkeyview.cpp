@@ -167,9 +167,16 @@ void EditKeyView::reset()
 {
     int barcode = dataInterface()->getScannedCode();
 
+    qDebug() << "EditKeyView::reset() - dataInterface()->getScannedCode() : " << barcode;
+
     QString labelText = "Schlüsselbund Nr: ";
 
-    labelText.append (Database::normaliseKeycode(barcode));
+    // error
+    if (dataInterface()->getScannedCode() <= 0)
+        labelText.append("UNDEFINED");
+    else
+        labelText.append (Database::normaliseKeycode(barcode));
+
     mKeychainCode->setText(labelText);
 
     QString filterKeyTable = "keychainId = ";

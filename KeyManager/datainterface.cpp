@@ -7,6 +7,7 @@
 #include "viewdataannotation.h"
 #include <QBuffer>
 #include <QPixmap>
+#include <QDebug>
 
 DataInterface::DataInterface()
 {
@@ -253,7 +254,10 @@ bool DataInterface::setAnnotationText(const QString& text)
 bool DataInterface::setScannedCode (const int keyCode)
 {
     if (!mDataScanner)
+    {
+        qDebug() << "DataInterface::setScannedCode (const int keyCode) - mDataScanner is NULL!";
         return false;
+    }
 
     mDataScanner->setBarcode(keyCode);
     return true;

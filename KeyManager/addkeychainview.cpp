@@ -188,7 +188,7 @@ void AddKeychainView::onMenuBtnClicked (Gui::MenuButton btnType)
                 return;
             }
 
-            if (0 != ioInterface()->getKeychainInternalLocation(dataInterface()->getScannedCode()))
+            if (ioInterface()->isInternalLocationInUse(mInternalLocation->text().toInt()))
             {
                 QString text = "Schlüsselhaken ist bereits belegt!\nDoppelbelegung bestätigen?";
                 msgBox.setStandardButtons(QMessageBox::Yes | QMessageBox::Abort);

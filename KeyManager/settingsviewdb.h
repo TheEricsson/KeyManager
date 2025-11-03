@@ -2,6 +2,8 @@
 #define SETTINGSVIEWDB_H
 #include "winsubmenu.h"
 
+class QPushButton;
+
 class SettingsViewDb : public WinSubmenu
 {
     Q_OBJECT
@@ -17,11 +19,14 @@ class SettingsViewDb : public WinSubmenu
             dbRestore
         };
 
+        QPushButton *mAutoBackupLocation;
+
         void showSuccessWindow (SettingsViewDb::DbOption messageType, bool noError);
 
     private slots:
         void onSaveDbBtnClicked();
         void onReadDbBtnClicked();
+        void onAutoBackupCheckStateChanged(Qt::CheckState aCheckstate);
 };
 
 #endif // SETTINGSVIEWDB_H

@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<Package>
+    <DisplayName>Key Manager</DisplayName>
+    <Description>key Manager auf diesem PC installieren.</Description>
+    <Version>0.1.0-1</Version>
+    <ReleaseDate>2025-10-21</ReleaseDate>
+    <Licenses>
+        <License name="Lizenzvereinbarung" file="lizenz.txt" />
+    </Licenses>
+    <Default>true</Default>
+</Package>

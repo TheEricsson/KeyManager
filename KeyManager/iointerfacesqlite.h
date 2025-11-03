@@ -33,6 +33,7 @@ class IOInterfaceSQLITE : public IOInterface
         KeychainStatus::Value getKeychainStatusId (const int& keyCode);
         const QString getKeychainStatusText (int statusId);
         int getKeychainInternalLocation (const int& keyCode);
+        bool isInternalLocationInUse(const int& location);
         int getKeychainAddressId (const int& keyCode);
         const QString getAddressStreet (const int& addressId);
         const QString getAddressStreetNumber (const int& addressId);
