@@ -19,6 +19,7 @@
 #include <QComboBox>
 #include <QRadioButton>
 #include <QButtonGroup>
+
 #include "checkboxarray.h"
 #include "winsubmenu.h"
 #include "camera.h"
@@ -26,6 +27,7 @@
 #include "viewdatascanner.h"
 #include "datainterface.h"
 #include "iointerface.h"
+#include "keycodeinputdialog.h"
 
 #if QT_CONFIG(permissions)
 #include <QPermission>
@@ -92,11 +94,12 @@ ScannerView::ScannerView(QWidget *parent)
 
     QList<Gui::MenuButton> menuButtons;
     menuButtons.append(Gui::Back);
+    menuButtons.append(Gui::Edit);
     menuButtons.append(Gui::Repeat);
     menuButtons.append(Gui::NewCodeScanned);
     menuButtons.append(Gui::Next);
     setMenuButtons(menuButtons);
-    hideButton(2, true);
+    hideButton(3, true);
     //setScannerState (ScannerState::READY);
 }
 
@@ -298,9 +301,9 @@ void ScannerView::onMenuBtnClicked (Gui::MenuButton btnType)
             setScannerState(ScannerState::STOPPED);
             emit menuButtonClicked(btnType);
             break;
-        // case Gui::Next:
-        //     setScannerState(ScannerState::STOPPED);
-        //     break;
+        case Gui::Edit:
+            setScannerState(ScannerState::STOPPED);
+            setCodeManual();
         default:
             emit menuButtonClicked(btnType);
             break;
@@ -322,9 +325,9 @@ void ScannerView::decodeFromVideoFrame ()
     }
 #ifdef QT_DEBUG
     // debugging without cam on windows pc -> use test image with barcode
-    QImage testCode (":/images/qrcode_0001-0001.png");
-    QString decodedString = Database::normaliseKeycode(mCode);
-    mCode++;
+    // QImage testCode (":/images/qrcode_0001-0001.png");
+    QString decodedString = "debug mode without cam";
+    // mCode++;
 #else
     QString decodedString ("");
     if (0 != mDecoder)
@@ -394,8 +397,9 @@ void ScannerView::setScannerState (ScannerState aStatus)
         case READY:
         case STOPPED:
             disableButton(1, false);
-            disableButton(2, true);
+            disableButton(2, false);
             disableButton(3, true);
+            disableButton(4, true);
 
             qDebug () << "ScannerState is READY";
             break;
@@ -404,9 +408,10 @@ void ScannerView::setScannerState (ScannerState aStatus)
             dataInterface()->resetScannerData();
             startScanner();
 
-            disableButton(1, true);
+            disableButton(1, false);
             disableButton(2, true);
             disableButton(3, true);
+            disableButton(4, true);
 
             qDebug() <<  "ScannerState is SCANNING";
             break;
@@ -416,18 +421,20 @@ void ScannerView::setScannerState (ScannerState aStatus)
 
             if (foundCode)
             {
-                hideButton(2, true);
+                hideButton(3, true);
                 //hideButton(3, false);
                 enableButton(1, true);
-                enableButton(3, true);
+                enableButton(2, true);
+                enableButton(4, true);
             }
             else
             {
-                showButton(2, true);
+                showButton(3, true);
                 //hideButton(3, true);
                 enableButton(1, true);
                 enableButton(2, true);
-                enableButton(3, false);
+                enableButton(3, true);
+                enableButton(4, false);
             }
 
             stopScanner();
@@ -459,6 +466,71 @@ void ScannerView::setCustomerLabel (QString aCustomerId)
 void ScannerView::setKeyLabel (QString aKeyId)
 {
     mKeyLabel->setText(aKeyId);
+}
+
+void ScannerView::setCodeManual()
+{
+    KeycodeInputDialog dlg;
+    dlg.setInputMode(QInputDialog::TextInput);
+    dlg.setLabelText("Code manuell eingeben:");
+    if (QDialog::Accepted == dlg.exec())
+    {
+        QString decodedString = dlg.textValue();
+        QString barcodeAsNumber = decodedString.mid (0, 4);
+        barcodeAsNumber.append(decodedString.mid(5, 4));
+        unsigned int barcodeAsInt = barcodeAsNumber.toInt();
+
+        if ("" != decodedString.toStdString())
+        {
+            qDebug () << "barcode:" << decodedString;
+            qDebug () << "barcodeAsNumber:" << barcodeAsNumber;
+            qDebug () << "barcodeAsInt: = " << barcodeAsInt;
+        }
+
+        if (0 != mCodeLabel)
+        {
+            mCodeLabel->setText(decodedString);
+        }
+
+        QString customerId = decodedString.mid (0, 4);
+        QString keyId = decodedString.mid (5, 4);
+
+        if  (codeIsValid(barcodeAsInt))
+        {
+            if (0 != mGrabTimer)
+                mGrabTimer->stop ();
+
+            if (0 != mCameraInstance)
+                mCameraInstance->stopCamera();
+
+            // code recognized: play a supermarket beep sound :)
+            playSound ();
+
+            setCustomerLabel(customerId);
+            setKeyLabel(keyId);
+
+            dataInterface()->resetScannerData();
+
+            if (dataInterface()->setScannedCode (barcodeAsInt))
+            {
+                // set scanview ui state
+                setScannerState(ScannerState::SCANSUCCEEDED);
+            }
+        }
+        else
+        {
+            QString codeLabelWAppendix = decodedString + " (ungültig)";
+
+            if (0 != mCodeLabel)
+            {
+                mCodeLabel->setText(codeLabelWAppendix);
+            }
+            setScannerState(ScannerState::SCANNING);
+        }
+
+    }
+    else
+        setScannerState(ScannerState::SCANNING);
 }
 
 const QString ScannerView::getCustomerLabel ()

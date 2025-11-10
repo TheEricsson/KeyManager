@@ -26,7 +26,8 @@ class ScannerView : public WinSubmenu
             READY,
             SCANNING,
             SCANSUCCEEDED,
-            STOPPED
+            STOPPED,
+            OVERRIDE
         };
 
         explicit ScannerView(QWidget *parent = nullptr);
@@ -52,6 +53,7 @@ class ScannerView : public WinSubmenu
         void setCodeLabel(QString aCodeLabel);
         void setCustomerLabel (QString aCustomerId);
         void setKeyLabel (QString aKeyId);
+        void setCodeManual();
 
         void startScanner();
         void stopScanner();

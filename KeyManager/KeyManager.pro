@@ -31,6 +31,7 @@ SOURCES += \
     iointerface.cpp \
     iointerfacesqlite.cpp \
     keychainstatusview.cpp \
+    keycodeinputdialog.cpp \
     main.cpp \
     mainwindow.cpp \
     menubutton.cpp \
@@ -81,6 +82,7 @@ HEADERS += \
     iointerface.h \
     iointerfacesqlite.h \
     keychainstatusview.h \
+    keycodeinputdialog.h \
     mainwindow.h \
     menubutton.h \
     printerinterface.h \
