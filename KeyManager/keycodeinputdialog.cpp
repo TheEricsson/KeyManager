@@ -5,12 +5,20 @@
 KeycodeInputDialog::KeycodeInputDialog (QWidget *parent)
     : QInputDialog {parent}
 {
+    mCodeValid = false;
+
     connect (this, SIGNAL(textValueChanged(const QString&)), this, SLOT(onTextValueChanged(const QString&)));
     connect (this, SIGNAL (accepted()), this, SLOT(onAcceptedClicked()));
 }
 
+bool KeycodeInputDialog::isCodeValid()
+{
+    return mCodeValid;
+}
+
 void KeycodeInputDialog::onTextValueChanged(const QString& text)
 {
+    mCodeValid = false;
     //input format: 0000-0000
     //check current pos
     int pos = text.size();
@@ -34,6 +42,8 @@ void KeycodeInputDialog::onTextValueChanged(const QString& text)
         QString manipulated = text;
         manipulated.removeLast();
         this->setTextValue(manipulated);
+        qDebug () << "mCodeValid oK";
+        mCodeValid = true;
         return;
     }
 
@@ -62,10 +72,16 @@ void KeycodeInputDialog::onTextValueChanged(const QString& text)
 
 void KeycodeInputDialog::onAcceptedClicked()
 {
-    QString code = this->textValue();
-    while (code.size() < 9)
+    QString value = textValue();
+
+    if (value.size() > 5)
     {
-        code.insert(5,"0");
-        this->setTextValue(code);
+        while (value.size() < 9)
+        {
+            value.insert(5,"0");
+        }
+        setTextValue(value);
+        qDebug () << "mCodeValid oK";
+        mCodeValid = true;
     }
 }

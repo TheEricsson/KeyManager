@@ -400,7 +400,7 @@ void ScannerView::setScannerState (ScannerState aStatus)
             disableButton(2, false);
             disableButton(3, true);
             disableButton(4, true);
-
+            stopScanner();
             qDebug () << "ScannerState is READY";
             break;
         case SCANNING:
@@ -495,7 +495,7 @@ void ScannerView::setCodeManual()
         QString customerId = decodedString.mid (0, 4);
         QString keyId = decodedString.mid (5, 4);
 
-        if  (codeIsValid(barcodeAsInt))
+        if  (codeIsValid(barcodeAsInt) && dlg.isCodeValid())
         {
             if (0 != mGrabTimer)
                 mGrabTimer->stop ();
