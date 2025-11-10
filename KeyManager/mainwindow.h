@@ -30,6 +30,7 @@ class ReturnDateView;
 class ViewStack;
 class SettingsViewDb;
 class ToolsViewDataAdministration;
+class DbSettingsDialog;
 
 class MainWindow : public QMainWindow
 {
@@ -50,6 +51,7 @@ private slots:
 private:
     void registerView (WinSubmenu *view);
     void setView (QWidget* view);
+    void showDbSettingsDialog();
 /*#if defined(Q_OS_ANDROID)
     void accessAllFiles();
 #endif*/
@@ -81,7 +83,10 @@ private:
     ToolsViewDataAdministration *mToolsViewDataAdministration;
 
     // views in the section settings
-    SettingsViewDb *mSettingsViewDb;
+    //SettingsViewDb *mSettingsViewDb;
+
+    // db settings
+    DbSettingsDialog *mDbSettingsDlg;
 
     DataInterface *mDataInterface;
     IOInterface *mDbInterface;

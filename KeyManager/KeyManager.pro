@@ -23,6 +23,7 @@ SOURCES += \
     datainterface.cpp \
     dataobject.cpp \
     dataobjecthandover.cpp \
+    dbsettingsdialog.cpp \
     editcustomerview.cpp \
     editkeyview.cpp \
     handoverview.cpp \
@@ -42,7 +43,6 @@ SOURCES += \
     returndateview.cpp \
     scannerview.cpp \
     searchview.cpp \
-    settingsviewdb.cpp \
     signaturepad.cpp \
     tableview.cpp \
     tests/qrencodertest.cpp \
@@ -71,6 +71,7 @@ HEADERS += \
     datainterface.h \
     dataobject.h \
     dataobjecthandover.h \
+    dbsettingsdialog.h \
     editcustomerview.h \
     editkeyview.h \
     globals.h \
@@ -91,7 +92,6 @@ HEADERS += \
     returndateview.h \
     scannerview.h \
     searchview.h \
-    settingsviewdb.h \
     signaturepad.h \
     tableview.h \
     tests/qrencodertest.h \

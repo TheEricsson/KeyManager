@@ -14,6 +14,7 @@
 #include <QStackedWidget>
 #include <QDockWidget>
 #include <QStatusBar>
+#include <QFileDialog>
 
 #if defined(Q_OS_ANDROID)
 #include <QtCore/private/qandroidextras_p.h>
@@ -34,7 +35,7 @@
 #include "editkeyview.h"
 #include "returndateview.h"
 #include "searchview.h"
-#include "settingsviewdb.h"
+#include "dbsettingsdialog.h"
 #include "toolsviewdataadministration.h"
 #include "iointerface.h"
 
@@ -56,8 +57,8 @@ MainWindow::MainWindow(QWidget *parent)
     mAddKeychainView = 0;
     mEditKeyView = 0;
     mViewStack = 0;
-    mSettingsViewDb = 0;
     mToolsViewDataAdministration = 0;
+    mDbSettingsDlg = 0;
 }
 
 void MainWindow::setDataInterface (DataInterface *dataInterface)
@@ -103,7 +104,7 @@ void MainWindow::init()
     mEditKeyView = new EditKeyView (this);
     mToolsViewDataAdministration = new ToolsViewDataAdministration (this);
     mReturnDateView = new ReturnDateView (this);
-    mSettingsViewDb = new SettingsViewDb (this);
+    mDbSettingsDlg = new DbSettingsDialog(this);
 
     registerView (mHomeView);
     registerView (mScanView);
@@ -116,8 +117,8 @@ void MainWindow::init()
     registerView (mAddKeychainView);
     registerView (mEditKeyView);
     registerView (mReturnDateView);
-    registerView (mSettingsViewDb);
     registerView (mToolsViewDataAdministration);
+    registerView (mDbSettingsDlg);
 
     // set view state
     mRecipientView->setViewMode(ViewMode::Handover);
@@ -144,7 +145,7 @@ void MainWindow::init()
     mViewStackManager->addNode(ViewStackManager::Tools, mToolsViewDataAdministration);
 
     // views in the section 'settings'
-    mViewStackManager->addNode(ViewStackManager::Settings, mSettingsViewDb);
+    mViewStackManager->addNode(ViewStackManager::Settings, mDbSettingsDlg);
 
     // views in the section 'search'
     mViewStackManager->addNode(ViewStackManager::Search, mSearchView);
@@ -152,19 +153,18 @@ void MainWindow::init()
     mViewStackManager->setCurrentStackId(ViewStackManager::HandoverOut);
     mViewStack->setCurrentWidget(mHomeView);
 
-/*#if defined(Q_OS_ANDROID)
-    accessAllFiles();
-#endif*/
-
-    // init db
+    // no db existant
     if (0 == mDbInterface->countDbTables())
     {
         QMessageBox msgBox;
-        msgBox.setStandardButtons(QMessageBox::Ok);
-        msgBox.setText ("Erster Start");
-        msgBox.setInformativeText("Eine neue Datenbank wird erstellt.");
-        msgBox.exec();
+        msgBox.setStandardButtons(QMessageBox::Yes | QMessageBox::No);
+        msgBox.setText ("Erster Start der Anwendung");
+        msgBox.setInformativeText("Bitte legen Sie die Grundeinstellungen für die Datenbank fest.");
+        int result = msgBox.exec();
 
+        showDbSettingsDialog();
+
+        /*
         if (!mDbInterface->initFirstStart())
         {
             QMessageBox msgBox;
@@ -173,7 +173,7 @@ void MainWindow::init()
             msgBox.setInformativeText("Datenbank konnte nicht geöffnet werden.");
             msgBox.setDetailedText(mDbInterface->dbGetLastError());
             msgBox.exec();
-        }
+        }*/
     }
 }
 
@@ -261,6 +261,14 @@ void MainWindow::setView (QWidget* view)
         return;
 
     mViewStack->setCurrentWidget(view);
+}
+
+void MainWindow::showDbSettingsDialog()
+{
+    if (mDbSettingsDlg)
+    {
+        mViewStack->setCurrentWidget(mDbSettingsDlg);
+    }
 }
 
 /*#if defined(Q_OS_ANDROID)
