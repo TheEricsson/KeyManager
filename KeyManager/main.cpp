@@ -7,13 +7,21 @@
 #include "mainwindow.h"
 #include "datainterface.h"
 #include "iointerfacesqlite.h"
-#include "androidapplication.h"
 #include <QPermissions>
+
+#ifdef Q_OS_ANDROID
+#include "androidapplication.h"
+#endif
 
 int main(int argc, char *argv[])
 {
-    //QApplication a(argc, argv);
+#ifdef Q_OS_WIN64
+    QApplication a(argc, argv);
+#endif
+
+#ifdef Q_OS_ANDROID
     AndroidApplication a(argc, argv);
+#endif
 
     QFont font("Roboto");
     font.setStyleHint(QFont::SansSerif);
@@ -30,6 +38,9 @@ int main(int argc, char *argv[])
             break;
         }
     }
+
+    //set application-wide icon
+    a.setWindowIcon(QIcon(":/images/icon.png"));
 
     //start the app window
     MainWindow w;
