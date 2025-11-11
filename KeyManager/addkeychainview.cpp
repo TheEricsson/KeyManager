@@ -191,38 +191,43 @@ void AddKeychainView::onMenuBtnClicked (Gui::MenuButton btnType)
             if (ioInterface()->isInternalLocationInUse(mInternalLocation->text().toInt()))
             {
                 QString text = "Schlüsselhaken ist bereits belegt!\nDoppelbelegung bestätigen?";
-                msgBox.setStandardButtons(QMessageBox::Yes | QMessageBox::Abort);
-                msgBox.setDefaultButton(QMessageBox::Abort);
+                msgBox.setStandardButtons(QMessageBox::Abort | QMessageBox::Ok);
+                msgBox.setDefaultButton(QMessageBox::Ok);
                 msgBox.setInformativeText(text);
-                if (QDialog::Accepted != msgBox.exec())
+
+                if (QMessageBox::Ok != msgBox.exec())
                 {
+                    qDebug()<<"Doppelbelegung - Abgebrochen";
+                    return;
+                }
+                else
+                {
+                    qDebug()<<"Doppelbelegung - Bestätigt";
+                }
+            }
+            if (true == ConfirmationDialog ())
+            {
+                dataInterface()->setNewKeychainStatusId(KeychainStatus::Value::Available);
+                dataInterface()->setKeychainInternalLocation(mInternalLocation->text().toInt());
+
+                //mViewDataKeychain->setNewStatus(KeychainStatus::Value::Available);
+                //mViewDataKeychain->setInternalLocation(mInternalLocation->text().toInt());
+
+                bool retVal = ioInterface()->dbInsertKeychain (dataInterface()->getHandle());
+                if (!retVal)
+                {
+                    QString text = "Fehler!";
+                    msgBox.setStandardButtons(QMessageBox::Abort);
+                    //msgBox.setDefaultButton(QMessageBox::Abort);
+                    msgBox.setText ("AddKeychainView::onMenuBtnClicked -> submitNewKeychain () - SQL Fehler!");
+                    msgBox.setInformativeText(text);
+                    msgBox.exec();
                     return;
                 }
             }
             else
             {
-                if (ConfirmationDialog ())
-                {
-                    dataInterface()->setNewKeychainStatusId(KeychainStatus::Value::Available);
-                    dataInterface()->setKeychainInternalLocation(mInternalLocation->text().toInt());
-
-                    //mViewDataKeychain->setNewStatus(KeychainStatus::Value::Available);
-                    //mViewDataKeychain->setInternalLocation(mInternalLocation->text().toInt());
-
-                    bool retVal = ioInterface()->dbInsertKeychain (dataInterface()->getHandle());
-                    if (!retVal)
-                    {
-                        QString text = "Fehler!";
-                        msgBox.setStandardButtons(QMessageBox::Abort);
-                        //msgBox.setDefaultButton(QMessageBox::Abort);
-                        msgBox.setText ("AddKeychainView::onMenuBtnClicked -> submitNewKeychain () - SQL Fehler!");
-                        msgBox.setInformativeText(text);
-                        msgBox.exec();
-                        break;
-                    }
-                }
-                else
-                    return;
+                return;
             }
             break;
         case Gui::AddCustomer:
