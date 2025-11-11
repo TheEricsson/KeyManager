@@ -14,7 +14,7 @@ AddCustomerView::AddCustomerView(QWidget *parent) : WinSubmenu {parent}
 
     mStreet = new QLineEdit (this);
     mStreetNr = new QLineEdit (this);
-    mStreetNr->setValidator(new QRegularExpressionValidator(QRegularExpression("\\d+\\w+"), mStreetNr));
+    //mStreetNr->setValidator(new QRegularExpressionValidator(QRegularExpression("\\d+\\w+"), mStreetNr));
     mAreaCode = new QLineEdit (this);
     mAreaCode->setValidator(new QRegularExpressionValidator(QRegularExpression("\\d\\d\\d\\d\\d"), mAreaCode));
     mCity = new QLineEdit (this);

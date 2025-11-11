@@ -52,7 +52,7 @@ AddRecipientView::AddRecipientView (QWidget *parent)
     //mStreetEdit->setValidator(new QRegularExpressionValidator(QRegularExpression("\\w+"), mStreetEdit));
     mStreetNumberEdit = new QLineEdit ();
     // accept only a digit in first place, followed by digits or text
-    mStreetNumberEdit->setValidator(new QRegularExpressionValidator(QRegularExpression("\\d+\\w+"), mStreetNumberEdit));
+    //mStreetNumberEdit->setValidator(new QRegularExpressionValidator(QRegularExpression("\\d+\\w+"), mStreetNumberEdit));
     // accept only digits (5)
     mAreaCodeEdit = new QLineEdit ();
     mAreaCodeEdit->setValidator(new QRegularExpressionValidator(QRegularExpression("\\d\\d\\d\\d\\d"), mAreaCodeEdit));
