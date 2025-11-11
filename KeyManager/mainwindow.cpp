@@ -71,7 +71,7 @@ void MainWindow::setIOInterface (IOInterface *ioInterface)
 }
 
 void MainWindow::init()
-{   
+{
     mViewStack = new QStackedWidget (this);
     setCentralWidget(mViewStack);
     qDebug () << "centralWidget width: " << centralWidget()->screen()->size().width();
