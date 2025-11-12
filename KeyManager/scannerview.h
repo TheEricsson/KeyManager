@@ -47,6 +47,7 @@ class ScannerView : public WinSubmenu
     private slots:
         virtual void onMenuBtnClicked (Gui::MenuButton btnType);
         void onCameraChanged(int camId);
+        void onStartDelayFinished();
         void decodeFromVideoFrame ();
 
     private:
@@ -69,6 +70,7 @@ class ScannerView : public WinSubmenu
         QList <int> mCameraIds;
         Camera *mCameraInstance;
         QTimer *mGrabTimer;
+        QTimer *mStartDelay;
         ScannerState mScannerState;
         QVideoWidget *m_viewfinder;
         QLabel *mCodeLabel;

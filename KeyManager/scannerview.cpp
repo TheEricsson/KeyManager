@@ -38,6 +38,7 @@ ScannerView::ScannerView(QWidget *parent)
 {
     mCameraInstance = 0;
     mGrabTimer = 0;
+    mStartDelay = 0;
     mScannerData = 0;
     mAvailableCameras = 0;
     mCameraInitDone = false;
@@ -172,14 +173,14 @@ void ScannerView::startScanner ()
         }
     }
 
-    if (!mGrabTimer)
+    if (!mStartDelay)
     {
-        mGrabTimer = new QTimer (this);
-        mGrabTimer->setInterval(100);
-        connect (mGrabTimer, SIGNAL(timeout()), this, SLOT(decodeFromVideoFrame()));
+        mStartDelay = new QTimer (this);
+        mStartDelay->setSingleShot(true);
+        connect (mStartDelay, SIGNAL(timeout()), this, SLOT(onStartDelayFinished()));
     }
-
-    mGrabTimer->start(1000);
+    qDebug()<<"Delay started";
+    mStartDelay->start(1000);
 }
 
 void ScannerView::stopScanner ()
@@ -316,6 +317,19 @@ void ScannerView::onCameraChanged(int camId)
     setScannerState(ScannerState::SCANNING);
 }
 
+void ScannerView::onStartDelayFinished()
+{
+    qDebug()<<"Delay finished";
+
+    if (!mGrabTimer)
+    {
+        mGrabTimer = new QTimer (this);
+        mGrabTimer->setInterval(50);
+        connect (mGrabTimer, SIGNAL(timeout()), this, SLOT(decodeFromVideoFrame()));
+    }
+    mGrabTimer->start();
+}
+
 void ScannerView::decodeFromVideoFrame ()
 {
     QImage capture;
@@ -340,12 +354,12 @@ void ScannerView::decodeFromVideoFrame ()
     barcodeAsNumber.append(decodedString.mid(5, 4));
     unsigned int barcodeAsInt = barcodeAsNumber.toInt();
 
-    if ("" != decodedString.toStdString())
+    /*if ("" != decodedString.toStdString())
     {
         qDebug () << "barcode:" << decodedString;
         qDebug () << "barcodeAsNumber:" << barcodeAsNumber;
         qDebug () << "barcodeAsInt: = " << barcodeAsInt;
-    }
+    }*/
 
     if (0 != mCodeLabel)
     {
