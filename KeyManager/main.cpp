@@ -54,7 +54,8 @@ int main(int argc, char *argv[])
 
     w.init();
 
-    w.show();
+    //w.show();
+    w.showFullScreen();
 
     return a.exec();
 }

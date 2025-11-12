@@ -21,6 +21,7 @@ class ToolsViewDataAdministration : public WinSubmenu
         void onBtnClicked_CodeGenerator (Gui::MenuButton btn);
         void onBtnClicked_RecipientView (Gui::MenuButton btn);
     private:
+        virtual void showEvent(QShowEvent *);
         CodeGeneratorView *mCodeGeneratorView;
         RecipientView *mRecipientView;
 };

@@ -34,6 +34,7 @@ EditCustomerView::EditCustomerView(QWidget *parent) : WinSubmenu {parent}
 
 void EditCustomerView::showEvent(QShowEvent *)
 {
+    showFullScreen();
     reset ();
 }
 

@@ -13,6 +13,7 @@ class ImageView : public WinSubmenu
         ImageView(QWidget *parent = nullptr);
         void setImage(QImage &img);
     private:
+        void showEvent(QShowEvent *);
         QLabel *mImagePane;
 };
 

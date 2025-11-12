@@ -212,6 +212,12 @@ void AddRecipientView::okButtonClicked()
     }
 }
 
+void AddRecipientView::showEvent(QShowEvent *)
+{
+    clearForm();
+    showFullScreen();
+}
+
 bool AddRecipientView::checkValues ()
 {
     bool checkOk = true;

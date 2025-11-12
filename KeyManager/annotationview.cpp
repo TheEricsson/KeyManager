@@ -28,6 +28,7 @@ AnnotationView::AnnotationView (QWidget *parent)
 
 void AnnotationView::showEvent(QShowEvent *)
 {
+    showFullScreen();
     reset ();
 }
 

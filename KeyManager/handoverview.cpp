@@ -139,6 +139,7 @@ void  HandoverView::onMenuBtnClicked (Gui::MenuButton btnType)
 
 void HandoverView::showEvent(QShowEvent *)
 {
+    showFullScreen();
     reset ();
 }
 

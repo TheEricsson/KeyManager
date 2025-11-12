@@ -67,6 +67,7 @@ void AddCustomerView::onMenuBtnClicked (Gui::MenuButton btnType)
 
 void AddCustomerView::showEvent(QShowEvent *)
 {
+    showFullScreen();
     reset();
 }
 

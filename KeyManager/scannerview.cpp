@@ -111,6 +111,8 @@ void ScannerView::reset()
 
 void ScannerView::showEvent(QShowEvent *)
 {
+    showFullScreen();
+
     // init camera at first show event
     if (!mCameraInitDone)
     {

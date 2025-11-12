@@ -53,4 +53,5 @@ void HomeView::showEvent(QShowEvent *)
         //     mLogo->setPixmap(logo_scaled);
         // }
     }
+    showFullScreen();
 }

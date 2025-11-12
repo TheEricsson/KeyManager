@@ -122,6 +122,11 @@ void ToolsViewDataAdministration::onBtnClicked_RecipientView (Gui::MenuButton bt
     }
 }
 
+void ToolsViewDataAdministration::showEvent(QShowEvent *)
+{
+    showFullScreen();
+}
+
 ToolsViewDataAdministration::~ToolsViewDataAdministration()
 {
     if (mCodeGeneratorView)

@@ -135,6 +135,8 @@ void KeychainStatusView::setViewMode(ViewMode::Value mode)
 
 void KeychainStatusView::showEvent(QShowEvent *)
 {
+    showFullScreen();
+
     int barcode = dataInterface()->getScannedCode();
     QString barcodeAsString = QString::number(barcode);
 
@@ -170,7 +172,10 @@ void KeychainStatusView::showEvent(QShowEvent *)
     if  (ioInterface()->getKeychainImg(keyCode, keychainImage))
         setKeychainImage (keychainImage);
     else
+    {
         qDebug () << "keychainStatusView::showEvent - no keychain img from db available.";
+        setKeychainImage (keychainImage);
+    }
 
     //set values for keychainstatus data from db
     ioInterface()->setKeychainData(dataInterface()->getDataKeychain(), keyCode);
@@ -319,13 +324,13 @@ void KeychainStatusView::keyImgBtnClicked()
     if (!mImageView)
     {
         mImageView = new ImageView();
+        mImageView->setWindowModality(Qt::ApplicationModal);
+        mImageView->hide();
         connect (mImageView, SIGNAL(menuButtonClicked(Gui::MenuButton)), this, SLOT(onImageViewButtonClicked(Gui::MenuButton)));
     }
 
     mImageView->show();
-
-    if (!keychainImage.isNull())
-        mImageView->setImage(keychainImage);
+    mImageView->setImage(keychainImage);
 }
 
 void KeychainStatusView::onCameraViewButtonClicked(Gui::MenuButton btn)

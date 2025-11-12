@@ -22,6 +22,8 @@ class CodeGeneratorView : public WinSubmenu
     private:
         bool checkValues();
         void generatePDF();
+        virtual void showEvent(QShowEvent *);
+
         QZXing decoder;
         QString mNumberOfCodes;
 

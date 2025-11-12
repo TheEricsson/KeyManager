@@ -186,11 +186,13 @@ void RecipientView::reset()
     mRecipients->clearSelection();
     mRecipients->setFocus();
     mRecipients->update();
+    mSearchField->setText("");
     mRowSelected = false;
 }
 
 void RecipientView::showEvent(QShowEvent *)
 {
+    showFullScreen();
     reset ();
 }
 

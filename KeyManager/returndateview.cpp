@@ -105,6 +105,7 @@ void ReturnDateView::reset()
 
 void ReturnDateView::showEvent(QShowEvent *)
 {
+    showFullScreen();
     reset();
     update ();
 }

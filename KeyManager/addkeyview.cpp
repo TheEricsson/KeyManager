@@ -83,6 +83,7 @@ void AddKeyView::onMenuBtnClicked (Gui::MenuButton btnType)
 
 void AddKeyView::showEvent(QShowEvent *)
 {
+    showFullScreen();
     reset ();
 }
 

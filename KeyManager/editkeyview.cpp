@@ -48,6 +48,7 @@ EditKeyView::EditKeyView(QWidget *parent) : WinSubmenu {parent}
 
 void EditKeyView::showEvent(QShowEvent *)
 {
+    showFullScreen();
     reset ();
     update ();
 }

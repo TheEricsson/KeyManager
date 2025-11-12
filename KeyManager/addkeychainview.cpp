@@ -146,6 +146,7 @@ void AddKeychainView::reset()
 
 void AddKeychainView::showEvent(QShowEvent *)
 {
+    showFullScreen();
     reset ();
 }
 

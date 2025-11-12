@@ -182,6 +182,7 @@ void MainWindow::registerView (WinSubmenu *view)
     connect (view, SIGNAL(menuButtonClicked(Gui::MenuButton)), this, SLOT (onMenuBtnClicked(Gui::MenuButton)));
     view->setDataInterface(mDataInterface);
     view->setIOInterface(mDbInterface);
+    view->setWindowModality(Qt::ApplicationModal);
     mViewStack->addWidget(view);
 }
 

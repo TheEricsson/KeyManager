@@ -32,6 +32,7 @@ class AddRecipientView : public WinSubmenu
 
         bool checkValues ();
         void okButtonClicked();
+        void showEvent(QShowEvent *);
 
         QLabel* mLabelRecipientName;
         QRadioButton* mIsCompany;

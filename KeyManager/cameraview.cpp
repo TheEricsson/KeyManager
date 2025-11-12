@@ -37,6 +37,7 @@ QImage CameraView::getImage()
 
 void CameraView::showEvent(QShowEvent *)
 {
+    showFullScreen();
     if (!mCamera)
     {
         mCamera = new Camera (this);

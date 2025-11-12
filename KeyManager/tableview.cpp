@@ -31,6 +31,7 @@ TableView::TableView(const QString &tableName, QWidget *parent)
 
 void TableView::showEvent(QShowEvent *)
 {
+    showFullScreen();
     getData();
 }
 

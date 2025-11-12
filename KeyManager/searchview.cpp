@@ -109,6 +109,7 @@ SearchView::SearchView (QWidget *parent)
 
 void SearchView::showEvent(QShowEvent *)
 {
+    showFullScreen();
     resetFilters();
 
     //setData();

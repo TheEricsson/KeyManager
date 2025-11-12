@@ -202,3 +202,7 @@ void CodeGeneratorView::generatePDF ()
     delete pdfPrinter;
 }
 
+void CodeGeneratorView::showEvent(QShowEvent *)
+{
+    showFullScreen();
+}
