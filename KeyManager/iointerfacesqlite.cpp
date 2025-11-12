@@ -16,6 +16,7 @@
 #include "datainterface.h"
 #include "globals.h"
 #include "viewdatarecipient.h"
+#include <QCoreApplication>
 
 #ifdef Q_OS_ANDROID
     #include <QCoreApplication>
@@ -34,6 +35,7 @@ IOInterfaceSQLITE::IOInterfaceSQLITE()
     qDebug () << "QStandardPaths::GenericDataLocation" << QStandardPaths::writableLocation(QStandardPaths::GenericDataLocation);
     qDebug () << "QStandardPaths::HomeLocation" << QStandardPaths::writableLocation(QStandardPaths::HomeLocation);
     qDebug () << "QStandardPaths::RuntimeLocation" << QStandardPaths::writableLocation(QStandardPaths::RuntimeLocation);
+    qDebug () << "QCoreApplication::applicationDirPath" << QCoreApplication::applicationDirPath();
 
     mKeychainStatusId = KeychainStatus::Undefined;
     mDb = QSqlDatabase::addDatabase("QSQLITE");
@@ -50,7 +52,20 @@ IOInterfaceSQLITE::IOInterfaceSQLITE()
 #endif
 #ifdef Q_OS_WIN64
     //mDbLocation = "C:/QtProjekte/KeyManager/build/Desktop_Qt_6_8_2_MinGW_64_bit-Debug/db.sqlite";
-    mDbLocation = QStandardPaths::writableLocation(QStandardPaths::AppDataLocation);
+    //mDbLocation = QStandardPaths::writableLocation(QStandardPaths::AppDataLocation);
+
+    QString appDirectoryStr = QCoreApplication::applicationDirPath();
+    QString dbDirectoryStr = appDirectoryStr + "/data";
+
+    QDir dbDirectory (dbDirectoryStr);
+    QDir appDirectory (appDirectoryStr);
+
+    if (!dbDirectory.exists())
+    {
+        appDirectory.mkdir("data");
+    }
+
+    mDbLocation = dbDirectoryStr;
     mDbLocation.append("/db");
     mDbLocation.append(".sqlite");
     qDebug () << "mDbLocation: " << mDbLocation;
