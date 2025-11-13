@@ -125,6 +125,8 @@ RESOURCES += \
     res/resources.qrc \
     qdarkstyle/light/lightstyle.qrc
 
+RC_ICONS = icon256.ico
+
 DISTFILES += \
     android/AndroidManifest.xml \
     android/build.gradle \
