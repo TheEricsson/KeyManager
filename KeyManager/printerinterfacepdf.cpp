@@ -85,6 +85,9 @@ void PrinterInterfacePdf::drawQRCode (QImage &img, int codeDim, int labelWidth, 
     float conversionFactor = mResolutionPPI / 2.41 / 10;
     float printSize = conversionFactor * codeDim;
     float printSizeLabelWidth = conversionFactor * labelWidth;
+    float printSizeQr = printSize * 0.8;
+    int posXQr = mPosX + ((printSize - printSizeQr)/2);
+    int posYQr = mPosY + ((printSize - printSizeQr)/2);
 
     // set printer position...
     unsigned int nextPosY = mPosY + printSize + 5;
@@ -99,7 +102,8 @@ void PrinterInterfacePdf::drawQRCode (QImage &img, int codeDim, int labelWidth, 
     }
 
     // draw the image in document
-    mPainter.drawImage(QRect(mPosX, mPosY, printSize, printSize), img);
+    //mPainter.drawImage(QRect(mPosX, mPosY, printSize, printSize), img);
+    mPainter.drawImage(QRect(posXQr, posYQr, printSizeQr, printSizeQr), img);
 
     // draw border
     if (style != Qt::NoPen)
