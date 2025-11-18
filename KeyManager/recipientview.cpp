@@ -293,8 +293,8 @@ void RecipientView::addRecipient()
         connect (mAddRecipientView, SIGNAL(menuButtonClicked(Gui::MenuButton)), this, SLOT(onAddRecipientButtonClicked(Gui::MenuButton)));
     }
     mAddRecipientView->setDataInterface (dataInterface());
-    mAddRecipientView->setViewMode(ViewMode::NewData);
     mAddRecipientView->setIOInterface (ioInterface());
+    mAddRecipientView->setViewMode(ViewMode::NewData);
     mAddRecipientView->show();
 }
 
@@ -307,8 +307,8 @@ void RecipientView::editRecipient()
     }
     mAddRecipientView->setDataInterface (dataInterface());
     mAddRecipientView->setData(mCurrentRecipientId, dataInterface()->getDataRecipient());
-    mAddRecipientView->setViewMode(ViewMode::EditData);
     mAddRecipientView->setIOInterface (ioInterface());
+    mAddRecipientView->setViewMode(ViewMode::EditData);
     mAddRecipientView->show();
 }
 

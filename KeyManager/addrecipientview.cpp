@@ -106,12 +106,16 @@ void AddRecipientView::clearForm()
     mAreaCodeEdit->setText("");
     mCityEdit->setText("");
     mRecipientId = _UNDEFINED;
-    mViewMode = ViewMode::Undefined;
+    //mViewMode = ViewMode::Undefined;
 }
 
 void AddRecipientView::setViewMode (ViewMode::Value mode)
 {
+    qDebug()<< "AddRecipientView::setViewMode: " << mode;
     mViewMode = mode;
+
+    if (mViewMode == ViewMode::NewData)
+        clearForm();
 }
 
 void AddRecipientView::setData(unsigned int id, ViewDataRecipient *data)
@@ -177,11 +181,14 @@ void AddRecipientView::onMenuBtnClicked (Gui::MenuButton btnType)
 
 void AddRecipientView::okButtonClicked()
 {
+    qDebug() << "AddRecipientView::okButtonClicked()";
     // check editable fiels
     if (checkValues ())
     {
+        qDebug()<<"checkValues ok";
         if (dataInterface())
         {
+            qDebug()<<"datainterface ok";
             dataInterface()->setRecipientAreaCode(mAreaCodeEdit->text().toInt());
             dataInterface()->setRecipientCity(mCityEdit->text());
             dataInterface()->setRecipientName(mRecipientNameEdit->text());
@@ -191,6 +198,7 @@ void AddRecipientView::okButtonClicked()
 
             if (ioInterface())
             {
+                qDebug()<<"ioInterface ok";
                 switch (mViewMode)
                 {
                 //add new db entry
@@ -214,7 +222,7 @@ void AddRecipientView::okButtonClicked()
 
 void AddRecipientView::showEvent(QShowEvent *)
 {
-    clearForm();
+    //clearForm();
     showFullScreen();
 }
 

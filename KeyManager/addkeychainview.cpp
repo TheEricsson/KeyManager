@@ -141,6 +141,7 @@ void AddKeychainView::reset()
     mCustomersView->update();
     mRowSelected = false;
     mInternalLocation->clear();
+    mSearchField->setText("");
     update();
 }
 
