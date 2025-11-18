@@ -81,14 +81,16 @@ SearchView::SearchView (QWidget *parent)
     formLayout->addRow(tr("&Schlüsselhaken:"), mKeyPositionLineEdit);
     formLayout->addRow(tr("&Status:"), mKeyStatusLineEdit);
     formLayout->addRow(tr("&Schlüssel Zusatzinfo:"), mKeyInfoLineEdit);
+    formLayout->addRow(tr("&Filter zurücksetzen:"), resetFilters);
     formLayout->setRowWrapPolicy(QFormLayout::WrapLongRows);
-
     filters->setLayout(formLayout);
 
+    QSpacerItem* placeHolder = new QSpacerItem(1, 25);
+
     QVBoxLayout *centralLayout = new QVBoxLayout();
-    centralLayout->addWidget(mDataView, Qt::AlignCenter);
     centralLayout->addWidget(filters);
-    centralLayout->addWidget(resetFilters);
+    centralLayout->addSpacerItem(placeHolder);
+    centralLayout->addWidget(mDataView, Qt::AlignCenter);
     setCentralLayout(centralLayout);
 
     QList<Gui::MenuButton> menuButtons;
