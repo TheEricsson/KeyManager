@@ -103,11 +103,11 @@ void Camera::setCamera (const QCameraDevice &cameraDevice)
         mCamera->setCameraDevice(cameraDevice);
     }
 
-    mCamera->setExposureMode(QCamera::ExposureAuto);
     mCamera->setAutoIsoSensitivity();
     mCamera->setAutoExposureTime();
+    mCamera->setExposureMode(QCamera::ExposureAction);
     mCamera->setWhiteBalanceMode(QCamera::WhiteBalanceAuto);
-    mCamera->setFocusMode(QCamera::FocusModeAuto);
+    mCamera->setFocusMode(QCamera::FocusModeAutoNear);
 
     initCaptureSession ();
 }
@@ -120,8 +120,9 @@ void Camera::initCaptureSession ()
         connect(mImageCapture, &QImageCapture::imageCaptured, this, &Camera::processCapturedImage);
     }
 
-    mImageCapture->setQuality(QImageCapture::HighQuality);
+    mImageCapture->setQuality(QImageCapture::NormalQuality);
     mImageCapture->setFileFormat(QImageCapture::JPEG);
+    mImageCapture->setResolution(1920,1080);
 
     mCaptureSession.setImageCapture(mImageCapture);
 
